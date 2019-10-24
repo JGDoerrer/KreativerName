@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KreativerName.Grid
 {
-    public struct Hex
+    public struct Hex : IBytes
     {
         public Hex(int x, int y)
         {
@@ -32,10 +32,31 @@ namespace KreativerName.Grid
             Troop = troop;
         }
 
-        public HexPoint Position { get; set; }
+        public HexPoint Position;
         public int X => Position.X;
         public int Y => Position.Y;
 
-        public Troop? Troop { get; set; }
+        public Troop? Troop;
+
+        public byte[] ToBytes()
+        {
+            byte[] bytes = new byte[Troop.HasValue ? 14 : 9];
+            Position.ToBytes().CopyTo(bytes, 0);
+            bytes[8] = (byte)(Troop.HasValue ? 1 : 0);
+            if (Troop.HasValue)
+                Troop.Value.ToBytes().CopyTo(bytes, 9);
+            return bytes;
+        }
+
+        public void FromBytes(byte[] bytes, int startIndex)
+        {
+            Position.FromBytes(bytes, startIndex);
+            if (bytes[startIndex + 8] > 0)
+            {
+                Troop t = new Troop();
+                t.FromBytes(bytes, startIndex + 9);
+                Troop = t;
+            }
+        }
     }
 }

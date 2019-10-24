@@ -42,7 +42,7 @@ namespace KreativerName.Rendering
 
             List<HexPoint> moves = game.GetMoves(game.selectedHex, game.currentTeam);
 
-            foreach (var hex in game.hexagons)
+            foreach (var hex in game.Grid)
             {
                 Vector2 renderPos = game.layout.HexCorner(hex, 3);
                 renderPos.X -= game.layout.size / 2f * (float)Math.Sqrt(3);
@@ -65,7 +65,7 @@ namespace KreativerName.Rendering
                 if (hex.Troop.HasValue)
                 {
                     Color teamColor = hex.Troop.Value.Team < teamColors.Length ? teamColors[hex.Troop.Value.Team] : Color.White;
-                    TextureRenderer.Draw(Textures.Get("Troop1"), renderPos, Vector2.One * game.layout.size / 100f, teamColor, null);
+                    TextureRenderer.Draw(Textures.Get("Pawn"), renderPos, Vector2.One * game.layout.size / 100f, teamColor, null);
                 }
             }
         }

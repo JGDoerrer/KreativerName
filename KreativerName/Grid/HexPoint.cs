@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace KreativerName.Grid
 {
-    public struct HexPoint
+    public struct HexPoint : IBytes
     {
         public HexPoint(int x, int y)
         {
@@ -72,6 +72,22 @@ namespace KreativerName.Grid
                 left.y / right
                 );
         }
+        
+        public static HexPoint operator *(int left, HexPoint right)
+        {
+            return new HexPoint(
+                right.x * left,
+                right.y * left
+                );
+        }
+
+        public static HexPoint operator /(int left, HexPoint right)
+        {
+            return new HexPoint(
+                right.x / left,
+                right.y / left
+                );
+        }
 
         public static bool operator ==(HexPoint left, HexPoint right)
         {
@@ -84,5 +100,19 @@ namespace KreativerName.Grid
         }
 
         #endregion
+
+        public byte[] ToBytes()
+        {
+            byte[] bytes = new byte[8];
+            BitConverter.GetBytes(X).CopyTo(bytes, 0);
+            BitConverter.GetBytes(Y).CopyTo(bytes, 4);
+            return bytes;
+        }
+
+        public void FromBytes(byte[] bytes, int startIndex)
+        {
+            X = BitConverter.ToInt32(bytes, startIndex);
+            Y = BitConverter.ToInt32(bytes, startIndex + 4);
+        }
     }
 }
