@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using KreativerName.Grid;
+using KreativerName.UI;
+using KreativerName.UI.Constraints;
 using OpenTK;
 using OpenTK.Input;
 
@@ -11,38 +13,53 @@ namespace KreativerName
     {
         public Game()
         {
-            if (false)
-            {
-                level = Level.LoadFromFile("000");
-            }
-            else
-            {
-                Grid = new HexGrid<Hex>();
+            //Grid = new HexGrid<Hex>();
 
-                int w = 11;
-                int h = 10;
+            //int w = 11;
+            //int h = 10;
+            //Random random = new Random();
 
-                for (int j = 0; j < w; j++)
-                {
-                    for (int i = -(j / 2); i < h - (j + 1) / 2; i++)
-                    {
-                        if (j > h - 2)
-                            Grid[i, j] = new Hex(i, j, new Troop(0, TroopType.Knight));
-                        else if (j < 2)
-                            Grid[i, j] = new Hex(i, j, new Troop(1, TroopType.Rook));
-                        else
-                            Grid[i, j] = new Hex(i, j);
-                    }
-                }
+            //for (int j = 0; j < w; j++)
+            //{
+            //    for (int i = -(j / 2); i < h - (j + 1) / 2; i++)
+            //    {
+            //        if (j > h - 2)
+            //            Grid[i, j] = new Hex(i, j, new Troop(0, (TroopType)((i + j) % 3)));
+            //        else if (j < 2)
+            //            Grid[i, j] = new Hex(i, j, new Troop(1, (TroopType)((i + j) % 3)));
+            //        else
+            //            Grid[i, j] = new Hex(i, j);
+            //    }
+            //}
 
-                level.SaveToFile("000");
-            }
+            //level.SaveToFile("000");
+
+            InitUI();
 
             currentTeam = 0;
             teams = 2;
         }
 
+        private void InitUI()
+        {
+            ui = new UI.UI();
+            Frame frame = new Frame();
+            frame.SetConstraints(new PixelConstraint(20),
+                new PixelConstraint(80),
+                new PixelConstraint(80),
+                new RelativeConstraint(1));
+            Button button = new Button();
+            button.OnClicked += Button_OnClicked;
+            button.SetConstraints(new PixelConstraint(20),
+                new PixelConstraint(20),
+                new PixelConstraint(40),
+                new RelativeConstraint(1));
+            frame.AddChild(button);
+            ui.Add(frame);
+        }
+
         Level level;
+        internal UI.UI ui;
         internal Input input;
         internal HexPoint selectedHex;
         public int currentTeam;
@@ -78,9 +95,23 @@ namespace KreativerName
             input.Update();
         }
 
+        public void UpdateUI(Vector2 windowSize)
+        {
+            ui.SetMouseState(input.MouseState());
+            ui.Update(windowSize);
+        }
+
+
+        private void Button_OnClicked()
+        {
+            level = Level.LoadFromFile("000");
+        }
+
+        #region Moves
+
         public List<HexPoint> GetMoves(HexPoint point, int team)
         {
-            if (!Grid.Contains(point))
+            if (Grid == null || !Grid.Contains(point))
                 return new List<HexPoint>();
 
             Hex hex = (Hex)Grid[point];
@@ -170,5 +201,7 @@ namespace KreativerName
             Grid[to] = hexFrom;
             Grid[from] = new Hex(from);
         }
+
+        #endregion
     }
 }

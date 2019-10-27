@@ -30,13 +30,14 @@ namespace KreativerName
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             game.Update();
+            game.UpdateUI(new Vector2(Width, Height));
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             GL.Viewport(0, 0, Width, Height);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
+            
             renderer.Render(Width, Height);
 
             SwapBuffers();

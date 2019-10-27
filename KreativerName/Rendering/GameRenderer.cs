@@ -29,8 +29,14 @@ namespace KreativerName.Rendering
             Color.Red,
         };
 
+        const float sqrt3 = 1.732050807568877293527446341505872366942805253810380628055f;
+
         internal void Render(int width, int height)
         {
+            game.ui.Render(width, height);
+
+            GL.Enable(EnableCap.Blend);
+
             GL.ClearColor(Color.FromArgb(255, 50, 50, 50));
 
             GL.MatrixMode(MatrixMode.Projection);
@@ -40,17 +46,20 @@ namespace KreativerName.Rendering
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
 
+            if (game.Grid == null)
+                return;
+
             List<HexPoint> moves = game.GetMoves(game.selectedHex, game.currentTeam);
 
-            int totalWidth = (int)(40 * Math.Sqrt(3) * game.Grid.Max(x => x.Position.X));
-            int totalHeight = (int)(40 * 1.5f * game.Grid.Max(x => x.Position.Y));
+            int totalWidth = (int)(40 * sqrt3 * (game.Grid.Max(x => x.X + x.Y / 2f) - game.Grid.Min(x => x.X + x.Y / 2f)));
+            int totalHeight = (int)(40 * 1.5f * (game.Grid.Max(x => x.Y) - game.Grid.Min(x => x.Y)));
 
             game.layout.origin = new Vector2((width - totalWidth) / 2, (height - totalHeight) / 2);
 
             foreach (var hex in game.Grid)
             {
                 Vector2 renderPos = game.layout.HexCorner(hex, 3);
-                renderPos.X -= game.layout.size / 2f * (float)Math.Sqrt(3);
+                renderPos.X -= game.layout.size / 2f * sqrt3;
                 renderPos.Y -= game.layout.size / 2f;
 
                 renderPos.X = (float)Math.Floor(renderPos.X);

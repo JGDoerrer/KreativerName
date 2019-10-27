@@ -86,6 +86,14 @@
     <Compile Include="Rendering\Texture2D.cs" />
     <Compile Include="Rendering\TextureRenderer.cs" />
     <Compile Include="Rendering\Textures.cs" />
+    <Compile Include="UI\Button.cs" />
+    <Compile Include="UI\Constraints\CenterConstraint.cs" />
+    <Compile Include="UI\Constraints\Constraint.cs" />
+    <Compile Include="UI\Constraints\PixelConstraint.cs" />
+    <Compile Include="UI\Constraints\RelativeConstraint.cs" />
+    <Compile Include="UI\Constraints\UIConstaints.cs" />
+    <Compile Include="UI\Events.cs" />
+    <Compile Include="UI\Frame.cs" />
     <Compile Include="UI\UI.cs" />
     <Compile Include="UI\UIElement.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
