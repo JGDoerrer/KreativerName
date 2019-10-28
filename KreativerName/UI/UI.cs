@@ -38,8 +38,6 @@ namespace KreativerName.UI
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
 
-            GL.Disable(EnableCap.Blend);
-
             Vector2 windowSize = new Vector2(windowWidth, windowHeight);
             foreach (var element in Elements)
             {

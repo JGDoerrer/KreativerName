@@ -24,7 +24,7 @@ namespace KreativerName.Grid
         internal float size;
         internal float startAngle;
 
-        public Vector2 HexToPixel(Hex h)
+        public Vector2 HexToPixel(HexPoint h)
         {
             float x = (f.M11 * h.X + f.M12 * h.Y) * size;
             float y = (f.M21 * h.X + f.M22 * h.Y) * size;
@@ -35,8 +35,7 @@ namespace KreativerName.Grid
         {
             v -= origin;
             v /= size;
-
-
+            
             float x = b.M11 * v.X + b.M12 * v.Y;
             float y = b.M21 * v.X + b.M22 * v.Y;
             float z = -x - y;
@@ -59,10 +58,10 @@ namespace KreativerName.Grid
             return new HexPoint((int)rx, (int)ry);
         }
 
-        public Vector2 HexCorner(Hex h, int i)
+        public Vector2 HexCorner(HexPoint h, int i)
         {
             double angle = 2 * Math.PI * (startAngle + i) / 6;
-            return HexToPixel(h) + new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle) * size);
+            return HexToPixel(h) + new Vector2((float)Math.Cos(angle) * size, (float)Math.Sin(angle) * size);
         }
 
 

@@ -12,6 +12,7 @@ namespace KreativerName
     public struct Level : IBytes
     {
         public HexGrid<Hex> grid;
+        public HexPoint startPos;
 
         public void SaveToFile(string name)
         {
@@ -53,13 +54,23 @@ namespace KreativerName
 
         public byte[] ToBytes()
         {
-            return grid.ToBytes();
+            List<byte> bytes = new List<byte>();
+            bytes.AddRange(grid.ToBytes());
+            bytes.AddRange(startPos.ToBytes());
+
+            return bytes.ToArray();
         }
 
-        public void FromBytes(byte[] bytes, int startIndex)
+        public int FromBytes(byte[] bytes, int startIndex)
         {
+            int count = 0;
+
             grid = new HexGrid<Hex>();
-            grid.FromBytes(bytes, startIndex);
+            count += grid.FromBytes(bytes, startIndex);
+            startPos = new HexPoint();
+            count += startPos.FromBytes(bytes, startIndex + count);
+
+            return count;
         }
     }
 }

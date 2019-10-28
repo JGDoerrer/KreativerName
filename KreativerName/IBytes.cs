@@ -9,6 +9,6 @@ namespace KreativerName
     public interface IBytes
     {
         byte[] ToBytes();
-        void FromBytes(byte[] bytes, int startIndex);
+        int FromBytes(byte[] bytes, int startIndex);
     }
 }

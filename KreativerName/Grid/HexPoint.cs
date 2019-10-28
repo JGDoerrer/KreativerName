@@ -109,10 +109,11 @@ namespace KreativerName.Grid
             return bytes;
         }
 
-        public void FromBytes(byte[] bytes, int startIndex)
+        public int FromBytes(byte[] bytes, int startIndex)
         {
             X = BitConverter.ToInt32(bytes, startIndex);
             Y = BitConverter.ToInt32(bytes, startIndex + 4);
+            return 8;
         }
     }
 }

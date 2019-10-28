@@ -2,8 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KreativerName.Grid
 {
@@ -82,36 +80,38 @@ namespace KreativerName.Grid
             foreach (var item in dictonary)
             {
                 bytes.AddRange(item.Key.ToBytes());
-                byte[] b = item.Value.ToBytes();
-                bytes.AddRange(BitConverter.GetBytes(b.Length));
-                bytes.AddRange(b);
+                bytes.AddRange(item.Value.ToBytes());
             }
 
             return bytes.ToArray();
         }
 
-        public void FromBytes(byte[] bytes, int startIndex)
+        public int FromBytes(byte[] bytes, int startIndex)
         {
             Clear();
 
+            int byteCount = 0;
+
             int count = BitConverter.ToInt32(bytes, startIndex);
             startIndex += 4;
+            byteCount += 4;
 
             for (int i = 0; i < count; i++)
             {
                 HexPoint key = new HexPoint();
-                key.FromBytes(bytes, startIndex);
-                startIndex += 8;
-
-                int length = BitConverter.ToInt32(bytes, startIndex);
-                startIndex += 4;
+                int lengthKey = key.FromBytes(bytes, startIndex);
+                startIndex += lengthKey;
+                byteCount += lengthKey;
 
                 T value = new T();
-                value.FromBytes(bytes, startIndex);
-                startIndex += length;
+                int lengthVal = value.FromBytes(bytes, startIndex);
+                startIndex += lengthVal;
+                byteCount += lengthVal;
 
                 dictonary.Add(key, value);
             }
+
+            return byteCount;
         }
     }
 }

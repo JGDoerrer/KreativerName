@@ -11,52 +11,51 @@ namespace KreativerName.Grid
         public Hex(int x, int y)
         {
             Position = new HexPoint(x, y);
-            Troop = null;
+            Type = HexType.Empty;
         }
 
         public Hex(HexPoint pos)
         {
             Position = pos;
-            Troop = null;
+            Type = HexType.Empty;
         }
 
-        public Hex(int x, int y, Troop troop)
+        public Hex(int x, int y, HexType type)
         {
             Position = new HexPoint(x, y);
-            Troop = troop;
+            Type = type;
         }
 
-        public Hex(HexPoint pos, Troop troop)
+        public Hex(HexPoint pos, HexType type)
         {
             Position = pos;
-            Troop = troop;
+            Type = type;
         }
 
         public HexPoint Position;
+        public HexType Type;
         public int X => Position.X;
         public int Y => Position.Y;
 
-        public Troop? Troop;
-
         public byte[] ToBytes()
         {
-            byte[] bytes = new byte[Troop.HasValue ? 14 : 9];
+            byte[] bytes = new byte[9];
             Position.ToBytes().CopyTo(bytes, 0);
-            bytes[8] = (byte)(Troop.HasValue ? 1 : 0);
-            if (Troop.HasValue)
-                Troop.Value.ToBytes().CopyTo(bytes, 9);
+            bytes[8] = (byte)Type;
             return bytes;
         }
 
-        public void FromBytes(byte[] bytes, int startIndex)
+        public int FromBytes(byte[] bytes, int startIndex)
         {
             Position.FromBytes(bytes, startIndex);
-            if (bytes[startIndex + 8] > 0)
-            {
-                Troop t = new Troop();
-                t.FromBytes(bytes, startIndex + 9);
-                Troop = t;
-            }
+            Type = (HexType)bytes[startIndex + 8];
+            return 9;
         }
+    }
+
+    public enum HexType : byte
+    {
+        Empty,
+        Solid
     }
 }

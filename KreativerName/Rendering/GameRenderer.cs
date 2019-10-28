@@ -1,12 +1,10 @@
-﻿using KreativerName.Grid;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using KreativerName.Grid;
+using OpenTK;
+using OpenTK.Graphics.OpenGL;
 
 namespace KreativerName.Rendering
 {
@@ -33,11 +31,15 @@ namespace KreativerName.Rendering
 
         internal void Render(int width, int height)
         {
+            GL.Disable(EnableCap.Texture2D);
+            GL.Disable(EnableCap.Blend);
+
             game.ui.Render(width, height);
 
+            GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
 
-            GL.ClearColor(Color.FromArgb(255, 50, 50, 50));
+            GL.ClearColor(Color.FromArgb(255, 0, 0, 0));
 
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
@@ -46,19 +48,27 @@ namespace KreativerName.Rendering
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
 
-            if (game.Grid == null)
-                return;
-
-            List<HexPoint> moves = game.GetMoves(game.selectedHex, game.currentTeam);
-
+            // Center grid
             int totalWidth = (int)(40 * sqrt3 * (game.Grid.Max(x => x.X + x.Y / 2f) - game.Grid.Min(x => x.X + x.Y / 2f)));
             int totalHeight = (int)(40 * 1.5f * (game.Grid.Max(x => x.Y) - game.Grid.Min(x => x.Y)));
 
             game.layout.origin = new Vector2((width - totalWidth) / 2, (height - totalHeight) / 2);
 
+            RenderGrid();
+
+
+        }
+
+        private void RenderGrid()
+        {
+            if (game.Grid == null)
+                return;
+
+            List<HexPoint> moves = game.GetPlayerMoves();
+
             foreach (var hex in game.Grid)
             {
-                Vector2 renderPos = game.layout.HexCorner(hex, 3);
+                Vector2 renderPos = game.layout.HexCorner(hex.Position, 3);
                 renderPos.X -= game.layout.size / 2f * sqrt3;
                 renderPos.Y -= game.layout.size / 2f;
 
@@ -68,19 +78,18 @@ namespace KreativerName.Rendering
                 Color color = Color.White;
 
                 if (game.selectedHex == hex.Position)
-                    color = Color.FromArgb(255, 100, 100, 100);
-                else if (moves.Contains(hex.Position))
-                    color = Color.FromArgb(255, 200, 100, 100);
-                else
                     color = Color.FromArgb(255, 200, 200, 200);
+                else if (moves.Contains(hex.Position))
+                    color = Color.LightGreen;
+                else
+                    color = Color.White;
 
-                TextureRenderer.Draw(Textures.Get("Hex"), renderPos, Vector2.One * game.layout.size / 100f, color, null);
+                if (hex.Position == game.player)
+                    TextureRenderer.DrawHex(Textures.Get("Player"), hex.Position, game.layout, Vector2.One * game.layout.size / 10, color, null);
+                else
+                    TextureRenderer.DrawHex(Textures.Get("Hex"), hex.Position, game.layout, Vector2.One * game.layout.size / 10, color, new RectangleF(32 * (int)hex.Type, 0, 32, 32));
+                    //TextureRenderer.Draw(Textures.Get("Hex"), renderPos, Vector2.One * game.layout.size / 10, color, new RectangleF(17*(int)hex.Type,0, 17, 19));
 
-                if (hex.Troop.HasValue)
-                {
-                    Color teamColor = hex.Troop.Value.Team < teamColors.Length ? teamColors[hex.Troop.Value.Team] : Color.White;
-                    TextureRenderer.Draw(Textures.Get(Enum.GetName(typeof(TroopType), hex.Troop.Value.Type)), renderPos, Vector2.One * game.layout.size / 100f, teamColor, null);
-                }
             }
         }
     }

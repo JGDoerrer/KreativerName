@@ -74,7 +74,6 @@
     <Compile Include="Grid\HexLayout.cs" />
     <Compile Include="IBytes.cs" />
     <Compile Include="Level.cs" />
-    <Compile Include="Troop.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="MainWindow.cs" />
     <Compile Include="Grid\HexPoint.cs" />
@@ -137,13 +136,7 @@
     <Content Include="Resources\Textures\Hex.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Textures\Knight.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Textures\Pawn.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Textures\Rook.png">
+    <Content Include="Resources\Textures\Player.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
