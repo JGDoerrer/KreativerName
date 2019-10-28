@@ -31,13 +31,7 @@ namespace KreativerName.Rendering
 
         internal void Render(int width, int height)
         {
-            GL.Disable(EnableCap.Texture2D);
-            GL.Disable(EnableCap.Blend);
-
             game.ui.Render(width, height);
-
-            GL.Enable(EnableCap.Texture2D);
-            GL.Enable(EnableCap.Blend);
 
             GL.ClearColor(Color.FromArgb(255, 0, 0, 0));
 
@@ -49,10 +43,13 @@ namespace KreativerName.Rendering
             GL.LoadIdentity();
 
             // Center grid
-            int totalWidth = (int)(40 * sqrt3 * (game.Grid.Max(x => x.X + x.Y / 2f) - game.Grid.Min(x => x.X + x.Y / 2f)));
-            int totalHeight = (int)(40 * 1.5f * (game.Grid.Max(x => x.Y) - game.Grid.Min(x => x.Y)));
+            if (game.Grid != null)
+            {
+                int totalWidth = (int)(40 * sqrt3 * (game.Grid.Max(x => x.X + x.Y / 2f) - game.Grid.Min(x => x.X + x.Y / 2f)));
+                int totalHeight = (int)(40 * 1.5f * (game.Grid.Max(x => x.Y) - game.Grid.Min(x => x.Y)));
 
-            game.layout.origin = new Vector2((width - totalWidth) / 2, (height - totalHeight) / 2);
+                game.layout.origin = new Vector2((width - totalWidth) / 2, (height - totalHeight) / 2);
+            }
 
             RenderGrid();
 
@@ -78,7 +75,12 @@ namespace KreativerName.Rendering
                 Color color = Color.White;
 
                 if (game.selectedHex == hex.Position)
-                    color = Color.FromArgb(255, 200, 200, 200);
+                {
+                    if (moves.Contains(hex.Position))
+                        color = Color.FromArgb(255, 100, 200, 100);
+                    else
+                        color = Color.FromArgb(255, 200, 200, 200);
+                }
                 else if (moves.Contains(hex.Position))
                     color = Color.LightGreen;
                 else
@@ -88,7 +90,7 @@ namespace KreativerName.Rendering
                     TextureRenderer.DrawHex(Textures.Get("Player"), hex.Position, game.layout, Vector2.One * game.layout.size / 10, color, null);
                 else
                     TextureRenderer.DrawHex(Textures.Get("Hex"), hex.Position, game.layout, Vector2.One * game.layout.size / 10, color, new RectangleF(32 * (int)hex.Type, 0, 32, 32));
-                    //TextureRenderer.Draw(Textures.Get("Hex"), renderPos, Vector2.One * game.layout.size / 10, color, new RectangleF(17*(int)hex.Type,0, 17, 19));
+                //TextureRenderer.Draw(Textures.Get("Hex"), renderPos, Vector2.One * game.layout.size / 10, color, new RectangleF(17*(int)hex.Type,0, 17, 19));
 
             }
         }

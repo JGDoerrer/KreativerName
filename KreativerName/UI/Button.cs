@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Drawing;
+using KreativerName.Rendering;
 using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
 
 namespace KreativerName.UI
 {
@@ -27,31 +24,46 @@ namespace KreativerName.UI
 
         public override void Render(Vector2 windowSize)
         {
-            float x1 = GetX(windowSize);
-            float y1 = GetY(windowSize);
-            float x2 = x1 + GetWidth(windowSize);
-            float y2 = y1 + GetHeight(windowSize);
+            const int a = 8;
+            const float scale = 2;
+
+            float x = GetX(windowSize);
+            float y = GetY(windowSize);
+            float w = GetWidth(windowSize);
+            float h = GetHeight(windowSize);
+
+            float offset;
+            Color color = Color.White;
+            Texture2D tex = Textures.Get("Button");
 
             if (MouseOver(windowSize))
             {
                 if (MouseLeftDown)
-                    GL.Color4(new Color4(255, 0, 0, 255));
+                    offset = a * 3 * 2;
                 else
-                    GL.Color4(new Color4(0, 255, 0, 255));
+                    offset = a * 3;
             }
             else
-                GL.Color4(new Color4(0, 0, 255, 255));
+                offset = 0;
 
-            GL.Begin(PrimitiveType.Quads);
-
-            GL.Vertex2(x1, y1);
-            GL.Vertex2(x1, y2);
-            GL.Vertex2(x2, y2);
-            GL.Vertex2(x2, y1);
-
-            GL.End();
-
-            RenderChildren(windowSize);
+            // corner top left
+            TextureRenderer.Draw(tex, new Vector2(x, y), Vector2.One * scale, color, new RectangleF(offset, 0, a, a));
+            // corner top right
+            TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y), Vector2.One * scale, color, new RectangleF(offset + a * 2, 0, a, a));
+            // corner bottom left
+            TextureRenderer.Draw(tex, new Vector2(x, y + h - a * scale), Vector2.One * scale, color, new RectangleF(offset, a * 2, a, a));
+            // corner bottom right
+            TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y + h - a * scale), Vector2.One * scale, color, new RectangleF(offset + a * 2, a * 2, a, a));
+            // left
+            TextureRenderer.Draw(tex, new Vector2(x, y + a * scale), new Vector2(1, h / a - 2 * scale) * scale, color, new RectangleF(offset, a, a, a));
+            // top
+            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y), new Vector2(w / a - 2 * scale, 1) * scale, color, new RectangleF(offset + a, 0, a, a));
+            // right
+            TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y + a * scale), new Vector2(1, h / a - 2 * scale) * scale, color, new RectangleF(offset + a * 2, a, a, a));
+            // bottom
+            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + h - a * scale), new Vector2(w / a - 2 * scale, 1) * scale, color, new RectangleF(offset + a, a * 2, a, a));
+            // center
+            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + a * scale), new Vector2(w / a - 2 * scale, h / a - 2 * scale) * scale, color, new RectangleF(offset + a, a, a, a));
         }
     }
 }

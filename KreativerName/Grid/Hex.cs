@@ -11,13 +11,13 @@ namespace KreativerName.Grid
         public Hex(int x, int y)
         {
             Position = new HexPoint(x, y);
-            Type = HexType.Empty;
+            Type = 0;
         }
 
         public Hex(HexPoint pos)
         {
             Position = pos;
-            Type = HexType.Empty;
+            Type = 0;
         }
 
         public Hex(int x, int y, HexType type)
@@ -53,9 +53,10 @@ namespace KreativerName.Grid
         }
     }
 
+    [Flags]
     public enum HexType : byte
     {
-        Empty,
-        Solid
+        Solid = 1,
+        Deadly = 2,
     }
 }

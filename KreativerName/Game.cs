@@ -12,40 +12,34 @@ namespace KreativerName
     {
         public Game()
         {
-            Grid = new HexGrid<Hex>();
-
-            int w = 11;
-            int h = 10;
-            Random random = new Random();
-
-            for (int j = 0; j < w; j++)
-            {
-                for (int i = -(j / 2); i < h - (j + 1) / 2; i++)
-                {
-                    Grid[i, j] = new Hex(i, j, (HexType)(random.Next(0, 2)));
-                }
-            }
-
-            level.SaveToFile("000");
-
             InitUI();
         }
 
         private void InitUI()
         {
             ui = new UI.UI();
+
             Frame frame = new Frame();
             frame.SetConstraints(new PixelConstraint(20),
-                new PixelConstraint(80),
-                new PixelConstraint(80),
-                new RelativeConstraint(1));
-            Button button = new Button();
-            button.OnClicked += LoadLevel;
-            button.SetConstraints(new PixelConstraint(20),
                 new PixelConstraint(20),
+                new PixelConstraint(80),
+                new PixelConstraint(160));
+
+            Button button1 = new Button();
+            button1.OnClicked += LoadLevel;
+            button1.SetConstraints(new PixelConstraint(20),
+                new PixelConstraint(40),
+                new PixelConstraint(32),
+                new RelativeConstraint(1));
+            frame.AddChild(button1);
+
+            Button button2 = new Button();
+            button2.OnClicked += GenerateLevel;
+            button2.SetConstraints(new PixelConstraint(20),
+                new PixelConstraint(80),
                 new PixelConstraint(40),
                 new RelativeConstraint(1));
-            frame.AddChild(button);
+            frame.AddChild(button2);
             ui.Add(frame);
         }
 
@@ -62,6 +56,8 @@ namespace KreativerName
             new Vector2(0, 0),
             size, 0.5f);
 
+        static Random random = new Random();
+
         public HexGrid<Hex> Grid { get => level.grid; set => level.grid = value; }
 
         public void Update()
@@ -71,9 +67,13 @@ namespace KreativerName
 
             if (input.MousePress(MouseButton.Left))
             {
-
                 if (GetPlayerMoves().Contains(mouse))
                     player = mouse;
+            }
+            
+            if (Grid != null && Grid[player]?.Type.HasFlag(HexType.Deadly) == true)
+            {
+                LoadLevel();
             }
 
             input.Update();
@@ -96,13 +96,16 @@ namespace KreativerName
                 new HexPoint( 0,  1),
             };
 
+            if (Grid == null)
+                return new List<HexPoint>();
+
             List<HexPoint> moves = new List<HexPoint>();
 
             for (int i = 0; i < 6; i++)
             {
                 int j = 1;
 
-                while (Grid[(directions[i] * j) + player].HasValue && Grid[(directions[i] * j) + player].Value.Type == HexType.Empty)
+                while (Grid[(directions[i] * j) + player].HasValue && !Grid[(directions[i] * j) + player].Value.Type.HasFlag(HexType.Solid))
                 {
                     moves.Add(directions[i] * j + player);
                     j++;
@@ -117,6 +120,31 @@ namespace KreativerName
         {
             level = Level.LoadFromFile("000");
             player = level.startPos;
+        }
+
+        private void GenerateLevel()
+        {
+            Grid = new HexGrid<Hex>();
+            
+            int w = 11;
+            int h = 10;
+
+            HexType[] types =
+            {
+                0,
+                HexType.Solid,
+                HexType.Deadly,
+            };
+
+            for (int j = 0; j < w; j++)
+            {
+                for (int i = -(j / 2); i < h - (j + 1) / 2; i++)
+                {
+                    Grid[i, j] = new Hex(i, j, types[random.Next(0, types.Length)]);
+                }
+            }
+            
+            level.SaveToFile("000");
         }
     }
 }
