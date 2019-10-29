@@ -25,15 +25,9 @@ namespace KreativerName.UI
 
         internal bool HasParent => parent != null;
 
-        public virtual void Update(Vector2 windowSize)
-        {
+        public abstract void Update(Vector2 windowSize);
 
-        }
-
-        public virtual void Render(Vector2 windowSize)
-        {
-
-        }
+        public abstract void Render(Vector2 windowSize);
 
         protected void RenderChildren(Vector2 windowSize)
         {

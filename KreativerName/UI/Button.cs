@@ -20,6 +20,11 @@ namespace KreativerName.UI
             }
             clicked = MouseOver(windowSize) && MouseLeftDown;
             mouseDown = MouseLeftDown;
+
+            foreach (var element in children)
+            {
+                element.Update(windowSize);
+            }
         }
 
         public override void Render(Vector2 windowSize)
@@ -55,15 +60,17 @@ namespace KreativerName.UI
             // corner bottom right
             TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y + h - a * scale), Vector2.One * scale, color, new RectangleF(offset + a * 2, a * 2, a, a));
             // left
-            TextureRenderer.Draw(tex, new Vector2(x, y + a * scale), new Vector2(1, h / a - 2 * scale) * scale, color, new RectangleF(offset, a, a, a));
+            TextureRenderer.Draw(tex, new Vector2(x, y + a * scale), new Vector2(1, h / (a * scale) - 2) * scale, color, new RectangleF(offset, a, a, a));
             // top
-            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y), new Vector2(w / a - 2 * scale, 1) * scale, color, new RectangleF(offset + a, 0, a, a));
+            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y), new Vector2(w / (a * scale) - 2, 1) * scale, color, new RectangleF(offset + a, 0, a, a));
             // right
-            TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y + a * scale), new Vector2(1, h / a - 2 * scale) * scale, color, new RectangleF(offset + a * 2, a, a, a));
+            TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y + a * scale), new Vector2(1, h / (a * scale) - 2) * scale, color, new RectangleF(offset + a * 2, a, a, a));
             // bottom
-            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + h - a * scale), new Vector2(w / a - 2 * scale, 1) * scale, color, new RectangleF(offset + a, a * 2, a, a));
+            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + h - a * scale), new Vector2(w / (a * scale) - 2, 1) * scale, color, new RectangleF(offset + a, a * 2, a, a));
             // center
-            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + a * scale), new Vector2(w / a - 2 * scale, h / a - 2 * scale) * scale, color, new RectangleF(offset + a, a, a, a));
+            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + a * scale), new Vector2(w / (a * scale) - 2 , h / (a * scale) - 2) * scale, color, new RectangleF(offset + a, a, a, a));
+            
+            RenderChildren(windowSize);
         }
     }
 }

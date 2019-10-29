@@ -93,6 +93,7 @@
     <Compile Include="UI\Constraints\UIConstaints.cs" />
     <Compile Include="UI\Events.cs" />
     <Compile Include="UI\Frame.cs" />
+    <Compile Include="UI\Text.cs" />
     <Compile Include="UI\UI.cs" />
     <Compile Include="UI\UIElement.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -134,6 +135,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Textures\Button.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Textures\Font.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\Hex.png">

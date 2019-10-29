@@ -20,26 +20,43 @@ namespace KreativerName
             ui = new UI.UI();
 
             Frame frame = new Frame();
-            frame.SetConstraints(new PixelConstraint(20),
-                new PixelConstraint(20),
-                new PixelConstraint(80),
+            frame.SetConstraints(new PixelConstraint(40),
+                new PixelConstraint(40),
+                new PixelConstraint(160),
                 new PixelConstraint(160));
 
             Button button1 = new Button();
             button1.OnClicked += LoadLevel;
             button1.SetConstraints(new PixelConstraint(20),
-                new PixelConstraint(40),
-                new PixelConstraint(32),
+                new PixelConstraint(20),
+                new PixelConstraint(80),
+                new PixelConstraint(40));
+
+            Text text1 = new Text("Load", 2);
+            text1.SetConstraints(new PixelConstraint(10),
+                new PixelConstraint(10),
+                new PixelConstraint(80),
                 new RelativeConstraint(1));
+
+            button1.AddChild(text1);
             frame.AddChild(button1);
 
             Button button2 = new Button();
             button2.OnClicked += GenerateLevel;
             button2.SetConstraints(new PixelConstraint(20),
                 new PixelConstraint(80),
-                new PixelConstraint(40),
+                new PixelConstraint(120),
+                new PixelConstraint(40));
+            
+            Text text2 = new Text("Generate", 2);
+            text2.SetConstraints(new PixelConstraint(10),
+                new PixelConstraint(10),
+                new PixelConstraint(80),
                 new RelativeConstraint(1));
+
+            button2.AddChild(text2);
             frame.AddChild(button2);
+
             ui.Add(frame);
         }
 
@@ -49,7 +66,7 @@ namespace KreativerName
         internal HexPoint selectedHex;
         internal HexPoint player;
 
-        const float size = 32;
+        const float size = 16*2;
         internal HexLayout layout = new HexLayout(
             new Matrix2((float)Math.Sqrt(3), (float)Math.Sqrt(3) / 2f, 0, 3f / 2f),
             new Matrix2((float)Math.Sqrt(3) / 3f, -1f / 3f, 0, 2f / 3f),

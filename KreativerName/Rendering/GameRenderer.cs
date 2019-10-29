@@ -21,12 +21,6 @@ namespace KreativerName.Rendering
 
         Game game;
 
-        Color[] teamColors = new[]
-        {
-            Color.Blue,
-            Color.Red,
-        };
-
         const float sqrt3 = 1.732050807568877293527446341505872366942805253810380628055f;
 
         internal void Render(int width, int height)

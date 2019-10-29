@@ -24,6 +24,8 @@ namespace KreativerName.UI
             float x2 = x1 + GetWidth(windowSize);
             float y2 = y1 + GetHeight(windowSize);
 
+            GL.Disable(EnableCap.Texture2D);
+
             GL.Color4(new Color4(100, 100, 100, 255));
 
             GL.Begin(PrimitiveType.Quads);
@@ -34,7 +36,8 @@ namespace KreativerName.UI
             GL.Vertex2(x2, y1);
 
             GL.End();
-
+            GL.Enable(EnableCap.Texture2D);
+            
             RenderChildren(windowSize);
         }
     }
