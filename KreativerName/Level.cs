@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using KreativerName.Grid;
 
 namespace KreativerName
@@ -23,12 +19,17 @@ namespace KreativerName
         public static Level LoadFromFile(string name)
         {
             Level level = new Level();
-            byte[] bytes = Decode(File.ReadAllBytes($@"Resources\Levels\{name}.lvl"));
-            level.FromBytes(bytes, 0);
+            string path = $@"Resources\Levels\{name}.lvl";
+
+            if (File.Exists(path))
+            {
+                byte[] bytes = Decode(File.ReadAllBytes(path));
+                level.FromBytes(bytes, 0);
+            }
 
             return level;
         }
-               
+
 
         static byte[] Encode(byte[] data)
         {
@@ -50,7 +51,7 @@ namespace KreativerName
             }
             return output.ToArray();
         }
-        
+
 
         public byte[] ToBytes()
         {

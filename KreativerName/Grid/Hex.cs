@@ -51,12 +51,14 @@ namespace KreativerName.Grid
             Type = (HexType)bytes[startIndex + 8];
             return 9;
         }
+
+        public void SetType(HexType type) => Type = type;
     }
 
-    [Flags]
     public enum HexType : byte
     {
         Solid = 1,
         Deadly = 2,
+        Goal = 3,
     }
 }

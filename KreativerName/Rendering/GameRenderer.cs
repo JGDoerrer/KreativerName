@@ -39,8 +39,8 @@ namespace KreativerName.Rendering
             // Center grid
             if (game.Grid != null)
             {
-                int totalWidth = (int)(40 * sqrt3 * (game.Grid.Max(x => x.X + x.Y / 2f) - game.Grid.Min(x => x.X + x.Y / 2f)));
-                int totalHeight = (int)(40 * 1.5f * (game.Grid.Max(x => x.Y) - game.Grid.Min(x => x.Y)));
+                int totalWidth = (int)(game.layout.size * sqrt3 * (game.Grid.Max(x => x.X + x.Y / 2f) + game.Grid.Min(x => x.X + x.Y / 2f)));
+                int totalHeight = (int)(game.layout.size * 1.5f * (game.Grid.Max(x => x.Y) + game.Grid.Min(x => x.Y)));
 
                 game.layout.origin = new Vector2((width - totalWidth) / 2, (height - totalHeight) / 2);
             }
