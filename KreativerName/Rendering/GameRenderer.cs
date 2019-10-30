@@ -13,10 +13,6 @@ namespace KreativerName.Rendering
         public GameRenderer(Game game)
         {
             this.game = game;
-
-            GL.Enable(EnableCap.Texture2D);
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
         }
 
         Game game;
@@ -25,10 +21,11 @@ namespace KreativerName.Rendering
 
         internal void Render(int width, int height)
         {
-            game.ui.Render(width, height);
+            if (game == null)
+                return;
 
             GL.ClearColor(Color.FromArgb(255, 0, 0, 0));
-
+            
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
             GL.Ortho(0, width, height, 0, -1, 1);

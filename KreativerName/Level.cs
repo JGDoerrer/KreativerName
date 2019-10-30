@@ -13,6 +13,7 @@ namespace KreativerName
         public void SaveToFile(string name)
         {
             byte[] bytes = Encode(ToBytes());
+            System.Console.WriteLine($"Level {name}: {bytes.Length}/{ToBytes().Length} ");
             File.WriteAllBytes($@"Resources\Levels\{name}.lvl", bytes);
         }
 

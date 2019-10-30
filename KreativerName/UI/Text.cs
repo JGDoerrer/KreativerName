@@ -14,14 +14,17 @@ namespace KreativerName.UI
         public Text()
         { }
 
-        public Text(string text, float size)
+        public Text(string text, float size = 2)
         {
-            this.text = text;
-            this.size = size;
+            String = text;
+            Size = size;
         }
 
-        string text;
-        float size;
+        string s;
+
+        public string String { get => s; set => s = value; }//.ToUpper(); }
+        public float Size { get; set; }
+        public Color Color { get; set; } = Color.Black;
 
         public override void Update(Vector2 windowSize)
         {
@@ -30,18 +33,16 @@ namespace KreativerName.UI
 
         public override void Render(Vector2 windowSize)
         {
-            
-
             Texture2D tex = Textures.Get("Font");
             Vector2 pos = new Vector2(GetX(windowSize), GetY(windowSize));
 
-            foreach (char c in text)
+            foreach (char c in String)
             {
-                if (c <= 126 && c >= 32)
+                if (c <= 126 && c >= 32 && pos.X < GetX(windowSize) + GetWidth(windowSize))
                 {
                     RectangleF sourceRect = new RectangleF(((c - 32) % 16) * 6, ((c - 32) / 16) * 6, 6, 6);
-                    TextureRenderer.Draw(tex, pos, Vector2.One * size, Color.Black, sourceRect);
-                    pos.X += 6 * size;
+                    TextureRenderer.Draw(tex, pos, Vector2.One * Size, Color, sourceRect);
+                    pos.X += 6 * Size;
                 }
             }
         }
