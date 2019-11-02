@@ -15,9 +15,6 @@ namespace KreativerName
         {
             input = new Input(this);
 
-            editor = new Editor();
-            editor.input = input;
-
             InitUI();
 
             Textures.LoadTextures(@"Resources\Textures");
@@ -32,18 +29,35 @@ namespace KreativerName
         Game game;
         Editor editor;
         GameRenderer gameRenderer;
+        EditorRenderer editorRenderer;
         GameState state = GameState.MainMenu;
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+            if (input.KeyPress(OpenTK.Input.Key.F11))
+            {
+                if (WindowState != WindowState.Fullscreen)
+                    WindowState = WindowState.Fullscreen;
+                else
+                    WindowState = WindowState.Normal;
+            }
+
+            if (input.KeyDown(OpenTK.Input.Key.AltLeft) && input.KeyDown(OpenTK.Input.Key.F4))
+                Close();
+
             switch (state)
             {
                 case GameState.Game:
+                    game.UpdateUI(new Vector2(Width, Height));
                     game.Update();
                     break;
                 case GameState.MainMenu:
                     mainMenu.SetMouseState(input.MouseState());
                     mainMenu.Update(new Vector2(Width, Height));
+                    break;
+                case GameState.Editor:
+                    editor.UpdateUI(new Vector2(Width, Height));
+                    editor.Update();
                     break;
             }
 
@@ -63,6 +77,9 @@ namespace KreativerName
                 case GameState.MainMenu:
                     mainMenu.Render(Width, Height);
                     break;
+                case GameState.Editor:
+                    editorRenderer.Render(Width, Height);
+                    break;
             }
 
             SwapBuffers();
@@ -73,32 +90,30 @@ namespace KreativerName
             mainMenu = new UI.UI();
 
             {
-                float size = 4;
+                float size = 5;
                 Text title = new Text("KREATIVER NAME", size);
                 title.SetConstraints(new CenterConstraint(), new PixelConstraint(50), new PixelConstraint((int)(title.String.Length * 6 * size)), new PixelConstraint((int)(6 * size)));
                 title.Color = Color.White;
                 mainMenu.Add(title);
             }
-
             {
                 Button button = new Button();
-                button.SetConstraints(new CenterConstraint(), new PixelConstraint(150), new PixelConstraint(200), new PixelConstraint(60));
+                button.SetConstraints(new CenterConstraint(), new PixelConstraint(150), new PixelConstraint(250), new PixelConstraint(60));
                 button.OnClicked += NewGame;
 
-                Text text = new Text("Spiel starten");
-                text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint(text.String.Length * 12), new PixelConstraint(12));
+                Text text = new Text("Spiel starten",3);
+                text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint(text.String.Length * 18), new PixelConstraint(18));
                 button.AddChild(text);
 
                 mainMenu.Add(button);
             }
-
             {
                 Button button = new Button();
-                button.SetConstraints(new CenterConstraint(), new PixelConstraint(250), new PixelConstraint(200), new PixelConstraint(60));
-                button.OnClicked += () => state = GameState.Editor;
+                button.SetConstraints(new CenterConstraint(), new PixelConstraint(250), new PixelConstraint(250), new PixelConstraint(60));
+                button.OnClicked += NewEditor;
 
-                Text text = new Text("Editor");
-                text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint(text.String.Length * 12), new PixelConstraint(12));
+                Text text = new Text("Editor",3);
+                text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint(text.String.Length * 18), new PixelConstraint(18));
                 button.AddChild(text);
 
                 mainMenu.Add(button);
@@ -110,11 +125,31 @@ namespace KreativerName
         {
             game = new Game();
             game.input = input;
-            game.Exit += () => state = GameState.MainMenu;
+            game.LoadWorld(0);
+            game.Exit += () =>
+            {
+                state = GameState.MainMenu;
+                game = null;
+            };
 
             gameRenderer = new GameRenderer(game);
 
             state = GameState.Game;
+        }
+
+        private void NewEditor()
+        {
+            editor = new Editor();
+            editor.input = input;
+            editor.Exit += () =>
+            {
+                state = GameState.MainMenu;
+                editor = null;
+            };
+
+            editorRenderer = new EditorRenderer(editor);
+
+            state = GameState.Editor;
         }
 
         enum GameState

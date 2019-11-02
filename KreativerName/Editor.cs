@@ -14,6 +14,8 @@ namespace KreativerName
         public Editor()
         {
             InitUI();
+
+            LoadWorld();
             LoadLevel();
         }
 
@@ -24,7 +26,7 @@ namespace KreativerName
             Frame frame = new Frame();
             frame.SetConstraints(new PixelConstraint(20), new PixelConstraint(20), new PixelConstraint(220), new PixelConstraint(220));
 
-            title = new Text($"Level {levelCount:000}", 2);
+            title = new Text($"Level {levelIndex:000}", 2);
             title.SetConstraints(new PixelConstraint(20), new PixelConstraint(10), new PixelConstraint(9 * 12), new PixelConstraint(12));
 
             frame.AddChild(title);
@@ -42,11 +44,11 @@ namespace KreativerName
             }
             {
                 Button button = new Button();
-                button.OnClicked += GenerateLevel;
+                button.OnClicked += NewLevel;
                 button.SetConstraints(new PixelConstraint(20), new PixelConstraint(100), new PixelConstraint(120), new PixelConstraint(40));
 
                 Text text = new Text("Generate", 2);
-                text.SetConstraints(new PixelConstraint(10), new PixelConstraint(10), new PixelConstraint(80), new RelativeConstraint(1));
+                text.SetConstraints(new PixelConstraint(10), new PixelConstraint(10), new PixelConstraint(90), new RelativeConstraint(1));
 
                 button.AddChild(text);
                 frame.AddChild(button);
@@ -88,7 +90,9 @@ namespace KreativerName
             editorUi.Add(frame);
         }
 
-        int levelCount = 0;
+        int levelIndex = 0;
+        int worldIndex = 0;
+        World world;
         Level level;
         Text title;
 
@@ -123,22 +127,12 @@ namespace KreativerName
             }
             if (input.MousePress(MouseButton.Right))
             {
-                HexType[] types =
-                {
-                    0,
-                    HexType.Solid,
-                    HexType.Deadly,
-                    HexType.Goal,
-                };
-
                 if (Grid != null && Grid[mouse] != null)
                 {
                     Hex hex = Grid[mouse].Value;
-                    if (types.Contains(hex.Type))
-                    {
-                        int index = Array.IndexOf(types, hex.Type);
-                        hex.Type = types[(index + 1) % types.Length];
-                    }
+                    int length = Enum.GetValues(typeof(HexType)).Length;
+
+                    hex.Type = (HexType)(((int)hex.Type + 1) % length);
 
                     Grid[mouse] = hex;
                 }
@@ -156,20 +150,6 @@ namespace KreativerName
             if (input.KeyPress(Key.Escape))
             {
                 Exit?.Invoke();
-            }
-
-            if (Grid != null)
-            {
-                switch (Grid[player]?.Type)
-                {
-                    case HexType.Deadly: LoadLevel(); break;
-                    case HexType.Goal:
-                        LevelCompleted?.Invoke(levelCount);
-                        NextLevel();
-                        break;
-                    default:
-                        break;
-                }
             }
 
             input.Update();
@@ -214,32 +194,42 @@ namespace KreativerName
 
         private void NextLevel()
         {
-            levelCount++;
-            title.String = $"Level {levelCount:000}";
+            levelIndex++;
+            title.String = $"Level {levelIndex:000}";
             LoadLevel();
         }
 
         private void PreviousLevel()
         {
-            if (levelCount > 0)
-                levelCount--;
-            title.String = $"Level {levelCount:000}";
+            if (levelIndex > 0)
+                levelIndex--;
+            title.String = $"Level {levelIndex:000}";
             LoadLevel();
         }
 
         private void LoadLevel()
         {
-            level = Level.LoadFromFile($"{levelCount:000}");
+            if (levelIndex < world.levels.Count)
+                level = world.levels[levelIndex];
+            else
+                level = new Level();
+
             player = level.startPos;
+        }
+
+        public void LoadWorld()
+        {
+            world = World.LoadFromFile($"{worldIndex:000}");
+            levelIndex = 0;            
         }
 
         private void SaveLevel()
         {
             level.startPos = player;
-            level.SaveToFile($"{levelCount:000}");
+            level.SaveToFile($"{levelIndex:000}");
         }
 
-        private void GenerateLevel()
+        private void NewLevel()
         {
             Grid = new HexGrid<Hex>();
 

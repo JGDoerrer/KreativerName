@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Drawing;
 using KreativerName.Grid;
 using KreativerName.UI;
 using KreativerName.UI.Constraints;
@@ -9,6 +9,7 @@ using OpenTK.Input;
 
 namespace KreativerName
 {
+    public delegate void WorldEvent(int world);
     public delegate void LevelEvent(int level);
     public delegate void EmptyEvent();
 
@@ -16,15 +17,23 @@ namespace KreativerName
     {
         public Game()
         {
+            InitUI();
             LoadLevel();
         }
 
-        int levelCount = 0;
+        bool singleLevel = true;
+        int levelIndex = 0;
+        int worldIndex = 0;
+        int moves = 0;
+        World world;
         Level level;
+        Text title;
 
+        public UI.UI ui;
         public Input input;
         public HexPoint selectedHex;
         public HexPoint player;
+        public bool loadNextLevel = true;
 
         const float size = 16 * 2;
         public HexLayout layout = new HexLayout(
@@ -33,10 +42,9 @@ namespace KreativerName
             new Vector2(0, 0),
             size, 0.5f);
 
-        public event LevelEvent LevelCompleted;
-        public event EmptyEvent Exit;
-
         public HexGrid<Hex> Grid { get => level.grid; set => level.grid = value; }
+        public World World { get => world; }
+        private int Levels => world.levels.Count;
 
         public void Update()
         {
@@ -46,7 +54,10 @@ namespace KreativerName
             if (input.MousePress(MouseButton.Left))
             {
                 if (GetPlayerMoves().Contains(mouse))
+                {
                     player = mouse;
+                    moves++;
+                }
             }
             if (input.KeyPress(Key.Escape))
             {
@@ -59,9 +70,28 @@ namespace KreativerName
                 {
                     case HexType.Deadly: LoadLevel(); break;
                     case HexType.Goal:
-                        LevelCompleted?.Invoke(levelCount);
-                        NextLevel();
+                    {
+                        LevelCompleted?.Invoke(levelIndex);
+
+                        if (loadNextLevel)
+                        {
+                            if (levelIndex < Levels)
+                                levelIndex++;
+
+                            if (levelIndex == Levels)
+                            {
+                                WorldCompleted?.Invoke(worldIndex);
+
+                                worldIndex++;
+                                levelIndex = 0;
+                                LoadWorld();
+                            }
+
+                            UpdateTitle();
+                            LoadLevel();
+                        }
                         break;
+                    }
                     default:
                         break;
                 }
@@ -100,24 +130,76 @@ namespace KreativerName
             return moves;
         }
 
+        #region Events
 
-        private void NextLevel()
+        public event EmptyEvent Exit;
+        public event LevelEvent LevelCompleted;
+        public event WorldEvent WorldCompleted;
+
+        #endregion
+
+        #region UI
+
+        public void InitUI()
         {
-            levelCount++;
-            LoadLevel();
+            ui = new UI.UI();
+
+            int size = 4;
+            title = new Text("", size);
+            UpdateTitle();
+            title.SetConstraints(new CenterConstraint(), new PixelConstraint(40), new PixelConstraint(size * 13 * 6), new PixelConstraint(size * 6));
+            title.Color = Color.LightGray;
+
+            ui.Add(title);
         }
 
-        private void PreviousLevel()
+        public void UpdateUI(Vector2 windowSize)
         {
-            if (levelCount > 0)
-                levelCount--;
-            LoadLevel();
+            ui.SetMouseState(input.MouseState());
+            ui.Update(windowSize);
         }
+
+        #endregion
+
+        #region Loading
 
         private void LoadLevel()
         {
-            level = Level.LoadFromFile($"{levelCount:000}");
+            if (singleLevel)
+                level = Level.LoadFromFile($"{levelIndex:000}");
+            else if (world.levels != null && levelIndex < world.levels.Count)
+                level = world.levels[levelIndex];
+            else
+                Exit?.Invoke();
+
             player = level.startPos;
         }
+
+        public void LoadLevel(int index)
+        {
+            levelIndex = index;
+            LoadLevel();
+        }
+
+        public void LoadWorld()
+        {
+            world = World.LoadFromFile($"{worldIndex:000}");
+            levelIndex = 0;
+            UpdateTitle();
+            singleLevel = false;
+        }
+
+        public void LoadWorld(int index)
+        {
+            world = World.LoadFromFile($"{index:000}");
+            worldIndex = index;
+            levelIndex = 0;
+            UpdateTitle();
+            singleLevel = false;
+        }
+
+        #endregion
+
+        private void UpdateTitle() => title.String = $"Level {levelIndex + 1:000}/{world.levels?.Count:000}";
     }
 }

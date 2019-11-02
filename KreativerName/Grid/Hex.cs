@@ -57,8 +57,9 @@ namespace KreativerName.Grid
 
     public enum HexType : byte
     {
-        Solid = 1,
-        Deadly = 2,
-        Goal = 3,
+        Normal,
+        Solid,
+        Deadly,
+        Goal,
     }
 }

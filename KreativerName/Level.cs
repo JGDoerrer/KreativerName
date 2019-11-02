@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using KreativerName.Grid;
@@ -12,8 +13,8 @@ namespace KreativerName
 
         public void SaveToFile(string name)
         {
-            byte[] bytes = Encode(ToBytes());
-            System.Console.WriteLine($"Level {name}: {bytes.Length}/{ToBytes().Length} ");
+            byte[] bytes = Compress(ToBytes());
+            Console.WriteLine($"Level {name}: {bytes.Length}/{ToBytes().Length} ");
             File.WriteAllBytes($@"Resources\Levels\{name}.lvl", bytes);
         }
 
@@ -24,7 +25,7 @@ namespace KreativerName
 
             if (File.Exists(path))
             {
-                byte[] bytes = Decode(File.ReadAllBytes(path));
+                byte[] bytes = Decompress(File.ReadAllBytes(path));
                 level.FromBytes(bytes, 0);
             }
 
@@ -32,7 +33,7 @@ namespace KreativerName
         }
 
 
-        static byte[] Encode(byte[] data)
+        static byte[] Compress(byte[] data)
         {
             MemoryStream output = new MemoryStream();
             using (DeflateStream dstream = new DeflateStream(output, CompressionLevel.Optimal))
@@ -42,7 +43,7 @@ namespace KreativerName
             return output.ToArray();
         }
 
-        static byte[] Decode(byte[] data)
+        static byte[] Decompress(byte[] data)
         {
             MemoryStream input = new MemoryStream(data);
             MemoryStream output = new MemoryStream();

@@ -22,7 +22,7 @@ namespace KreativerName.UI
 
         string s;
 
-        public string String { get => s; set => s = value; }//.ToUpper(); }
+        public string String { get => s; set => s = value.ToUpper(); }
         public float Size { get; set; }
         public Color Color { get; set; } = Color.Black;
 
