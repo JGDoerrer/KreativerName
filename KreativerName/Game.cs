@@ -18,7 +18,7 @@ namespace KreativerName
         public Game()
         {
             InitUI();
-            LoadWorld(0);
+            LoadWorld(1);
             LoadLevel(0);
         }
 
@@ -34,7 +34,6 @@ namespace KreativerName
         public Input input;
         public HexPoint selectedHex;
         public HexPoint player;
-        public bool loadNextLevel = true;
 
         const float size = 16 * 2;
         public HexLayout layout = new HexLayout(
@@ -117,7 +116,9 @@ namespace KreativerName
             {
                 LevelCompleted?.Invoke(levelIndex);
 
-                if (loadNextLevel)
+                if (singleLevel)
+                    Exit?.Invoke();
+                else
                 {
                     if (levelIndex < Levels)
                         levelIndex++;
@@ -186,6 +187,14 @@ namespace KreativerName
         {
             levelIndex = index;
             LoadLevel();
+        }
+
+        public void LoadLevel(Level level)
+        {
+            singleLevel = true;
+            this.level = level;
+
+            player = level.startPos;
         }
 
         public void LoadWorld()

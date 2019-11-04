@@ -129,8 +129,8 @@ namespace KreativerName
                 const int size = 42;
                 HexType[] values = (HexType[])Enum.GetValues(typeof(HexType));
 
-                buttons = new Frame();
-                buttons.SetConstraints(
+                buttonFrame = new Frame();
+                buttonFrame.SetConstraints(
                    new PixelConstraint(20, RelativeTo.Window),
                    new PixelConstraint(20, RelativeTo.Window, Direction.Bottom),
                    new PixelConstraint(values.Length * (size + 10) + 30),
@@ -147,7 +147,7 @@ namespace KreativerName
 
                     UI.Image image = new UI.Image(Textures.Get("Hex"), new RectangleF(32 * i, 0, 32, 32));
                     image.SetConstraints(
-                        new PixelConstraint(5, RelativeTo.Parent, Direction.Left),
+                        new PixelConstraint(6, RelativeTo.Parent, Direction.Left),
                         new PixelConstraint(5, RelativeTo.Parent, Direction.Top),
                         new PixelConstraint(size - 10),
                         new PixelConstraint(size - 10));
@@ -159,9 +159,9 @@ namespace KreativerName
                         drawType = values[copy];
                     };
 
-                    buttons.AddChild(button);
+                    buttonFrame.AddChild(button);
                 }
-                editorUi.Add(buttons);
+                editorUi.Add(buttonFrame);
             }
         }
 
@@ -172,19 +172,19 @@ namespace KreativerName
         Level level;
         Text textLevel;
         Text textWorld;
-        Frame buttons;
+        Frame buttonFrame;
 
         public UI.UI editorUi;
         public Input input;
         public HexPoint selectedHex;
         public HexPoint player;
 
-        const float size = 16 * 2;
+        const float hexSize = 16 * 2;
         public HexLayout layout = new HexLayout(
             new Matrix2((float)Math.Sqrt(3), (float)Math.Sqrt(3) / 2f, 0, 3f / 2f),
             new Matrix2((float)Math.Sqrt(3) / 3f, -1f / 3f, 0, 2f / 3f),
             new Vector2(0, 0),
-            size, 0.5f);
+            hexSize, 0.5f);
 
         public event EmptyEvent Exit;
 
@@ -197,9 +197,9 @@ namespace KreativerName
             HexPoint mouse = layout.PixelToHex(input.MousePosition());
             selectedHex = mouse;
 
-            for (int i = 0; i < buttons.Children.Count; i++)
+            for (int i = 0; i < buttonFrame.Children.Count; i++)
             {
-                Button item = (Button)buttons.Children[i];
+                Button item = (Button)buttonFrame.Children[i];
                 item.Color = (int)drawType == i ? Color.Green : Color.White;
             }
 
@@ -214,11 +214,6 @@ namespace KreativerName
             }
             if (input.MousePress(MouseButton.Right))
             {
-                if (GetPlayerMoves().Contains(mouse))
-                    player = mouse;
-            }
-            if (input.MousePress(MouseButton.Middle))
-            {
                 if (Grid != null)
                 {
                     if (Grid[mouse].HasValue)
@@ -226,6 +221,11 @@ namespace KreativerName
                     else
                         Grid[mouse] = new Hex(mouse, 0);
                 }
+            }
+            if (input.MousePress(MouseButton.Middle))
+            {
+                //if (GetPlayerMoves().Contains(mouse))
+                    player = mouse;
             }
             if (input.KeyPress(Key.Escape))
             {
