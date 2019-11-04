@@ -24,7 +24,6 @@ namespace KreativerName
             World world = new World();
             string path = $@"Resources\Worlds\{name}.wld";
 
-
             if (File.Exists(path))
             {
                 byte[] bytes = File.ReadAllBytes(path);

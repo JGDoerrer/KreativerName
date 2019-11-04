@@ -18,10 +18,11 @@ namespace KreativerName
         public Game()
         {
             InitUI();
-            LoadLevel();
+            LoadWorld(0);
+            LoadLevel(0);
         }
 
-        bool singleLevel = true;
+        bool singleLevel = false;
         int levelIndex = 0;
         int worldIndex = 0;
         int moves = 0;
@@ -57,44 +58,13 @@ namespace KreativerName
                 {
                     player = mouse;
                     moves++;
+                    level.Update();
+                    UpdatePlayer();
                 }
             }
             if (input.KeyPress(Key.Escape))
             {
                 Exit?.Invoke();
-            }
-
-            if (Grid != null)
-            {
-                switch (Grid[player]?.Type)
-                {
-                    case HexType.Deadly: LoadLevel(); break;
-                    case HexType.Goal:
-                    {
-                        LevelCompleted?.Invoke(levelIndex);
-
-                        if (loadNextLevel)
-                        {
-                            if (levelIndex < Levels)
-                                levelIndex++;
-
-                            if (levelIndex == Levels)
-                            {
-                                WorldCompleted?.Invoke(worldIndex);
-
-                                worldIndex++;
-                                levelIndex = 0;
-                                LoadWorld();
-                            }
-
-                            UpdateTitle();
-                            LoadLevel();
-                        }
-                        break;
-                    }
-                    default:
-                        break;
-                }
             }
 
             input.Update();
@@ -120,7 +90,7 @@ namespace KreativerName
             {
                 int j = 1;
 
-                while (Grid[(directions[i] * j) + player].HasValue && Grid[(directions[i] * j) + player].Value.Type != HexType.Solid)
+                while (Grid[(directions[i] * j) + player].HasValue && !Grid[(directions[i] * j) + player].Value.Type.GetFlags().HasFlag(HexFlags.Solid))
                 {
                     moves.Add(directions[i] * j + player);
                     j++;
@@ -128,6 +98,43 @@ namespace KreativerName
             }
 
             return moves;
+        }
+
+        private void UpdatePlayer()
+        {
+            if (Grid == null)
+                return;
+
+            HexType type = Grid[player].Value.Type;
+
+
+            if (type.GetFlags().HasFlag(HexFlags.Deadly))
+            {
+                LoadLevel();
+            }
+
+            if (type.GetFlags().HasFlag(HexFlags.Goal))
+            {
+                LevelCompleted?.Invoke(levelIndex);
+
+                if (loadNextLevel)
+                {
+                    if (levelIndex < Levels)
+                        levelIndex++;
+
+                    if (levelIndex == Levels)
+                    {
+                        WorldCompleted?.Invoke(worldIndex);
+
+                        worldIndex++;
+                        levelIndex = 0;
+                        LoadWorld();
+                    }
+
+                    UpdateTitle();
+                    LoadLevel();
+                }
+            }
         }
 
         #region Events
@@ -147,7 +154,7 @@ namespace KreativerName
             int size = 4;
             title = new Text("", size);
             UpdateTitle();
-            title.SetConstraints(new CenterConstraint(), new PixelConstraint(40), new PixelConstraint(size * 13 * 6), new PixelConstraint(size * 6));
+            title.SetConstraints(new CenterConstraint(), new PixelConstraint(40), new PixelConstraint(size * 13 * 7), new PixelConstraint(size * 6));
             title.Color = Color.LightGray;
 
             ui.Add(title);
@@ -200,6 +207,6 @@ namespace KreativerName
 
         #endregion
 
-        private void UpdateTitle() => title.String = $"Level {levelIndex + 1:000}/{world.levels?.Count:000}";
+        private void UpdateTitle() => title.String = $"LEVEL {levelIndex + 1:000}/{world.levels?.Count:000}";
     }
 }

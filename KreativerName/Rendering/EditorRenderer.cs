@@ -36,8 +36,8 @@ namespace KreativerName.Rendering
             // Center grid
             if (editor.Grid != null)
             {
-                int totalWidth = (int)(editor.layout.size * sqrt3 * (editor.Grid.Max(x => x.X + x.Y / 2f) + editor.Grid.Min(x => x.X + x.Y / 2f)));
-                int totalHeight = (int)(editor.layout.size * 1.5f * (editor.Grid.Max(x => x.Y) + editor.Grid.Min(x => x.Y)));
+                int totalWidth = (int)(editor.layout.size * sqrt3 * (editor.Grid.Max(x => x.Value.X + x.Value.Y / 2f) + editor.Grid.Min(x => x.Value.X + x.Value.Y / 2f)));
+                int totalHeight = (int)(editor.layout.size * 1.5f * (editor.Grid.Max(x => x.Value.Y) + editor.Grid.Min(x => x.Value.Y)));
 
                 editor.layout.origin = new Vector2((width - totalWidth) / 2, (height - totalHeight) / 2);
             }
@@ -54,7 +54,7 @@ namespace KreativerName.Rendering
 
             List<HexPoint> moves = editor.GetPlayerMoves();
 
-            foreach (var hex in editor.Grid)
+            foreach (Hex hex in editor.Grid)
             {
                 Vector2 renderPos = editor.layout.HexCorner(hex.Position, 3);
                 renderPos.X -= editor.layout.size / 2f * sqrt3;

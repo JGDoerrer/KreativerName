@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using KreativerName.Grid;
 
 namespace KreativerName
@@ -10,6 +11,23 @@ namespace KreativerName
     {
         public HexGrid<Hex> grid;
         public HexPoint startPos;
+
+        public void Update()
+        {
+            for (int i = 0; i < grid.Count; i++)
+            {
+                Hex hex = grid.Values.ElementAt(i);
+
+                if (hex.Type == HexType.DeadlyTwoStateOn)
+                    hex.Type = HexType.DeadlyTwoStateOff;
+                else if (hex.Type == HexType.DeadlyTwoStateOff)
+                    hex.Type = HexType.DeadlyTwoStateOn;
+
+                grid[hex.Position] = hex;
+            }
+        }
+
+        #region Load & Save
 
         public void SaveToFile(string name)
         {
@@ -75,5 +93,7 @@ namespace KreativerName
 
             return count;
         }
+
+        #endregion
     }
 }

@@ -11,7 +11,7 @@ namespace KreativerName.UI
     {
         public override void Update(Vector2 windowSize)
         {
-            foreach (var element in children)
+            foreach (UIElement element in children)
             {
                 element.Update(windowSize);
             }

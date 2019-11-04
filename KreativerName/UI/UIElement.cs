@@ -22,8 +22,9 @@ namespace KreativerName.UI
         internal UI ui;
         internal UIElement parent;
         protected List<UIElement> children = new List<UIElement>();
-
+        
         internal bool HasParent => parent != null;
+        public List<UIElement> Children => children;
 
         public abstract void Update(Vector2 windowSize);
 
@@ -31,7 +32,7 @@ namespace KreativerName.UI
 
         protected void RenderChildren(Vector2 windowSize)
         {
-            foreach (var element in children)
+            foreach (UIElement element in children)
             {
                 element.Render(windowSize);
             }
@@ -50,7 +51,7 @@ namespace KreativerName.UI
         internal void SetUI(UI ui)
         {
             this.ui = ui;
-            foreach (var child in children)
+            foreach (UIElement child in children)
             {
                 child.SetUI(ui);
             }

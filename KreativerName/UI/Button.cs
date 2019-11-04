@@ -9,6 +9,7 @@ namespace KreativerName.UI
         bool clicked;
         bool mouseDown;
 
+        public Color Color { get; set; } = Color.White;
         public bool Clicked => clicked;
         public event ButtonClickEvent OnClicked;
 
@@ -21,7 +22,7 @@ namespace KreativerName.UI
             clicked = MouseOver(windowSize) && MouseLeftDown;
             mouseDown = MouseLeftDown;
 
-            foreach (var element in children)
+            foreach (UIElement element in children)
             {
                 element.Update(windowSize);
             }
@@ -38,7 +39,7 @@ namespace KreativerName.UI
             float h = GetHeight(windowSize);
 
             float offset;
-            Color color = Color.White;
+            Color color = Color;
             Texture2D tex = Textures.Get("Button");
 
             if (MouseOver(windowSize))

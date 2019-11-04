@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Editor.cs" />
+    <Compile Include="Extentions.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Grid\HexGrid.cs" />
     <Compile Include="Grid\HexLayout.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="UI\Constraints\UIConstaints.cs" />
     <Compile Include="UI\Events.cs" />
     <Compile Include="UI\Frame.cs" />
+    <Compile Include="UI\Image.cs" />
     <Compile Include="UI\Text.cs" />
     <Compile Include="UI\UI.cs" />
     <Compile Include="UI\UIElement.cs" />
@@ -118,24 +120,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Content Include="Resources\Levels\000.lvl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Levels\001.lvl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Levels\002.lvl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Levels\003.lvl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Levels\004.lvl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Levels\005.lvl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Resources\Worlds\000.wld">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

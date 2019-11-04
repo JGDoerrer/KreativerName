@@ -61,5 +61,15 @@ namespace KreativerName.Grid
         Solid,
         Deadly,
         Goal,
+        DeadlyTwoStateOn,
+        DeadlyTwoStateOff,
+    }
+
+    [Flags]
+    public enum HexFlags
+    {
+        Solid = 1 << 1,
+        Deadly = 1 << 2,
+        Goal = 1 << 3,
     }
 }

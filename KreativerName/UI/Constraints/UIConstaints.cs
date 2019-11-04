@@ -26,4 +26,19 @@ namespace KreativerName.UI.Constraints
         public float GetWidth(Vector2 windowSize, UIElement element) => widthCon.GetWidth(windowSize, element);
         public float GetHeight(Vector2 windowSize, UIElement element) => heightCon.GetHeight(windowSize, element);
     }
+
+    public enum RelativeTo
+    {
+        Window,
+        Parent,
+        Self,
+    }
+
+    public enum Direction
+    {
+        Left,
+        Top,
+        Right,
+        Bottom,
+    }
 }

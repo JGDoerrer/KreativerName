@@ -22,7 +22,7 @@ namespace KreativerName.UI
 
         string s;
 
-        public string String { get => s; set => s = value.ToUpper(); }
+        public string String { get => s; set => s = value; }//.ToUpper(); }
         public float Size { get; set; }
         public Color Color { get; set; } = Color.Black;
 
@@ -40,9 +40,11 @@ namespace KreativerName.UI
             {
                 if (c <= 126 && c >= 32 && pos.X < GetX(windowSize) + GetWidth(windowSize))
                 {
+                    if (char.IsLower(c) || char.IsDigit(c))
+                        pos.X -= 1 * Size;
                     RectangleF sourceRect = new RectangleF(((c - 32) % 16) * 6, ((c - 32) / 16) * 6, 6, 6);
                     TextureRenderer.Draw(tex, pos, Vector2.One * Size, Color, sourceRect);
-                    pos.X += 6 * Size;
+                    pos.X += 7 * Size;
                 }
             }
         }

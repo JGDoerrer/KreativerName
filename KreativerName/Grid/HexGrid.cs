@@ -14,7 +14,7 @@ namespace KreativerName.Grid
     /// y: + => unten rechts  - => oben links
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class HexGrid<T> : IEnumerable<T>, IBytes where T : struct, IBytes
+    public class HexGrid<T> : IDictionary<HexPoint, T>, IBytes where T : struct, IBytes
     {
         public HexGrid()
         {
@@ -59,25 +59,14 @@ namespace KreativerName.Grid
             dictonary.Clear();
         }
 
-        public bool Contains(HexPoint point)
-            => dictonary.ContainsKey(point);
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            return dictonary.Select(x => x.Value).GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        #region Interfaces
 
         public byte[] ToBytes()
         {
             List<byte> bytes = new List<byte>();
 
             bytes.AddRange(BitConverter.GetBytes(dictonary.Count));
-            foreach (var item in dictonary)
+            foreach (KeyValuePair<HexPoint, T> item in dictonary)
             {
                 bytes.AddRange(item.Key.ToBytes());
                 bytes.AddRange(item.Value.ToBytes());
@@ -113,5 +102,39 @@ namespace KreativerName.Grid
 
             return byteCount;
         }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return dictonary.Select(x => x.Value).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public bool ContainsKey(HexPoint key) => dictonary.ContainsKey(key);
+        public void Add(HexPoint key, T value) => dictonary.Add(key, value);
+        public bool Remove(HexPoint key) => dictonary.Remove(key);
+        public bool TryGetValue(HexPoint key, out T value) => dictonary.TryGetValue(key, out value);
+
+        T IDictionary<HexPoint, T>.this[HexPoint key] { get => dictonary[key]; set => dictonary[key] = value; }
+
+        public ICollection<HexPoint> Keys => dictonary.Keys;
+
+        public ICollection<T> Values => dictonary.Values;
+
+        public void Add(KeyValuePair<HexPoint, T> item) => dictonary.Add(item.Key, item.Value);
+        public bool Contains(KeyValuePair<HexPoint, T> item) => dictonary.Contains(item);
+        public void CopyTo(KeyValuePair<HexPoint, T>[] array, int arrayIndex) => throw new NotImplementedException();
+        public bool Remove(KeyValuePair<HexPoint, T> item) => dictonary.Remove(item.Key);
+
+        public int Count => dictonary.Count;
+
+        public bool IsReadOnly => false;
+
+        IEnumerator<KeyValuePair<HexPoint, T>> IEnumerable<KeyValuePair<HexPoint, T>>.GetEnumerator() => dictonary.GetEnumerator();
+
+        #endregion
     }
 }

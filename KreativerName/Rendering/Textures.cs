@@ -24,7 +24,7 @@ namespace KreativerName.Rendering
             string[] files = Directory.GetFiles(directory);
 
             textures = new Dictionary<string, Texture2D>();
-            foreach (var file in files)
+            foreach (string file in files)
             {
                 textures.Add(Path.GetFileNameWithoutExtension(file), LoadTexture(file));
             }

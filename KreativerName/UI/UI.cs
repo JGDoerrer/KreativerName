@@ -21,7 +21,7 @@ namespace KreativerName.UI
         
         public void Update(Vector2 windowSize)
         {
-            foreach (var element in Elements)
+            foreach (UIElement element in Elements)
             {
                 element.Update(windowSize);
             }

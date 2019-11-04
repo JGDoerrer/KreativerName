@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Drawing;
 using KreativerName.Grid;
+using KreativerName.Rendering;
 using KreativerName.UI;
 using KreativerName.UI.Constraints;
 using OpenTK;
@@ -23,78 +24,155 @@ namespace KreativerName
         {
             editorUi = new UI.UI();
 
-            Frame frame = new Frame();
-            frame.SetConstraints(new PixelConstraint(20), new PixelConstraint(20), new PixelConstraint(220), new PixelConstraint(220));
-
-            title = new Text($"Level {levelIndex:000}", 2);
-            title.SetConstraints(new PixelConstraint(20), new PixelConstraint(10), new PixelConstraint(9 * 12), new PixelConstraint(12));
-
-            frame.AddChild(title);
-
             {
-                Button button = new Button();
-                button.OnClicked += LoadLevel;
-                button.SetConstraints(new PixelConstraint(20), new PixelConstraint(40), new PixelConstraint(90), new PixelConstraint(40));
+                Frame frame = new Frame();
+                frame.SetConstraints(new PixelConstraint(20), new PixelConstraint(20), new PixelConstraint(220), new PixelConstraint(240));
 
-                Text text = new Text("Reload", 2);
-                text.SetConstraints(new PixelConstraint(10), new PixelConstraint(10), new PixelConstraint(80), new RelativeConstraint(1));
+                textWorld = new Text($"World {worldIndex:000}", 2);
+                textWorld.SetConstraints(new PixelConstraint(20), new PixelConstraint(12), new PixelConstraint(200), new PixelConstraint(12));
 
-                button.AddChild(text);
-                frame.AddChild(button);
+                frame.AddChild(textWorld);
+
+                textLevel = new Text($"Level {levelIndex:000}", 2);
+                textLevel.SetConstraints(new PixelConstraint(20), new PixelConstraint(32), new PixelConstraint(200), new PixelConstraint(12));
+
+                frame.AddChild(textLevel);
+
+                // Reload
+                {
+                    Button button = new Button();
+                    button.OnClicked += LoadLevel;
+                    button.SetConstraints(new PixelConstraint(20), new PixelConstraint(50), new PixelConstraint(90), new PixelConstraint(40));
+
+                    Text text = new Text("Reload", 2);
+                    text.SetConstraints(new PixelConstraint(10), new PixelConstraint(10), new PixelConstraint(80), new RelativeConstraint(1));
+
+                    button.AddChild(text);
+                    frame.AddChild(button);
+                }
+                // Generate
+                {
+                    Button button = new Button();
+                    button.OnClicked += NewLevel;
+                    button.SetConstraints(new PixelConstraint(20), new PixelConstraint(110), new PixelConstraint(120), new PixelConstraint(40));
+
+                    Text text = new Text("Generate", 2);
+                    text.SetConstraints(new PixelConstraint(10), new PixelConstraint(10), new PixelConstraint(90), new RelativeConstraint(1));
+
+                    button.AddChild(text);
+                    frame.AddChild(button);
+                }
+                // Save
+                {
+                    Button button = new Button();
+                    button.OnClicked += SaveWorld;
+                    button.SetConstraints(new PixelConstraint(20), new PixelConstraint(170), new PixelConstraint(80), new PixelConstraint(40));
+
+                    Text text = new Text("Save", 2);
+                    text.SetConstraints(new PixelConstraint(10), new PixelConstraint(10), new PixelConstraint(80), new RelativeConstraint(1));
+
+                    button.AddChild(text);
+                    frame.AddChild(button);
+                }
+                // +
+                {
+                    Button button = new Button();
+                    button.OnClicked += NextLevel;
+                    button.SetConstraints(new PixelConstraint(140), new PixelConstraint(30), new PixelConstraint(20), new PixelConstraint(20));
+
+                    Text text = new Text("+", 2f);
+                    text.SetConstraints(new PixelConstraint(3), new PixelConstraint(3), new PixelConstraint(80), new RelativeConstraint(1));
+
+                    button.AddChild(text);
+                    frame.AddChild(button);
+                }
+                // -
+                {
+                    Button button = new Button();
+                    button.OnClicked += PreviousLevel;
+                    button.SetConstraints(new PixelConstraint(160), new PixelConstraint(30), new PixelConstraint(20), new PixelConstraint(20));
+
+                    Text text = new Text("-", 2f);
+                    text.SetConstraints(new PixelConstraint(3), new PixelConstraint(3), new PixelConstraint(80), new RelativeConstraint(1));
+
+                    button.AddChild(text);
+                    frame.AddChild(button);
+                }
+                // +
+                {
+                    Button button = new Button();
+                    button.OnClicked += NextWorld;
+                    button.SetConstraints(new PixelConstraint(140), new PixelConstraint(10), new PixelConstraint(20), new PixelConstraint(20));
+
+                    Text text = new Text("+", 2f);
+                    text.SetConstraints(new PixelConstraint(3), new PixelConstraint(3), new PixelConstraint(80), new RelativeConstraint(1));
+
+                    button.AddChild(text);
+                    frame.AddChild(button);
+                }
+                // -
+                {
+                    Button button = new Button();
+                    button.OnClicked += PreviousWorld;
+                    button.SetConstraints(new PixelConstraint(160), new PixelConstraint(10), new PixelConstraint(20), new PixelConstraint(20));
+
+                    Text text = new Text("-", 2f);
+                    text.SetConstraints(new PixelConstraint(3), new PixelConstraint(3), new PixelConstraint(80), new RelativeConstraint(1));
+
+                    button.AddChild(text);
+                    frame.AddChild(button);
+                }
+
+                editorUi.Add(frame);
             }
             {
-                Button button = new Button();
-                button.OnClicked += NewLevel;
-                button.SetConstraints(new PixelConstraint(20), new PixelConstraint(100), new PixelConstraint(120), new PixelConstraint(40));
+                const int size = 42;
+                HexType[] values = (HexType[])Enum.GetValues(typeof(HexType));
 
-                Text text = new Text("Generate", 2);
-                text.SetConstraints(new PixelConstraint(10), new PixelConstraint(10), new PixelConstraint(90), new RelativeConstraint(1));
+                buttons = new Frame();
+                buttons.SetConstraints(
+                   new PixelConstraint(20, RelativeTo.Window),
+                   new PixelConstraint(20, RelativeTo.Window, Direction.Bottom),
+                   new PixelConstraint(values.Length * (size + 10) + 30),
+                   new PixelConstraint(size + 40));
 
-                button.AddChild(text);
-                frame.AddChild(button);
+                for (int i = 0; i < values.Length; i++)
+                {
+                    Button button = new Button();
+                    button.SetConstraints(
+                        new PixelConstraint(i * (size + 10) + 20, RelativeTo.Parent),
+                        new PixelConstraint(20, RelativeTo.Parent, Direction.Bottom),
+                        new PixelConstraint(size),
+                        new PixelConstraint(size));
+
+                    UI.Image image = new UI.Image(Textures.Get("Hex"), new RectangleF(32 * i, 0, 32, 32));
+                    image.SetConstraints(
+                        new PixelConstraint(5, RelativeTo.Parent, Direction.Left),
+                        new PixelConstraint(5, RelativeTo.Parent, Direction.Top),
+                        new PixelConstraint(size - 10),
+                        new PixelConstraint(size - 10));
+                    button.AddChild(image);
+
+                    int copy = i;
+                    button.OnClicked += () =>
+                    {
+                        drawType = values[copy];
+                    };
+
+                    buttons.AddChild(button);
+                }
+                editorUi.Add(buttons);
             }
-            {
-                Button button = new Button();
-                button.OnClicked += SaveLevel;
-                button.SetConstraints(new PixelConstraint(20), new PixelConstraint(160), new PixelConstraint(80), new PixelConstraint(40));
-
-                Text text = new Text("Save", 2);
-                text.SetConstraints(new PixelConstraint(10), new PixelConstraint(10), new PixelConstraint(80), new RelativeConstraint(1));
-
-                button.AddChild(text);
-                frame.AddChild(button);
-            }
-            {
-                Button button = new Button();
-                button.OnClicked += NextLevel;
-                button.SetConstraints(new PixelConstraint(120), new PixelConstraint(40), new PixelConstraint(40), new PixelConstraint(40));
-
-                Text text = new Text("+", 2);
-                text.SetConstraints(new PixelConstraint(10), new PixelConstraint(10), new PixelConstraint(80), new RelativeConstraint(1));
-
-                button.AddChild(text);
-                frame.AddChild(button);
-            }
-            {
-                Button button = new Button();
-                button.OnClicked += PreviousLevel;
-                button.SetConstraints(new PixelConstraint(160), new PixelConstraint(40), new PixelConstraint(40), new PixelConstraint(40));
-
-                Text text = new Text("-", 2);
-                text.SetConstraints(new PixelConstraint(10), new PixelConstraint(10), new PixelConstraint(80), new RelativeConstraint(1));
-
-                button.AddChild(text);
-                frame.AddChild(button);
-            }
-
-            editorUi.Add(frame);
         }
 
         int levelIndex = 0;
         int worldIndex = 0;
+        HexType drawType;
         World world;
         Level level;
-        Text title;
+        Text textLevel;
+        Text textWorld;
+        Frame buttons;
 
         public UI.UI editorUi;
         public Input input;
@@ -108,7 +186,6 @@ namespace KreativerName
             new Vector2(0, 0),
             size, 0.5f);
 
-        public event LevelEvent LevelCompleted;
         public event EmptyEvent Exit;
 
         static Random random = new Random();
@@ -120,22 +197,25 @@ namespace KreativerName
             HexPoint mouse = layout.PixelToHex(input.MousePosition());
             selectedHex = mouse;
 
-            if (input.MousePress(MouseButton.Left))
+            for (int i = 0; i < buttons.Children.Count; i++)
             {
-                if (GetPlayerMoves().Contains(mouse))
-                    player = mouse;
+                Button item = (Button)buttons.Children[i];
+                item.Color = (int)drawType == i ? Color.Green : Color.White;
             }
-            if (input.MousePress(MouseButton.Right))
+
+            if (input.MouseDown(MouseButton.Left))
             {
                 if (Grid != null && Grid[mouse] != null)
                 {
                     Hex hex = Grid[mouse].Value;
-                    int length = Enum.GetValues(typeof(HexType)).Length;
-
-                    hex.Type = (HexType)(((int)hex.Type + 1) % length);
-
+                    hex.Type = drawType;
                     Grid[mouse] = hex;
                 }
+            }
+            if (input.MousePress(MouseButton.Right))
+            {
+                if (GetPlayerMoves().Contains(mouse))
+                    player = mouse;
             }
             if (input.MousePress(MouseButton.Middle))
             {
@@ -195,7 +275,6 @@ namespace KreativerName
         private void NextLevel()
         {
             levelIndex++;
-            title.String = $"Level {levelIndex:000}";
             LoadLevel();
         }
 
@@ -203,7 +282,31 @@ namespace KreativerName
         {
             if (levelIndex > 0)
                 levelIndex--;
-            title.String = $"Level {levelIndex:000}";
+            LoadLevel();
+        }
+
+        private void NextWorld()
+        {
+            worldIndex++;
+
+            LoadWorld();
+
+            if (world.levels == null)
+                world.levels = new List<Level>();
+
+            LoadLevel();
+        }
+
+        private void PreviousWorld()
+        {
+            if (worldIndex > 0)
+                worldIndex--;
+
+            LoadWorld();
+
+            if (world.levels == null)
+                world.levels = new List<Level>();
+
             LoadLevel();
         }
 
@@ -215,18 +318,28 @@ namespace KreativerName
                 level = new Level();
 
             player = level.startPos;
+            textLevel.String = $"Level {levelIndex + 1:000}";
         }
 
         public void LoadWorld()
         {
             world = World.LoadFromFile($"{worldIndex:000}");
-            levelIndex = 0;            
+            textWorld.String = $"World {worldIndex + 1:000}";
         }
 
         private void SaveLevel()
         {
             level.startPos = player;
-            level.SaveToFile($"{levelIndex:000}");
+            while (world.levels.Count - 1 < levelIndex)
+                world.levels.Add(new Level());
+
+            world.levels[levelIndex] = level;
+        }
+
+        private void SaveWorld()
+        {
+            SaveLevel();
+            world.SaveToFile($"{worldIndex:000}");
         }
 
         private void NewLevel()
