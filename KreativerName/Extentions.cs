@@ -25,6 +25,10 @@ namespace KreativerName
                     return HexFlags.Deadly;
                 case HexType.DeadlyTwoStateOff:
                     return 0;
+                case HexType.DeadlyOneUseOn:
+                    return HexFlags.Deadly;
+                case HexType.DeadlyOneUseOff:
+                    return 0;
 
                 default:
                     return 0;

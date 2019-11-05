@@ -92,7 +92,7 @@ namespace KreativerName
             {
                 float size = 5;
                 Text title = new Text("KREATIVER NAME", size);
-                title.SetConstraints(new CenterConstraint(), new PixelConstraint(50), new PixelConstraint((int)(title.String.Length * 7 * size)), new PixelConstraint((int)(6 * size)));
+                title.SetConstraints(new CenterConstraint(), new PixelConstraint(50), new PixelConstraint((int)title.TextWidth), new PixelConstraint((int)(6 * size)));
                 title.Color = Color.White;
                 mainMenu.Add(title);
             }
@@ -101,8 +101,8 @@ namespace KreativerName
                 button.SetConstraints(new CenterConstraint(), new PixelConstraint(150), new PixelConstraint(300), new PixelConstraint(60));
                 button.OnClicked += NewGame;
 
-                Text text = new Text("SPIEL STARTEN",3);
-                text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint(text.String.Length * 21), new PixelConstraint(21));
+                Text text = new Text("Spiel starten",3);
+                text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)text.TextWidth), new PixelConstraint(21));
                 button.AddChild(text);
 
                 mainMenu.Add(button);
@@ -112,8 +112,8 @@ namespace KreativerName
                 button.SetConstraints(new CenterConstraint(), new PixelConstraint(250), new PixelConstraint(300), new PixelConstraint(60));
                 button.OnClicked += NewEditor;
 
-                Text text = new Text("EDITOR",3);
-                text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint(text.String.Length * 18), new PixelConstraint(18));
+                Text text = new Text("Editor",3);
+                text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)text.TextWidth), new PixelConstraint(18));
                 button.AddChild(text);
 
                 mainMenu.Add(button);

@@ -63,6 +63,8 @@ namespace KreativerName.Grid
         Goal,
         DeadlyTwoStateOn,
         DeadlyTwoStateOff,
+        DeadlyOneUseOff,
+        DeadlyOneUseOn,
     }
 
     [Flags]

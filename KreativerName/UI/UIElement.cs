@@ -25,6 +25,7 @@ namespace KreativerName.UI
         
         internal bool HasParent => parent != null;
         public List<UIElement> Children => children;
+        public bool Visible { get; set; } = true;
 
         public abstract void Update(Vector2 windowSize);
 
@@ -34,7 +35,8 @@ namespace KreativerName.UI
         {
             foreach (UIElement element in children)
             {
-                element.Render(windowSize);
+                if (element.Visible)
+                    element.Render(windowSize);
             }
         }
 

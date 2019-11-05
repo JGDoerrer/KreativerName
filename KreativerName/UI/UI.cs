@@ -1,9 +1,7 @@
-﻿using OpenTK;
+﻿using System.Collections.Generic;
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace KreativerName.UI
 {
@@ -18,7 +16,7 @@ namespace KreativerName.UI
         internal MouseState mouseState;
         internal MouseState previousMouseState;
         internal Vector2 MousePosition => new Vector2(mouseState.X, mouseState.Y);
-        
+
         public void Update(Vector2 windowSize)
         {
             foreach (UIElement element in Elements)
@@ -41,7 +39,8 @@ namespace KreativerName.UI
             Vector2 windowSize = new Vector2(windowWidth, windowHeight);
             foreach (var element in Elements)
             {
-                element.Render(windowSize);
+                if (element.Visible)
+                    element.Render(windowSize);
             }
         }
 

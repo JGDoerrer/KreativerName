@@ -28,7 +28,7 @@ namespace KreativerName
                 Frame frame = new Frame();
                 frame.SetConstraints(new PixelConstraint(20), new PixelConstraint(20), new PixelConstraint(220), new PixelConstraint(240));
 
-                textWorld = new Text($"World {worldIndex:000}", 2);
+                textWorld = new Text($"Welt  {worldIndex:000}", 2);
                 textWorld.SetConstraints(new PixelConstraint(20), new PixelConstraint(12), new PixelConstraint(200), new PixelConstraint(12));
 
                 frame.AddChild(textWorld);
@@ -54,9 +54,9 @@ namespace KreativerName
                 {
                     Button button = new Button();
                     button.OnClicked += NewLevel;
-                    button.SetConstraints(new PixelConstraint(20), new PixelConstraint(110), new PixelConstraint(120), new PixelConstraint(40));
+                    button.SetConstraints(new PixelConstraint(20), new PixelConstraint(110), new PixelConstraint(60), new PixelConstraint(40));
 
-                    Text text = new Text("Generate", 2);
+                    Text text = new Text("Neu", 2);
                     text.SetConstraints(new PixelConstraint(10), new PixelConstraint(10), new PixelConstraint(90), new RelativeConstraint(1));
 
                     button.AddChild(text);
@@ -66,10 +66,10 @@ namespace KreativerName
                 {
                     Button button = new Button();
                     button.OnClicked += SaveWorld;
-                    button.SetConstraints(new PixelConstraint(20), new PixelConstraint(170), new PixelConstraint(80), new PixelConstraint(40));
+                    button.SetConstraints(new PixelConstraint(20), new PixelConstraint(170), new PixelConstraint(130), new PixelConstraint(40));
 
-                    Text text = new Text("Save", 2);
-                    text.SetConstraints(new PixelConstraint(10), new PixelConstraint(10), new PixelConstraint(80), new RelativeConstraint(1));
+                    Text text = new Text("Speichern", 2);
+                    text.SetConstraints(new PixelConstraint(10), new PixelConstraint(10), new PixelConstraint(130), new RelativeConstraint(1));
 
                     button.AddChild(text);
                     frame.AddChild(button);
@@ -81,7 +81,7 @@ namespace KreativerName
                     button.SetConstraints(new PixelConstraint(140), new PixelConstraint(30), new PixelConstraint(20), new PixelConstraint(20));
 
                     Text text = new Text("+", 2f);
-                    text.SetConstraints(new PixelConstraint(3), new PixelConstraint(3), new PixelConstraint(80), new RelativeConstraint(1));
+                    text.SetConstraints(new PixelConstraint(5), new PixelConstraint(3), new PixelConstraint(80), new RelativeConstraint(1));
 
                     button.AddChild(text);
                     frame.AddChild(button);
@@ -93,7 +93,7 @@ namespace KreativerName
                     button.SetConstraints(new PixelConstraint(160), new PixelConstraint(30), new PixelConstraint(20), new PixelConstraint(20));
 
                     Text text = new Text("-", 2f);
-                    text.SetConstraints(new PixelConstraint(3), new PixelConstraint(3), new PixelConstraint(80), new RelativeConstraint(1));
+                    text.SetConstraints(new PixelConstraint(5), new PixelConstraint(3), new PixelConstraint(80), new RelativeConstraint(1));
 
                     button.AddChild(text);
                     frame.AddChild(button);
@@ -105,7 +105,7 @@ namespace KreativerName
                     button.SetConstraints(new PixelConstraint(140), new PixelConstraint(10), new PixelConstraint(20), new PixelConstraint(20));
 
                     Text text = new Text("+", 2f);
-                    text.SetConstraints(new PixelConstraint(3), new PixelConstraint(3), new PixelConstraint(80), new RelativeConstraint(1));
+                    text.SetConstraints(new PixelConstraint(5), new PixelConstraint(3), new PixelConstraint(80), new RelativeConstraint(1));
 
                     button.AddChild(text);
                     frame.AddChild(button);
@@ -117,7 +117,7 @@ namespace KreativerName
                     button.SetConstraints(new PixelConstraint(160), new PixelConstraint(10), new PixelConstraint(20), new PixelConstraint(20));
 
                     Text text = new Text("-", 2f);
-                    text.SetConstraints(new PixelConstraint(3), new PixelConstraint(3), new PixelConstraint(80), new RelativeConstraint(1));
+                    text.SetConstraints(new PixelConstraint(5), new PixelConstraint(3), new PixelConstraint(80), new RelativeConstraint(1));
 
                     button.AddChild(text);
                     frame.AddChild(button);
@@ -188,8 +188,6 @@ namespace KreativerName
 
         public event EmptyEvent Exit;
 
-        static Random random = new Random();
-
         public HexGrid<Hex> Grid { get => level.grid; set => level.grid = value; }
 
         public void Update()
@@ -222,7 +220,7 @@ namespace KreativerName
                         Grid[mouse] = new Hex(mouse, 0);
                 }
             }
-            if (input.MousePress(MouseButton.Middle))
+            if (input.KeyPress(Key.A))
             {
                 //if (GetPlayerMoves().Contains(mouse))
                     player = mouse;
@@ -271,6 +269,7 @@ namespace KreativerName
             return moves;
         }
 
+        #region Loading
 
         private void NextLevel()
         {
@@ -324,7 +323,7 @@ namespace KreativerName
         public void LoadWorld()
         {
             world = World.LoadFromFile($"{worldIndex:000}");
-            textWorld.String = $"World {worldIndex + 1:000}";
+            textWorld.String = $"Welt  {worldIndex + 1:000}";
         }
 
         private void SaveLevel()
@@ -357,5 +356,7 @@ namespace KreativerName
                 }
             }
         }
+
+        #endregion
     }
 }

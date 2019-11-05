@@ -18,7 +18,7 @@ namespace KreativerName
         public Game()
         {
             InitUI();
-            LoadWorld(1);
+            LoadWorld(0);
             LoadLevel(0);
         }
 
@@ -153,9 +153,9 @@ namespace KreativerName
             ui = new UI.UI();
 
             int size = 4;
-            title = new Text("", size);
+            title = new Text("Level 000/000", size);
+            title.SetConstraints(new CenterConstraint(), new PixelConstraint(40), new PixelConstraint((int)title.TextWidth), new PixelConstraint(size * 6));
             UpdateTitle();
-            title.SetConstraints(new CenterConstraint(), new PixelConstraint(40), new PixelConstraint(size * 13 * 7), new PixelConstraint(size * 6));
             title.Color = Color.LightGray;
 
             ui.Add(title);
@@ -173,14 +173,13 @@ namespace KreativerName
 
         private void LoadLevel()
         {
-            if (singleLevel)
-                level = Level.LoadFromFile($"{levelIndex:000}");
-            else if (world.levels != null && levelIndex < world.levels.Count)
+            if (world.levels != null && levelIndex < world.levels.Count)
                 level = world.levels[levelIndex];
             else
                 Exit?.Invoke();
 
             player = level.startPos;
+            moves = 0;
         }
 
         public void LoadLevel(int index)
@@ -216,6 +215,6 @@ namespace KreativerName
 
         #endregion
 
-        private void UpdateTitle() => title.String = $"LEVEL {levelIndex + 1:000}/{world.levels?.Count:000}";
+        private void UpdateTitle() => title.String = $"Level {levelIndex + 1:000}/{world.levels?.Count:000}";
     }
 }
