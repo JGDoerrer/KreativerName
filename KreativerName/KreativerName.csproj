@@ -69,9 +69,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Editor.cs" />
+    <Compile Include="Scenes\Editor.cs" />
     <Compile Include="Extentions.cs" />
-    <Compile Include="Game.cs" />
+    <Compile Include="Scenes\Game.cs" />
     <Compile Include="Grid\HexGrid.cs" />
     <Compile Include="Grid\HexLayout.cs" />
     <Compile Include="IBytes.cs" />
@@ -87,6 +87,8 @@
     <Compile Include="Rendering\Texture2D.cs" />
     <Compile Include="Rendering\TextureRenderer.cs" />
     <Compile Include="Rendering\Textures.cs" />
+    <Compile Include="Scenes\MainMenu.cs" />
+    <Compile Include="Scenes\Scene.cs" />
     <Compile Include="UI\Button.cs" />
     <Compile Include="UI\Constraints\CenterConstraint.cs" />
     <Compile Include="UI\Constraints\Constraint.cs" />

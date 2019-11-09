@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using KreativerName.Grid;
+using KreativerName.Scenes;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
@@ -19,10 +20,13 @@ namespace KreativerName.Rendering
 
         const float sqrt3 = 1.732050807568877293527446341505872366942805253810380628055f;
 
-        internal void Render(int width, int height)
+        internal void Render(Vector2 windowSize)
         {
             if (editor == null)
                 return;
+
+            int width = (int)windowSize.X;
+            int height = (int)windowSize.Y;
 
             GL.ClearColor(Color.FromArgb(255, 0, 0, 0));
             
@@ -44,7 +48,7 @@ namespace KreativerName.Rendering
 
             RenderGrid();
 
-            editor.editorUi.Render(width, height);
+            editor.editorUi.Render(windowSize);
         }
 
         private void RenderGrid()

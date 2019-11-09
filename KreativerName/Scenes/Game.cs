@@ -2,23 +2,32 @@
 using System.Collections.Generic;
 using System.Drawing;
 using KreativerName.Grid;
+using KreativerName.Rendering;
 using KreativerName.UI;
 using KreativerName.UI.Constraints;
 using OpenTK;
 using OpenTK.Input;
 
-namespace KreativerName
+namespace KreativerName.Scenes
 {
     public delegate void WorldEvent(int world);
     public delegate void LevelEvent(int level);
     public delegate void EmptyEvent();
 
-    public class Game
+    public class Game : Scene
     {
         public Game()
         {
+            renderer = new GameRenderer(this);
             InitUI();
             LoadWorld(0);
+            LoadLevel(0);
+        }
+        public Game(int world)
+        {
+            renderer = new GameRenderer(this);
+            InitUI();
+            LoadWorld(world);
             LoadLevel(0);
         }
 
@@ -29,6 +38,7 @@ namespace KreativerName
         World world;
         Level level;
         Text title;
+        GameRenderer renderer;
 
         public UI.UI ui;
         public Input input;
@@ -46,7 +56,7 @@ namespace KreativerName
         public World World { get => world; }
         private int Levels => world.levels.Count;
 
-        public void Update()
+        public override void Update()
         {
             HexPoint mouse = layout.PixelToHex(input.MousePosition());
             selectedHex = mouse;
@@ -67,6 +77,12 @@ namespace KreativerName
             }
 
             input.Update();
+        }
+
+        public override void Render(Vector2 windowSize)
+        {
+            renderer.Render(windowSize);
+            ui.Render(windowSize);
         }
 
         public List<HexPoint> GetPlayerMoves()
@@ -161,7 +177,7 @@ namespace KreativerName
             ui.Add(title);
         }
 
-        public void UpdateUI(Vector2 windowSize)
+        public override void UpdateUI(Vector2 windowSize)
         {
             ui.SetMouseState(input.MouseState());
             ui.Update(windowSize);

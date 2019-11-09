@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
+using KreativerName.UI.Constraints;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -9,6 +11,21 @@ namespace KreativerName.UI
 {
     public class Frame : UIElement
     {
+        public Frame()
+        {
+            constaints = new UIConstaints();
+        }
+        public Frame(int x, int y, int w, int h)
+        {
+            constaints = new UIConstaints(
+                new PixelConstraint(x),
+                new PixelConstraint(y),
+                new PixelConstraint(w),
+                new PixelConstraint(h));
+        }
+
+        public Color Color { get; set; } = Color.FromArgb(100, 100, 100);
+
         public override void Update(Vector2 windowSize)
         {
             foreach (UIElement element in children)
@@ -26,7 +43,7 @@ namespace KreativerName.UI
 
             GL.Disable(EnableCap.Texture2D);
 
-            GL.Color4(new Color4(100, 100, 100, 255));
+            GL.Color4(Color);
 
             GL.Begin(PrimitiveType.Quads);
 

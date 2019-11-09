@@ -1,23 +1,37 @@
 ﻿using System.Drawing;
 using KreativerName.Rendering;
+using KreativerName.UI.Constraints;
 using OpenTK;
 
 namespace KreativerName.UI
 {
     public class Button : UIElement
     {
+        public Button()
+        {
+            constaints = new UIConstaints();
+        }
+        public Button(int x, int y, int w, int h)
+        {
+            constaints = new UIConstaints(
+                new PixelConstraint(x),
+                new PixelConstraint(y),
+                new PixelConstraint(w),
+                new PixelConstraint(h));
+        }
+
         bool clicked;
         bool mouseDown;
 
         public Color Color { get; set; } = Color.White;
         public bool Clicked => clicked;
-        public event ButtonClickEvent OnClicked;
+        public event ButtonClickEvent OnClick;
 
         public override void Update(Vector2 windowSize)
         {
             if (!clicked && MouseOver(windowSize) && !mouseDown && MouseLeftDown)
             {
-                OnClicked?.Invoke();
+                OnClick?.Invoke();
             }
             clicked = MouseOver(windowSize) && MouseLeftDown;
             mouseDown = MouseLeftDown;

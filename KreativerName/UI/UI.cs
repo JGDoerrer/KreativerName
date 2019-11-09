@@ -25,18 +25,20 @@ namespace KreativerName.UI
             }
         }
 
-        public void Render(int windowWidth, int windowHeight)
+        public void Render(Vector2 windowSize)
         {
-            GL.Viewport(0, 0, windowWidth, windowHeight);
+            int width = (int)windowSize.X;
+            int height = (int)windowSize.Y;
+
+            GL.Viewport(0, 0, width, height);
 
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
-            GL.Ortho(0, windowWidth, windowHeight, 0, -1, 1);
+            GL.Ortho(0, width, height, 0, -1, 1);
 
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
 
-            Vector2 windowSize = new Vector2(windowWidth, windowHeight);
             foreach (var element in Elements)
             {
                 if (element.Visible)

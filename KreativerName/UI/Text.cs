@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using KreativerName.Rendering;
+using KreativerName.UI.Constraints;
 using OpenTK;
 
 namespace KreativerName.UI
@@ -12,12 +13,22 @@ namespace KreativerName.UI
     public class Text : UIElement
     {
         public Text()
-        { }
-
+        {
+        }
         public Text(string text, float size = 2)
         {
             String = text;
             Size = size;
+        }
+        public Text(string text, float size, int x, int y)
+        {
+            String = text;
+            Size = size;
+            constaints = new UIConstaints(
+                new PixelConstraint(x),
+                new PixelConstraint(y),
+                new PixelConstraint((int)TextWidth),
+                new PixelConstraint((int)TextHeight));
         }
 
         string s;
@@ -26,6 +37,7 @@ namespace KreativerName.UI
         public float Size { get; set; }
         public Color Color { get; set; } = Color.Black;
         public float TextWidth => s.Sum(x => char.IsLower(x) || char.IsDigit(x) ? Size * 6 : Size * 7);
+        public float TextHeight => Size*6;
 
         public override void Update(Vector2 windowSize)
         {
