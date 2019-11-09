@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using KreativerName.Grid;
 using KreativerName.Scenes;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -29,7 +27,7 @@ namespace KreativerName.Rendering
             int height = (int)windowSize.Y;
 
             GL.ClearColor(Color.FromArgb(255, 0, 0, 0));
-            
+
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
             GL.Ortho(0, width, height, 0, -1, 1);
@@ -37,57 +35,33 @@ namespace KreativerName.Rendering
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
 
-            // Center grid
             if (game.Grid != null)
             {
-                int totalWidth = (int)(game.layout.size * sqrt3 * (game.Grid.Max(x => x.Value.X + x.Value.Y / 2f) + game.Grid.Min(x => x.Value.X + x.Value.Y / 2f)));
-                int totalHeight = (int)(game.layout.size * 1.5f * (game.Grid.Max(x => x.Value.Y) + game.Grid.Min(x => x.Value.Y)));
+                const int margin = 50;
 
-                game.layout.origin = new Vector2((width - totalWidth) / 2, (height - totalHeight) / 2);
+                float maxX = game.Grid.Max(x => x.Value.X + x.Value.Y / 2f);
+                float minX = game.Grid.Min(x => x.Value.X + x.Value.Y / 2f);
+                int maxY = game.Grid.Max(x => x.Value.Y);
+                int minY = game.Grid.Min(x => x.Value.Y);
+
+                game.layout.size = Math.Min((width - margin) / (sqrt3 * (maxX - minX + 1)), (height - margin) / (1.5f * (maxY - minY + 1.25f)));
+                // Round to multiples of 16
+                game.layout.size = (float)Math.Floor(game.layout.size / 16) * 16;
+                game.layout.size = Math.Min(game.layout.size, 48);
+
+                int centerX = (int)(game.layout.size * sqrt3 * (maxX + minX));
+                int centerY = (int)(game.layout.size * 1.5f * (maxY + minY));
+
+                // Center grid
+                game.layout.origin = new Vector2((width - centerX) / 2, (height - centerY) / 2);
+
+                //int totalWidth = (int)(editor.layout.size * sqrt3 * (maxX - minX + 1));
+                //int totalHeight = (int)(editor.layout.size * 1.5f * (maxY - minY + 1.25f));
             }
 
-            RenderGrid();
+            GridRenderer.RenderGrid(game.Grid, game.layout, game.GetPlayerMoves(), game.selectedHex, game.player);
 
             game.ui.Render(new Vector2(width, height));
-        }
-
-        private void RenderGrid()
-        {
-            if (game.Grid == null)
-                return;
-
-            List<HexPoint> moves = game.GetPlayerMoves();
-
-            foreach (Hex hex in game.Grid)
-            {
-                Vector2 renderPos = game.layout.HexCorner(hex.Position, 3);
-                renderPos.X -= game.layout.size / 2f * sqrt3;
-                renderPos.Y -= game.layout.size / 2f;
-
-                renderPos.X = (float)Math.Floor(renderPos.X);
-                renderPos.Y = (float)Math.Floor(renderPos.Y);
-
-                Color color = Color.White;
-
-                if (game.selectedHex == hex.Position)
-                {
-                    if (moves.Contains(hex.Position))
-                        color = Color.FromArgb(255, 100, 200, 100);
-                    else
-                        color = Color.FromArgb(255, 200, 200, 200);
-                }
-                else if (moves.Contains(hex.Position))
-                    color = Color.LightGreen;
-                else
-                    color = Color.White;
-
-                if (hex.Position == game.player)
-                    TextureRenderer.DrawHex(Textures.Get("Player"), hex.Position, game.layout, Vector2.One * game.layout.size / 10, color, null);
-                else
-                    TextureRenderer.DrawHex(Textures.Get("Hex"), hex.Position, game.layout, Vector2.One * game.layout.size / 10, color, new RectangleF(32 * (int)hex.Type, 0, 32, 32));
-                //TextureRenderer.Draw(Textures.Get("Hex"), renderPos, Vector2.One * game.layout.size / 10, color, new RectangleF(17*(int)hex.Type,0, 17, 19));
-
-            }
         }
     }
 }

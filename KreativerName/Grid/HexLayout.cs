@@ -63,7 +63,5 @@ namespace KreativerName.Grid
             double angle = 2 * Math.PI * (startAngle + i) / 6;
             return HexToPixel(h) + new Vector2((float)Math.Cos(angle) * size, (float)Math.Sin(angle) * size);
         }
-
-
     }
 }

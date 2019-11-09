@@ -208,6 +208,7 @@ namespace KreativerName.Scenes
         {
             singleLevel = true;
             this.level = level;
+            world = new World();
 
             player = level.startPos;
         }

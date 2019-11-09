@@ -52,7 +52,10 @@ namespace KreativerName.Grid
             return 9;
         }
 
-        public void SetType(HexType type) => Type = type;
+        public override string ToString()
+        {
+            return $"{Position}; {Type}";
+        }
     }
 
     public enum HexType : byte

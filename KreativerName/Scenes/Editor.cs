@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using KreativerName.Grid;
 using KreativerName.Rendering;
-using KreativerName.Scenes;
 using KreativerName.UI;
 using KreativerName.UI.Constraints;
 using OpenTK;
@@ -27,6 +26,7 @@ namespace KreativerName.Scenes
         {
             editorUi = new UI.UI();
 
+            // Levelselection
             {
                 Frame frame = new Frame();
                 frame.SetConstraints(new PixelConstraint(20), new PixelConstraint(20), new PixelConstraint(220), new PixelConstraint(240));
@@ -41,20 +41,19 @@ namespace KreativerName.Scenes
 
                 frame.AddChild(textLevel);
 
-                // Reload
+                // Test
                 {
-                    Button button = new Button(20,50,90,40);
-                    button.OnClick += LoadLevel;
+                    Button button = new Button(20, 50, 90, 40);
+                    button.OnClick += TestLevel;
 
-                    Text text = new Text("Reload", 2);
-                    text.SetConstraints(new PixelConstraint(10), new PixelConstraint(10), new PixelConstraint(80), new RelativeConstraint(1));
+                    Text text = new Text("Testen", 2, 10, 10);
 
                     button.AddChild(text);
                     frame.AddChild(button);
                 }
                 // Generate
                 {
-                    Button button = new Button(20,110,60,40);
+                    Button button = new Button(20, 110, 60, 40);
                     button.OnClick += NewLevel;
 
                     Text text = new Text("Neu", 2);
@@ -65,7 +64,7 @@ namespace KreativerName.Scenes
                 }
                 // Save
                 {
-                    Button button = new Button(20,170,130,40);
+                    Button button = new Button(20, 170, 130, 40);
                     button.OnClick += SaveWorld;
 
                     Text text = new Text("Speichern", 2);
@@ -76,7 +75,7 @@ namespace KreativerName.Scenes
                 }
                 // +
                 {
-                    Button button = new Button(140,30,20,20);
+                    Button button = new Button(140, 30, 20, 20);
                     button.OnClick += NextLevel;
 
                     Text text = new Text("+", 2f);
@@ -87,7 +86,7 @@ namespace KreativerName.Scenes
                 }
                 // -
                 {
-                    Button button = new Button(160,30,20,20);
+                    Button button = new Button(160, 30, 20, 20);
                     button.OnClick += PreviousLevel;
 
                     Text text = new Text("-", 2f);
@@ -98,7 +97,7 @@ namespace KreativerName.Scenes
                 }
                 // +
                 {
-                    Button button = new Button(140,10,20,20);
+                    Button button = new Button(140, 10, 20, 20);
                     button.OnClick += NextWorld;
 
                     Text text = new Text("+", 2f);
@@ -109,7 +108,7 @@ namespace KreativerName.Scenes
                 }
                 // -
                 {
-                    Button button = new Button(160,10,20,20);
+                    Button button = new Button(160, 10, 20, 20);
                     button.OnClick += PreviousWorld;
 
                     Text text = new Text("-", 2f);
@@ -121,6 +120,7 @@ namespace KreativerName.Scenes
 
                 editorUi.Add(frame);
             }
+            // Hexagons
             {
                 const int size = 42;
                 HexType[] values = (HexType[])Enum.GetValues(typeof(HexType));
@@ -134,7 +134,7 @@ namespace KreativerName.Scenes
 
                 for (int i = 0; i < values.Length; i++)
                 {
-                    Button button = new Button(i * (size + 10) + 20,20,size,size);
+                    Button button = new Button(i * (size + 10) + 20, 20, size, size);
 
                     UI.Image image = new UI.Image(Textures.Get("Hex"), new RectangleF(32 * i, 0, 32, 32));
                     image.SetConstraints(
@@ -158,9 +158,11 @@ namespace KreativerName.Scenes
 
         int levelIndex = 0;
         int worldIndex = 0;
-        HexType drawType;
+        HexType? drawType = null;
         World world;
         Level level;
+        Game testGame;
+
         Text textLevel;
         Text textWorld;
         Frame buttonFrame;
@@ -190,15 +192,15 @@ namespace KreativerName.Scenes
             for (int i = 0; i < buttonFrame.Children.Count; i++)
             {
                 Button item = (Button)buttonFrame.Children[i];
-                item.Color = (int)drawType == i ? Color.Green : Color.White;
+                item.Color = drawType != null && (int)drawType == i ? Color.Green : Color.White;
             }
 
             if (input.MouseDown(MouseButton.Left))
             {
-                if (Grid != null && Grid[mouse] != null)
+                if (Grid != null && Grid[mouse] != null && drawType != null)
                 {
                     Hex hex = Grid[mouse].Value;
-                    hex.Type = drawType;
+                    hex.Type = drawType.Value;
                     Grid[mouse] = hex;
                 }
             }
@@ -215,7 +217,7 @@ namespace KreativerName.Scenes
             if (input.KeyPress(Key.A))
             {
                 //if (GetPlayerMoves().Contains(mouse))
-                    player = mouse;
+                player = mouse;
             }
             if (input.KeyPress(Key.Escape))
             {
@@ -267,6 +269,26 @@ namespace KreativerName.Scenes
         }
 
         #region Loading
+
+        private void TestLevel()
+        {
+            Level copy = new Level();
+            // copy
+            copy.FromBytes(level.ToBytes(),0);
+
+            testGame = new Game
+            {
+                input = MainWindow.input
+            };
+            testGame.LoadLevel(level);
+            testGame.Exit += () =>
+            {
+                MainWindow.scene = this;
+                level = copy;
+            };
+            drawType = null;
+            MainWindow.scene = testGame;
+        }
 
         private void NextLevel()
         {

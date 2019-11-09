@@ -79,6 +79,7 @@ namespace KreativerName.Scenes
                 worldMenu.Add(title);
 
                 Frame frame = new Frame();
+                frame.Color = Color.Transparent;
                 frame.SetConstraints(
                     new CenterConstraint(),
                     new PixelConstraint(180),
@@ -95,12 +96,13 @@ namespace KreativerName.Scenes
                         NewGame(world);
                     };
 
-                    Text text = new Text((i+1).ToString(), 2);
+                    Text text = new Text((i + 1).ToString(), 2);
                     text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)text.TextWidth), new PixelConstraint((int)text.TextHeight));
                     button.AddChild(text);
                     frame.AddChild(button);
                 }
-                    worldMenu.Add(frame);
+
+                worldMenu.Add(frame);
             }
         }
 

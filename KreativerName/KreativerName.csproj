@@ -69,6 +69,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Rendering\GridRenderer.cs" />
     <Compile Include="Scenes\Editor.cs" />
     <Compile Include="Extentions.cs" />
     <Compile Include="Scenes\Game.cs" />
@@ -125,6 +126,7 @@
     <Content Include="Resources\Worlds\000.wld">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\Worlds\001.wld" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
