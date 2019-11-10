@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using KreativerName.Grid;
 using KreativerName.Rendering;
 using KreativerName.UI;
 using KreativerName.UI.Constraints;
 using OpenTK;
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 
 namespace KreativerName.Scenes
@@ -18,8 +20,6 @@ namespace KreativerName.Scenes
 
             LoadWorld();
             LoadLevel();
-
-            renderer = new EditorRenderer(this);
         }
 
         private void InitUI()
@@ -166,12 +166,13 @@ namespace KreativerName.Scenes
         Text textLevel;
         Text textWorld;
         Frame buttonFrame;
-        EditorRenderer renderer;
 
         public UI.UI editorUi;
         public Input input;
         public HexPoint selectedHex;
         public HexPoint player;
+
+        const float sqrt3 = 1.732050807568877293527446341505872366942805253810380628055f;
 
         const float hexSize = 16 * 2;
         public HexLayout layout = new HexLayout(
@@ -229,7 +230,45 @@ namespace KreativerName.Scenes
 
         public override void Render(Vector2 windowSize)
         {
-            renderer.Render(windowSize);
+            int width = (int)windowSize.X;
+            int height = (int)windowSize.Y;
+
+            GL.ClearColor(Color.FromArgb(255, 0, 0, 0));
+
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
+            GL.Ortho(0, width, height, 0, -1, 1);
+
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+
+            if (Grid != null)
+            {
+                const int margin = 100;
+
+                float maxX = Grid.Max(x => x.Value.X + x.Value.Y / 2f);
+                float minX = Grid.Min(x => x.Value.X + x.Value.Y / 2f);
+                int maxY = Grid.Max(x => x.Value.Y);
+                int minY = Grid.Min(x => x.Value.Y);
+
+                layout.size = Math.Min((width - margin) / (sqrt3 * (maxX - minX + 1)), (height - margin) / (1.5f * (maxY - minY + 1.25f)));
+                // Round to multiples of 16
+                layout.size = (float)Math.Floor(layout.size / 16) * 16;
+                layout.size = Math.Min(layout.size, 48);
+
+                int centerX = (int)(layout.size * sqrt3 * (maxX + minX));
+                int centerY = (int)(layout.size * 1.5f * (maxY + minY));
+
+                // Center grid
+                layout.origin = new Vector2((width - centerX) / 2, (height - centerY) / 2);
+
+                //int totalWidth = (int)(layout.size * sqrt3 * (maxX - minX + 1));
+                //int totalHeight = (int)(layout.size * 1.5f * (maxY - minY + 1.25f));
+            }
+
+            GridRenderer.RenderGrid(Grid, layout, GetPlayerMoves(), selectedHex, player);
+
+            editorUi.Render(windowSize);
         }
 
         public override void UpdateUI(Vector2 windowSize)
@@ -278,16 +317,16 @@ namespace KreativerName.Scenes
 
             testGame = new Game
             {
-                input = MainWindow.input
+                input = Scenes.Input
             };
             testGame.LoadLevel(level);
             testGame.Exit += () =>
             {
-                MainWindow.scene = this;
+                Scenes.LoadScene(this);
                 level = copy;
             };
             drawType = null;
-            MainWindow.scene = testGame;
+            Scenes.LoadScene(testGame);
         }
 
         private void NextLevel()
@@ -330,7 +369,7 @@ namespace KreativerName.Scenes
 
         private void LoadLevel()
         {
-            if (levelIndex < world.levels.Count)
+            if (world.levels != null && levelIndex < world.levels.Count)
                 level = world.levels[levelIndex];
             else
                 level = new Level();
@@ -348,6 +387,9 @@ namespace KreativerName.Scenes
         private void SaveLevel()
         {
             level.startPos = player;
+            if (world.levels == null)
+                world.levels = new List<Level>();
+
             while (world.levels.Count - 1 < levelIndex)
                 world.levels.Add(new Level());
 

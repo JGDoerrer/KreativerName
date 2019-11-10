@@ -11,6 +11,7 @@ namespace KreativerName
     {
         public HexGrid<Hex> grid;
         public HexPoint startPos;
+        public int minMoves;
 
         public void Update()
         {
@@ -78,6 +79,7 @@ namespace KreativerName
             List<byte> bytes = new List<byte>();
             bytes.AddRange(grid.ToBytes());
             bytes.AddRange(startPos.ToBytes());
+            bytes.AddRange(minMoves.ToBytes());
 
             return bytes.ToArray();
         }
@@ -87,9 +89,11 @@ namespace KreativerName
             int count = 0;
 
             grid = new HexGrid<Hex>();
-            count += grid.FromBytes(bytes, startIndex);
+            count += grid.FromBytes(bytes, startIndex + count);
             startPos = new HexPoint();
             count += startPos.FromBytes(bytes, startIndex + count);
+            minMoves = BitConverter.ToInt32(bytes, startIndex + count);
+            count += 4;
 
             return count;
         }

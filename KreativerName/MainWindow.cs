@@ -10,7 +10,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace KreativerName
 {
-    class MainWindow : GameWindow
+    public class MainWindow : GameWindow
     {
         public MainWindow()
             : base(16 * 80, 9 * 80, GraphicsMode.Default, "KreativerName")
@@ -19,15 +19,15 @@ namespace KreativerName
 
             Textures.LoadTextures(@"Resources\Textures");
 
-            scene = new MainMenu();
+            Scenes.Scenes.SetWindow(this);
+            Scenes.Scenes.LoadScene(new MainMenu());
 
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
         }
 
-        public static Input input;
-        public static Scene scene;
+        Input input;
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
@@ -44,8 +44,7 @@ namespace KreativerName
 
             Vector2 size = new Vector2(Width, Height);
 
-            scene?.Update();
-            scene?.UpdateUI(size);
+            Scenes.Scenes.Update(size);
             
             input.Update();
         }
@@ -57,7 +56,7 @@ namespace KreativerName
 
             Vector2 size = new Vector2(Width, Height);
 
-            scene?.Render(size);
+            Scenes.Scenes.Render(size);
 
             SwapBuffers();
         }

@@ -34,5 +34,8 @@ namespace KreativerName
                     return 0;
             }
         }
+
+        public static byte[] ToBytes(this int i)
+            => BitConverter.GetBytes(i);
     }
 }

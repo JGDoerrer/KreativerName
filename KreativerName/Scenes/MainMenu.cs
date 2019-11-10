@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using KreativerName.UI;
 using KreativerName.UI.Constraints;
 using OpenTK;
@@ -13,7 +14,6 @@ namespace KreativerName.Scenes
             InitUI();
         }
 
-        Input input;
         UI.UI mainMenu;
         UI.UI worldMenu;
 
@@ -27,16 +27,17 @@ namespace KreativerName.Scenes
 
                 float size = 5;
                 Text title = new Text("KREATIVER NAME", size);
-                title.SetConstraints(new CenterConstraint(), new PixelConstraint(50), new PixelConstraint((int)title.TextWidth), new PixelConstraint((int)(6 * size)));
+                title.SetConstraints(new CenterConstraint(), new PixelConstraint(50), new PixelConstraint((int)title.TextWidth), new PixelConstraint((int)title.TextHeight));
                 title.Color = Color.White;
                 mainMenu.Add(title);
 
                 Button startButton = new Button();
+                startButton.Color = Color.FromArgb(100, 255, 100);
                 startButton.SetConstraints(new CenterConstraint(), new PixelConstraint(150), new PixelConstraint(300), new PixelConstraint(60));
                 startButton.OnClick += () => { world = true; };
 
                 Text startText = new Text("Spiel starten", 3);
-                startText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)startText.TextWidth), new PixelConstraint(21));
+                startText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)startText.TextWidth), new PixelConstraint((int)startText.TextHeight));
                 startButton.AddChild(startText);
 
                 mainMenu.Add(startButton);
@@ -46,25 +47,28 @@ namespace KreativerName.Scenes
                 editorButton.OnClick += NewEditor;
 
                 Text editorText = new Text("Editor", 3);
-                editorText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)editorText.TextWidth), new PixelConstraint(18));
+                editorText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)editorText.TextWidth), new PixelConstraint((int)editorText.TextHeight));
                 editorButton.AddChild(editorText);
 
                 mainMenu.Add(editorButton);
+
+                Button exitButton = new Button();
+                exitButton.Color = Color.FromArgb(255, 100, 100);
+                exitButton.SetConstraints(new CenterConstraint(), new PixelConstraint(350), new PixelConstraint(300), new PixelConstraint(60));
+                exitButton.OnClick += () => { Scenes.CloseWindow(); };
+
+                Text exitText = new Text("Schliessen", 3);
+                exitText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)exitText.TextWidth), new PixelConstraint((int)exitText.TextHeight));
+                exitButton.AddChild(exitText);
+
+                mainMenu.Add(exitButton);
             }
             // World Menu            
             {
-                List<World> worlds = new List<World>();
-
-                int index = 0;
-                while (true)
+                int worldcount = 0;
+                for (; File.Exists($@"Resources\Worlds\{worldcount:000}.wld"); worldcount++)
                 {
-                    World world = World.LoadFromFile($"{index:000}");
 
-                    if (world.levels == null)
-                        break;
-
-                    worlds.Add(world);
-                    index++;
                 }
 
                 worldMenu = new UI.UI();
@@ -83,10 +87,10 @@ namespace KreativerName.Scenes
                 frame.SetConstraints(
                     new CenterConstraint(),
                     new PixelConstraint(180),
-                    new PixelConstraint(worlds.Count * 50 + 30),
+                    new PixelConstraint(worldcount * 50 + 30),
                     new PixelConstraint(80));
 
-                for (int i = 0; i < worlds.Count; i++)
+                for (int i = 0; i < worldcount; i++)
                 {
                     Button button = new Button(50 * i + 20, 20, 40, 40);
 
@@ -108,7 +112,7 @@ namespace KreativerName.Scenes
 
         public override void Update()
         {
-            if (world && MainWindow.input.KeyPress(OpenTK.Input.Key.Escape))
+            if (world && Scenes.Input.KeyPress(OpenTK.Input.Key.Escape))
                 world = false;
         }
 
@@ -117,12 +121,12 @@ namespace KreativerName.Scenes
             if (!world)
             {
                 mainMenu.Update(windowSize);
-                mainMenu.SetMouseState(MainWindow.input.MouseState());
+                mainMenu.SetMouseState(Scenes.Input.MouseState());
             }
             else
             {
                 worldMenu.Update(windowSize);
-                worldMenu.SetMouseState(MainWindow.input.MouseState());
+                worldMenu.SetMouseState(Scenes.Input.MouseState());
             }
         }
 
@@ -137,27 +141,27 @@ namespace KreativerName.Scenes
         private void NewGame(int world)
         {
             Game game = new Game(world);
-            game.input = MainWindow.input;
+            game.input = Scenes.Input;
             game.Exit += () =>
             {
-                MainWindow.scene = this;
+                Scenes.LoadScene(this);
                 this.world = false;
             };
 
-            MainWindow.scene = game;
+            Scenes.LoadScene(game);
         }
 
         private void NewEditor()
         {
             Editor editor = new Editor();
-            editor.input = MainWindow.input;
+            editor.input = Scenes.Input;
             editor.Exit += () =>
             {
-                MainWindow.scene = this;
+                Scenes.LoadScene(this);
                 world = false;
             };
 
-            MainWindow.scene = editor;
+            Scenes.LoadScene(editor);
         }
     }
 }

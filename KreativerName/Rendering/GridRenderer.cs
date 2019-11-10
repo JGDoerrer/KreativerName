@@ -29,12 +29,12 @@ namespace KreativerName.Rendering
 
                 if (selectedHex == hex.Position)
                 {
-                    if (moves.Contains(hex.Position))
+                    if (moves != null && moves.Contains(hex.Position))
                         color = Color.FromArgb(255, 100, 200, 100);
                     else
                         color = Color.FromArgb(255, 200, 200, 200);
                 }
-                else if (moves.Contains(hex.Position))
+                else if (moves != null && moves.Contains(hex.Position))
                     color = Color.LightGreen;
                 else
                     color = Color.White;
