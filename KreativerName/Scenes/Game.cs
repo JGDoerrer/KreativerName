@@ -37,7 +37,7 @@ namespace KreativerName.Scenes
         int moves = 0;
         World world;
         Level level;
-        Text title;
+        TextBlock title;
 
         public UI.UI ui;
         public Input input;
@@ -59,7 +59,7 @@ namespace KreativerName.Scenes
 
         public override void Update()
         {
-            HexPoint mouse = layout.PixelToHex(input.MousePosition());
+            HexPoint mouse = layout.PixelToHex(input.MousePosition);
             selectedHex = mouse;
 
             if (input.MousePress(MouseButton.Left))
@@ -160,7 +160,7 @@ namespace KreativerName.Scenes
                 return;
 
             HexType type = Grid[player].Value.Type;
-
+            
 
             if (type.GetFlags().HasFlag(HexFlags.Deadly))
             {
@@ -173,7 +173,7 @@ namespace KreativerName.Scenes
 
                 if (singleLevel)
                     Exit?.Invoke();
-                else
+                else 
                 {
                     if (levelIndex < Levels)
                         levelIndex++;
@@ -206,9 +206,10 @@ namespace KreativerName.Scenes
         public void InitUI()
         {
             ui = new UI.UI();
+            ui.Input = new Input(Scenes.Window);
 
             int size = 4;
-            title = new Text("Level 000/000", size);
+            title = new TextBlock("Level 000/000", size);
             title.SetConstraints(new CenterConstraint(), new PixelConstraint(40), new PixelConstraint((int)title.TextWidth), new PixelConstraint(size * 6));
             UpdateTitle();
             title.Color = Color.LightGray;
@@ -218,7 +219,6 @@ namespace KreativerName.Scenes
 
         public override void UpdateUI(Vector2 windowSize)
         {
-            ui.SetMouseState(input.MouseState());
             ui.Update(windowSize);
         }
 
@@ -271,6 +271,6 @@ namespace KreativerName.Scenes
 
         #endregion
 
-        private void UpdateTitle() => title.String = $"Level {levelIndex + 1:000}/{world.levels?.Count:000}";
+        private void UpdateTitle() => title.Text = $"Level {levelIndex + 1:000}/{world.levels?.Count:000}";
     }
 }

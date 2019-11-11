@@ -10,19 +10,19 @@ using OpenTK;
 
 namespace KreativerName.UI
 {
-    public class Text : UIElement
+    public class TextBlock : UIElement
     {
-        public Text()
+        public TextBlock()
         {
         }
-        public Text(string text, float size = 2)
+        public TextBlock(string text, float size = 2)
         {
-            String = text;
+            Text = text;
             Size = size;
         }
-        public Text(string text, float size, int x, int y)
+        public TextBlock(string text, float size, int x, int y)
         {
-            String = text;
+            Text = text;
             Size = size;
             constaints = new UIConstaints(
                 new PixelConstraint(x),
@@ -33,7 +33,7 @@ namespace KreativerName.UI
 
         string s;
 
-        public string String { get => s; set => s = value; }//.ToUpper(); }
+        public string Text { get => s; set => s = value; }//.ToUpper(); }
         public float Size { get; set; }
         public Color Color { get; set; } = Color.Black;
         public float TextWidth => s.Sum(x => char.IsLower(x) || char.IsDigit(x) ? Size * 6 : Size * 7);
@@ -49,7 +49,7 @@ namespace KreativerName.UI
             Texture2D tex = Textures.Get("Font");
             Vector2 pos = new Vector2(GetX(windowSize), GetY(windowSize));
 
-            foreach (char c in String)
+            foreach (char c in Text)
             {
                 if (c <= 126 && c >= 32 && pos.X < GetX(windowSize) + GetWidth(windowSize))
                 {

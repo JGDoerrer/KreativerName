@@ -23,7 +23,8 @@ namespace KreativerName
 
         private int mouseWheel;
         private int mouseWheelLast;
-        private MouseState state;
+        private MouseState mouseState;
+        private KeyboardState keyState;
 
         public void Initialise(GameWindow window)
         {
@@ -45,33 +46,35 @@ namespace KreativerName
         private void MouseWheel(object sender, MouseWheelEventArgs e)
         {
             mouseWheel = e.Value;
-            state = e.Mouse;
+            mouseState = e.Mouse;
         }
         private void MouseUp(object sender, MouseButtonEventArgs e)
         {
             while (mouseDown.Contains(e.Button))
                 mouseDown.Remove(e.Button);
-            state = e.Mouse;
+            mouseState = e.Mouse;
         }
         private void MouseDown(object sender, MouseButtonEventArgs e)
         {
             mouseDown.Add(e.Button);
-            state = e.Mouse;
+            mouseState = e.Mouse;
         }
         private void MouseMove(object sender, MouseMoveEventArgs e)
         {
             mousePosition = new Vector2(e.X, e.Y);
-            state = e.Mouse;
+            mouseState = e.Mouse;
         }
 
         private void KeyUp(object sender, KeyboardKeyEventArgs e)
         {
             while (keysDown.Contains(e.Key))
                 keysDown.Remove(e.Key);
+            keyState = e.Keyboard;
         }
         private void KeyDown(object sender, KeyboardKeyEventArgs e)
         {
             keysDown.Add(e.Key);
+            keyState = e.Keyboard;
         }
 
         public void Update()
@@ -104,8 +107,9 @@ namespace KreativerName
         public bool MousePress(MouseButton button) => mouseDown.Contains(button) && !mouseDownLast.Contains(button);
         public bool MouseDown(MouseButton button) => mouseDown.Contains(button);
         public bool MouseRelease(MouseButton button) => !mouseDown.Contains(button) && mouseDownLast.Contains(button);
-        public Vector2 MousePosition() => mousePosition;
-        public MouseState MouseState() => state;
+        public Vector2 MousePosition => mousePosition;
+        public MouseState MouseState => mouseState;
+        public KeyboardState KeyState => keyState;
 
         public int MouseWheel() => mouseWheel;
         public int MouseScroll() => mouseWheel - mouseWheelLast;

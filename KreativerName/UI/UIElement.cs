@@ -1,8 +1,7 @@
-﻿using KreativerName.UI.Constraints;
+﻿using System.Collections.Generic;
+using KreativerName.UI.Constraints;
 using OpenTK;
 using OpenTK.Input;
-using System;
-using System.Collections.Generic;
 
 namespace KreativerName.UI
 {
@@ -22,7 +21,7 @@ namespace KreativerName.UI
         internal UI ui;
         internal UIElement parent;
         protected List<UIElement> children = new List<UIElement>();
-        
+
         internal bool HasParent => parent != null;
         public List<UIElement> Children => children;
         public bool Visible { get; set; } = true;
@@ -30,6 +29,14 @@ namespace KreativerName.UI
         public abstract void Update(Vector2 windowSize);
 
         public abstract void Render(Vector2 windowSize);
+
+        protected void UpdateChildren(Vector2 windowSize)
+        {
+            foreach (UIElement element in children)
+            {
+                element.Update(windowSize);
+            }
+        }
 
         protected void RenderChildren(Vector2 windowSize)
         {
@@ -79,15 +86,15 @@ namespace KreativerName.UI
                    ui.MousePosition.Y < y + h;
         }
 
-        protected bool MouseLeftDown => ui.mouseState.LeftButton == ButtonState.Pressed;
-        protected bool MouseLeftUp => ui.mouseState.LeftButton == ButtonState.Released;
-        protected bool MouseLeftClick => MouseLeftDown && ui.previousMouseState.LeftButton == ButtonState.Released;
-        protected bool MouseRightDown => ui.mouseState.RightButton == ButtonState.Pressed;
-        protected bool MouseRightUp => ui.mouseState.RightButton == ButtonState.Released;
-        protected bool MouseRightClick => MouseRightDown && ui.previousMouseState.RightButton == ButtonState.Released;
-        protected bool MouseMiddleDown => ui.mouseState.MiddleButton == ButtonState.Pressed;
-        protected bool MouseMiddleUp => ui.mouseState.MiddleButton == ButtonState.Released;
-        protected bool MouseMiddleClick => MouseMiddleDown && ui.previousMouseState.MiddleButton == ButtonState.Released;
+        protected bool MouseLeftDown => ui.Input.MouseDown(MouseButton.Left);
+        protected bool MouseLeftUp => !MouseLeftDown;
+        protected bool MouseLeftClick => ui.Input.MousePress(MouseButton.Left);
+        protected bool MouseRightDown => ui.Input.MouseDown(MouseButton.Right);
+        protected bool MouseRightUp => !MouseRightDown;
+        protected bool MouseRightClick => ui.Input.MousePress(MouseButton.Right);
+        protected bool MouseMiddleDown => ui.Input.MouseDown(MouseButton.Middle);
+        protected bool MouseMiddleUp => !MouseMiddleDown;
+        protected bool MouseMiddleClick => ui.Input.MousePress(MouseButton.Middle);
 
         #endregion
     }

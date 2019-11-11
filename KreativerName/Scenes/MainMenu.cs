@@ -25,8 +25,10 @@ namespace KreativerName.Scenes
             {
                 mainMenu = new UI.UI();
 
+                mainMenu.Input = new Input(Scenes.Window);
+
                 float size = 5;
-                Text title = new Text("KREATIVER NAME", size);
+                TextBlock title = new TextBlock("KREATIVER NAME", size);
                 title.SetConstraints(new CenterConstraint(), new PixelConstraint(50), new PixelConstraint((int)title.TextWidth), new PixelConstraint((int)title.TextHeight));
                 title.Color = Color.White;
                 mainMenu.Add(title);
@@ -36,7 +38,7 @@ namespace KreativerName.Scenes
                 startButton.SetConstraints(new CenterConstraint(), new PixelConstraint(150), new PixelConstraint(300), new PixelConstraint(60));
                 startButton.OnClick += () => { world = true; };
 
-                Text startText = new Text("Spiel starten", 3);
+                TextBlock startText = new TextBlock("Spiel starten", 3);
                 startText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)startText.TextWidth), new PixelConstraint((int)startText.TextHeight));
                 startButton.AddChild(startText);
 
@@ -46,7 +48,7 @@ namespace KreativerName.Scenes
                 editorButton.SetConstraints(new CenterConstraint(), new PixelConstraint(250), new PixelConstraint(300), new PixelConstraint(60));
                 editorButton.OnClick += NewEditor;
 
-                Text editorText = new Text("Editor", 3);
+                TextBlock editorText = new TextBlock("Editor", 3);
                 editorText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)editorText.TextWidth), new PixelConstraint((int)editorText.TextHeight));
                 editorButton.AddChild(editorText);
 
@@ -57,7 +59,7 @@ namespace KreativerName.Scenes
                 exitButton.SetConstraints(new CenterConstraint(), new PixelConstraint(350), new PixelConstraint(300), new PixelConstraint(60));
                 exitButton.OnClick += () => { Scenes.CloseWindow(); };
 
-                Text exitText = new Text("Schliessen", 3);
+                TextBlock exitText = new TextBlock("Schliessen", 3);
                 exitText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)exitText.TextWidth), new PixelConstraint((int)exitText.TextHeight));
                 exitButton.AddChild(exitText);
 
@@ -72,8 +74,9 @@ namespace KreativerName.Scenes
                 }
 
                 worldMenu = new UI.UI();
+                worldMenu.Input = new Input(Scenes.Window);
 
-                Text title = new Text("Welten", 4);
+                TextBlock title = new TextBlock("Welten", 4);
                 title.Color = Color.White;
                 title.SetConstraints(
                     new CenterConstraint(),
@@ -100,7 +103,7 @@ namespace KreativerName.Scenes
                         NewGame(world);
                     };
 
-                    Text text = new Text((i + 1).ToString(), 2);
+                    TextBlock text = new TextBlock((i + 1).ToString(), 2);
                     text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)text.TextWidth), new PixelConstraint((int)text.TextHeight));
                     button.AddChild(text);
                     frame.AddChild(button);
@@ -121,12 +124,10 @@ namespace KreativerName.Scenes
             if (!world)
             {
                 mainMenu.Update(windowSize);
-                mainMenu.SetMouseState(Scenes.Input.MouseState());
             }
             else
             {
                 worldMenu.Update(windowSize);
-                worldMenu.SetMouseState(Scenes.Input.MouseState());
             }
         }
 

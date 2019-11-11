@@ -5,7 +5,7 @@ namespace KreativerName.Scenes
     public static class Scenes
     {
         static Scene scene;
-        static GameWindow window;
+        public static GameWindow Window;
         public static Input Input;
 
         public static void LoadScene(Scene scene)
@@ -25,14 +25,14 @@ namespace KreativerName.Scenes
         }
 
         public static void SetWindow(GameWindow window)
-        {
-            Scenes.window = window;
+        {            
+            Window = window;
             Input = new Input(window);
         }
 
         public static void CloseWindow()
         {
-            window.Close();
+            Window.Close();
         }
     }
 }

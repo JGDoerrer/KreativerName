@@ -1,42 +1,23 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using KreativerName.Rendering;
-using KreativerName.UI.Constraints;
 using OpenTK;
 
 namespace KreativerName.UI
 {
-    public class Button : UIElement
+    class TextBox : UIElement
     {
-        public Button()
-        {
-            constaints = new UIConstaints();
-        }
-        public Button(int x, int y, int w, int h)
-        {
-            constaints = new UIConstaints(
-                new PixelConstraint(x),
-                new PixelConstraint(y),
-                new PixelConstraint(w),
-                new PixelConstraint(h));
-        }
-
-        bool clicked;
-        bool mouseDown;
-
-        public Color Color { get; set; } = Color.White;
-        public bool Clicked => clicked;
-        public event ButtonClickEvent OnClick;
+        public string Text { get; set; }
 
         public override void Update(Vector2 windowSize)
         {
-            UpdateChildren(windowSize);
-
-            if (!clicked && MouseOver(windowSize) && !mouseDown && MouseLeftDown)
+            if (MouseLeftDown)
             {
-                OnClick?.Invoke();
             }
-            clicked = MouseOver(windowSize) && MouseLeftDown;
-            mouseDown = MouseLeftDown;           
         }
 
         public override void Render(Vector2 windowSize)
@@ -49,20 +30,10 @@ namespace KreativerName.UI
             float w = GetWidth(windowSize);
             float h = GetHeight(windowSize);
 
-            float offset;
-            Color color = Color;
-            Texture2D tex = Textures.Get("Button");
-
-            if (MouseOver(windowSize))
-            {
-                if (MouseLeftDown)
-                    offset = a * 3 * 2;
-                else
-                    offset = a * 3;
-            }
-            else
-                offset = 0;
-
+            float offset = 0;
+            Color color = Color.White;
+            Texture2D tex = Textures.Get("TextBox");
+            
             // corner top left
             TextureRenderer.Draw(tex, new Vector2(x, y), Vector2.One * scale, color, new RectangleF(offset, 0, a, a));
             // corner top right
@@ -80,8 +51,8 @@ namespace KreativerName.UI
             // bottom
             TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + h - a * scale), new Vector2(w / (a * scale) - 2, 1) * scale, color, new RectangleF(offset + a, a * 2, a, a));
             // center
-            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + a * scale), new Vector2(w / (a * scale) - 2 , h / (a * scale) - 2) * scale, color, new RectangleF(offset + a, a, a, a));
-            
+            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + a * scale), new Vector2(w / (a * scale) - 2, h / (a * scale) - 2) * scale, color, new RectangleF(offset + a, a, a, a));
+
             RenderChildren(windowSize);
         }
     }

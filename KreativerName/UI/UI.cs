@@ -13,9 +13,9 @@ namespace KreativerName.UI
         }
 
         List<UIElement> Elements { get; set; } = new List<UIElement>();
-        internal MouseState mouseState;
-        internal MouseState previousMouseState;
-        internal Vector2 MousePosition => new Vector2(mouseState.X, mouseState.Y);
+        internal Input Input { get; set; }
+
+        internal Vector2 MousePosition => Input?.MousePosition ?? new Vector2();
 
         public void Update(Vector2 windowSize)
         {
@@ -23,6 +23,8 @@ namespace KreativerName.UI
             {
                 element.Update(windowSize);
             }
+
+            Input.Update();
         }
 
         public void Render(Vector2 windowSize)
@@ -44,12 +46,6 @@ namespace KreativerName.UI
                 if (element.Visible)
                     element.Render(windowSize);
             }
-        }
-
-        public void SetMouseState(MouseState newState)
-        {
-            previousMouseState = mouseState;
-            mouseState = newState;
         }
 
         public void Add(UIElement element)

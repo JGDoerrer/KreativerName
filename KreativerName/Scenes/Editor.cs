@@ -31,12 +31,12 @@ namespace KreativerName.Scenes
                 Frame frame = new Frame();
                 frame.SetConstraints(new PixelConstraint(20), new PixelConstraint(20), new PixelConstraint(220), new PixelConstraint(240));
 
-                textWorld = new Text($"Welt  {worldIndex:000}", 2);
+                textWorld = new TextBlock($"Welt  {worldIndex:000}", 2);
                 textWorld.SetConstraints(new PixelConstraint(20), new PixelConstraint(12), new PixelConstraint(200), new PixelConstraint(12));
 
                 frame.AddChild(textWorld);
 
-                textLevel = new Text($"Level {levelIndex:000}", 2);
+                textLevel = new TextBlock($"Level {levelIndex:000}", 2);
                 textLevel.SetConstraints(new PixelConstraint(20), new PixelConstraint(32), new PixelConstraint(200), new PixelConstraint(12));
 
                 frame.AddChild(textLevel);
@@ -46,7 +46,7 @@ namespace KreativerName.Scenes
                     Button button = new Button(20, 50, 90, 40);
                     button.OnClick += TestLevel;
 
-                    Text text = new Text("Testen", 2, 10, 10);
+                    TextBlock text = new TextBlock("Testen", 2, 10, 10);
 
                     button.AddChild(text);
                     frame.AddChild(button);
@@ -56,7 +56,7 @@ namespace KreativerName.Scenes
                     Button button = new Button(20, 110, 60, 40);
                     button.OnClick += NewLevel;
 
-                    Text text = new Text("Neu", 2);
+                    TextBlock text = new TextBlock("Neu", 2);
                     text.SetConstraints(new PixelConstraint(10), new PixelConstraint(10), new PixelConstraint(90), new RelativeConstraint(1));
 
                     button.AddChild(text);
@@ -67,7 +67,7 @@ namespace KreativerName.Scenes
                     Button button = new Button(20, 170, 130, 40);
                     button.OnClick += SaveWorld;
 
-                    Text text = new Text("Speichern", 2);
+                    TextBlock text = new TextBlock("Speichern", 2);
                     text.SetConstraints(new PixelConstraint(10), new PixelConstraint(10), new PixelConstraint(130), new RelativeConstraint(1));
 
                     button.AddChild(text);
@@ -78,7 +78,7 @@ namespace KreativerName.Scenes
                     Button button = new Button(140, 30, 20, 20);
                     button.OnClick += NextLevel;
 
-                    Text text = new Text("+", 2f);
+                    TextBlock text = new TextBlock("+", 2f);
                     text.SetConstraints(new PixelConstraint(5), new PixelConstraint(3), new PixelConstraint(80), new RelativeConstraint(1));
 
                     button.AddChild(text);
@@ -89,7 +89,7 @@ namespace KreativerName.Scenes
                     Button button = new Button(160, 30, 20, 20);
                     button.OnClick += PreviousLevel;
 
-                    Text text = new Text("-", 2f);
+                    TextBlock text = new TextBlock("-", 2f);
                     text.SetConstraints(new PixelConstraint(5), new PixelConstraint(3), new PixelConstraint(80), new RelativeConstraint(1));
 
                     button.AddChild(text);
@@ -100,7 +100,7 @@ namespace KreativerName.Scenes
                     Button button = new Button(140, 10, 20, 20);
                     button.OnClick += NextWorld;
 
-                    Text text = new Text("+", 2f);
+                    TextBlock text = new TextBlock("+", 2f);
                     text.SetConstraints(new PixelConstraint(5), new PixelConstraint(3), new PixelConstraint(80), new RelativeConstraint(1));
 
                     button.AddChild(text);
@@ -111,11 +111,22 @@ namespace KreativerName.Scenes
                     Button button = new Button(160, 10, 20, 20);
                     button.OnClick += PreviousWorld;
 
-                    Text text = new Text("-", 2f);
+                    TextBlock text = new TextBlock("-", 2f);
                     text.SetConstraints(new PixelConstraint(5), new PixelConstraint(3), new PixelConstraint(80), new RelativeConstraint(1));
 
                     button.AddChild(text);
                     frame.AddChild(button);
+                }
+                // Text
+                {
+                    TextBox box = new TextBox();
+                    box.SetConstraints(
+                        new PixelConstraint(20),
+                        new PixelConstraint(230),
+                        new PixelConstraint(150),
+                        new PixelConstraint(40));
+
+                    frame.AddChild(box);
                 }
 
                 editorUi.Add(frame);
@@ -163,8 +174,8 @@ namespace KreativerName.Scenes
         Level level;
         Game testGame;
 
-        Text textLevel;
-        Text textWorld;
+        TextBlock textLevel;
+        TextBlock textWorld;
         Frame buttonFrame;
 
         public UI.UI editorUi;
@@ -187,7 +198,7 @@ namespace KreativerName.Scenes
 
         public override void Update()
         {
-            HexPoint mouse = layout.PixelToHex(input.MousePosition());
+            HexPoint mouse = layout.PixelToHex(input.MousePosition);
             selectedHex = mouse;
 
             for (int i = 0; i < buttonFrame.Children.Count; i++)
@@ -273,7 +284,6 @@ namespace KreativerName.Scenes
 
         public override void UpdateUI(Vector2 windowSize)
         {
-            editorUi.SetMouseState(input.MouseState());
             editorUi.Update(windowSize);
         }
 
@@ -375,13 +385,13 @@ namespace KreativerName.Scenes
                 level = new Level();
 
             player = level.startPos;
-            textLevel.String = $"Level {levelIndex + 1:000}";
+            textLevel.Text = $"Level {levelIndex + 1:000}";
         }
 
         public void LoadWorld()
         {
             world = World.LoadFromFile($"{worldIndex:000}");
-            textWorld.String = $"Welt  {worldIndex + 1:000}";
+            textWorld.Text = $"Welt  {worldIndex + 1:000}";
         }
 
         private void SaveLevel()
