@@ -30,6 +30,12 @@ namespace KreativerName.Scenes
             LoadWorld(world);
             LoadLevel(0);
         }
+        public Game(int world, int level)
+        {
+            InitUI();
+            LoadWorld(world);
+            LoadLevel(level);
+        }
 
         bool singleLevel = false;
         int levelIndex = 0;
@@ -144,7 +150,7 @@ namespace KreativerName.Scenes
             {
                 int j = 1;
 
-                while (Grid[(directions[i] * j) + player].HasValue && !Grid[(directions[i] * j) + player].Value.Type.GetFlags().HasFlag(HexFlags.Solid))
+                while (Grid[(directions[i] * j) + player].HasValue && !Grid[(directions[i] * j) + player].Value.Flags.HasFlag(HexFlags.Solid))
                 {
                     moves.Add(directions[i] * j + player);
                     j++;
@@ -159,15 +165,14 @@ namespace KreativerName.Scenes
             if (Grid == null)
                 return;
 
-            HexType type = Grid[player].Value.Type;
+            HexFlags flags = Grid[player].Value.Flags;
             
-
-            if (type.GetFlags().HasFlag(HexFlags.Deadly))
+            if (flags.HasFlag(HexFlags.Deadly))
             {
                 LoadLevel();
             }
 
-            if (type.GetFlags().HasFlag(HexFlags.Goal))
+            if (flags.HasFlag(HexFlags.Goal))
             {
                 LevelCompleted?.Invoke(levelIndex);
 

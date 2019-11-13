@@ -40,9 +40,22 @@ namespace KreativerName.Rendering
                     color = Color.White;
 
                 if (hex.Position == player)
-                    TextureRenderer.DrawHex(Textures.Get("Player"), hex.Position, layout, Vector2.One * layout.size / 10, color, null);
+                    TextureRenderer.DrawHex(Textures.Get("Player"), hex.Position, layout, Vector2.One * layout.size, color, null);
                 else
-                    TextureRenderer.DrawHex(Textures.Get("Hex"), hex.Position, layout, Vector2.One * layout.size / 10, color, new RectangleF(32 * (int)hex.Type, 0, 32, 32));
+                {
+                    for (int i = 0; i < hex.Types.Count; i++)
+                    {
+                        int type = (int)hex.Types[i];
+                        int count = 0;
+                        while ((type & 1) == 0)
+                        {
+                            type >>= 1;
+                            count++;
+                        }
+
+                        TextureRenderer.DrawHex(Textures.Get("Hex"), hex.Position, layout, Vector2.One * layout.size, color, new RectangleF(32 * count, 0, 32, 32));
+                    }
+                }
             }
         }
     }

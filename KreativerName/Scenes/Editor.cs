@@ -26,6 +26,8 @@ namespace KreativerName.Scenes
         {
             editorUi = new UI.UI();
 
+            editorUi.Input = new Input(Scenes.Window);
+
             // Levelselection
             {
                 Frame frame = new Frame();
@@ -187,8 +189,8 @@ namespace KreativerName.Scenes
 
         const float hexSize = 16 * 2;
         public HexLayout layout = new HexLayout(
-            new Matrix2((float)Math.Sqrt(3), (float)Math.Sqrt(3) / 2f, 0, 3f / 2f),
-            new Matrix2((float)Math.Sqrt(3) / 3f, -1f / 3f, 0, 2f / 3f),
+            new Matrix2(sqrt3, sqrt3 / 2f, 0, 3f / 2f),
+            new Matrix2(sqrt3 / 3f, -1f / 3f, 0, 2f / 3f),
             new Vector2(0, 0),
             hexSize, 0.5f);
 
@@ -204,7 +206,7 @@ namespace KreativerName.Scenes
             for (int i = 0; i < buttonFrame.Children.Count; i++)
             {
                 Button item = (Button)buttonFrame.Children[i];
-                item.Color = drawType != null && (int)drawType == i ? Color.Green : Color.White;
+                item.Color = drawType != null && (int)drawType == 1 << i ? Color.Green : Color.White;
             }
 
             if (input.MouseDown(MouseButton.Left))
