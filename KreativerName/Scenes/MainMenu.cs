@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.IO;
 using KreativerName.UI;
 using KreativerName.UI.Constraints;
@@ -145,11 +144,11 @@ namespace KreativerName.Scenes
             game.input = Scenes.Input;
             game.Exit += () =>
             {
-                Scenes.LoadScene(this);
+                Scenes.LoadScene(new Transition(this, 10));
                 this.world = false;
             };
 
-            Scenes.LoadScene(game);
+            Scenes.LoadScene(new Transition(game, 10));
         }
 
         private void NewEditor()
@@ -158,11 +157,11 @@ namespace KreativerName.Scenes
             editor.input = Scenes.Input;
             editor.Exit += () =>
             {
-                Scenes.LoadScene(this);
+                Scenes.LoadScene(new Transition(this, 10));
                 world = false;
             };
 
-            Scenes.LoadScene(editor);
+            Scenes.LoadScene(new Transition(editor, 10));
         }
     }
 }

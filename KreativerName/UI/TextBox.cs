@@ -15,7 +15,7 @@ namespace KreativerName.UI
 
         public override void Update(Vector2 windowSize)
         {
-            if (MouseLeftDown)
+            if (MouseOver(windowSize))
             {
             }
         }
