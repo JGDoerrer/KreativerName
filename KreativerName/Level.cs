@@ -12,20 +12,45 @@ namespace KreativerName
         public HexGrid<Hex> grid;
         public HexPoint startPos;
         public int minMoves;
+        public bool completed;
 
-        public void Update()
+        HexPoint lastPlayer;
+        bool updated;
+
+        public void Update(HexPoint player)
         {
+            if (!updated)
+            {
+                lastPlayer = startPos;
+                updated = true;
+            }
+
             for (int i = 0; i < grid.Count; i++)
             {
                 Hex hex = grid.Values.ElementAt(i);
 
-                if (hex.Type == HexType.DeadlyTwoStateOn)
-                    hex.Type = HexType.DeadlyTwoStateOff;
-                else if (hex.Type == HexType.DeadlyTwoStateOff)
-                    hex.Type = HexType.DeadlyTwoStateOn;
+                // Two states
+                if (hex.Type.HasFlag(HexType.DeadlyTwoStateOn))
+                {
+                    hex.Type &= ~HexType.DeadlyTwoStateOn; // delete state
+                    hex.Type |= HexType.DeadlyTwoStateOff;
+                }
+                else if (hex.Type.HasFlag(HexType.DeadlyTwoStateOff))
+                {
+                    hex.Type &= ~HexType.DeadlyTwoStateOff;
+                    hex.Type |= HexType.DeadlyTwoStateOn;
+                }
+
+                if (hex.Type.HasFlag(HexType.DeadlyOneUseOff) && hex.Position == lastPlayer)
+                {
+                    hex.Type &= ~HexType.DeadlyOneUseOff;
+                    hex.Type |= HexType.DeadlyOneUseOn;
+                }
 
                 grid[hex.Position] = hex;
             }
+
+            lastPlayer = player;
         }
 
         #region Load & Save
@@ -80,6 +105,7 @@ namespace KreativerName
             bytes.AddRange(grid.ToBytes());
             bytes.AddRange(startPos.ToBytes());
             bytes.AddRange(minMoves.ToBytes());
+            bytes.Add(completed ? (byte)1 : (byte)0);
 
             return bytes.ToArray();
         }
@@ -94,8 +120,17 @@ namespace KreativerName
             count += startPos.FromBytes(bytes, startIndex + count);
             minMoves = BitConverter.ToInt32(bytes, startIndex + count);
             count += 4;
+            completed = bytes[startIndex + count] == 1;
+            count += 1;
 
             return count;
+        }
+
+        public Level Copy()
+        {
+            Level level = new Level();
+            level.FromBytes(ToBytes(),0);
+            return level;
         }
 
         #endregion

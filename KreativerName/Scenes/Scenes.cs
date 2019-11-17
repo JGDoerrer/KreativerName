@@ -15,8 +15,10 @@ namespace KreativerName.Scenes
 
         public static void Update(Vector2 windowSize)
         {
-            scene?.Update();
             scene?.UpdateUI(windowSize);
+            scene?.Update();
+
+            Input.Update();
         }
 
         public static void Render(Vector2 windowSize)

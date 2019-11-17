@@ -1,9 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using KreativerName.Rendering;
+﻿using KreativerName.Rendering;
 using KreativerName.Scenes;
-using KreativerName.UI;
-using KreativerName.UI.Constraints;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -45,7 +41,7 @@ namespace KreativerName
             Vector2 size = new Vector2(Width, Height);
 
             Scenes.Scenes.Update(size);
-            
+
             input.Update();
         }
 

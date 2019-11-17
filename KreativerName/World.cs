@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 
 namespace KreativerName
 {
@@ -9,10 +10,14 @@ namespace KreativerName
     {
         public List<Level> levels;
 
+        public bool AllCompleted => levels.All(x => x.completed);
+
+        #region Load & Save
+
         public void SaveToFile(string name)
         {
             byte[] bytes = Compress(ToBytes());
-            Console.WriteLine($"World {name}: {bytes.Length}/{ToBytes().Length} ");
+            //Console.WriteLine($"World {name}: {bytes.Length}/{ToBytes().Length} {100f*bytes.Length/ToBytes().Length:N1}%");
             File.WriteAllBytes($@"Resources\Worlds\{name}.wld", bytes);
         }
 
@@ -72,21 +77,24 @@ namespace KreativerName
             levels = new List<Level>();
 
             int total = 0;
-            int count = BitConverter.ToInt32(bytes, startIndex);
-            startIndex += 4;
-            total += 4;
 
-            for (int i = 0; i < count; i++)
-            {
-                Level level = new Level();
-                int length = level.FromBytes(bytes, startIndex);
-                levels.Add(level);
+                int count = BitConverter.ToInt32(bytes, startIndex);
+                startIndex += 4;
+                total += 4;
 
-                startIndex += length;
-                total += length;
-            }
+                for (int i = 0; i < count; i++)
+                {
+                    Level level = new Level();
+                    int length = level.FromBytes(bytes, startIndex);
+                    levels.Add(level);
+
+                    startIndex += length;
+                    total += length;
+                }
 
             return total;
         }
+
+        #endregion
     }
 }

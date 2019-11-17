@@ -13,7 +13,7 @@ namespace KreativerName.UI
         }
 
         List<UIElement> Elements { get; set; } = new List<UIElement>();
-        internal Input Input { get; set; }
+        internal Input Input; //{ get; set; }
 
         internal Vector2 MousePosition => Input?.MousePosition ?? new Vector2();
 
@@ -24,7 +24,7 @@ namespace KreativerName.UI
                 element.Update(windowSize);
             }
 
-            Input.Update();
+            //Input.Update();
         }
 
         public void Render(Vector2 windowSize)

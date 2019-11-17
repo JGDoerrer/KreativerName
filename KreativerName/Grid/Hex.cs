@@ -106,8 +106,8 @@ namespace KreativerName.Grid
         Goal = 1 << 3,
         DeadlyTwoStateOn = 1 << 4,
         DeadlyTwoStateOff = 1 << 5,
-        DeadlyOneUseOff = 1 << 6,
-        DeadlyOneUseOn = 1 << 7,
+        DeadlyOneUseOn = 1 << 6,
+        DeadlyOneUseOff = 1 << 7,
     }
 
     [Flags]

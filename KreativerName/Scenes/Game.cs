@@ -74,7 +74,7 @@ namespace KreativerName.Scenes
                 {
                     player = mouse;
                     moves++;
-                    level.Update();
+                    level.Update(player);
                     UpdatePlayer();
                 }
             }
@@ -180,9 +180,14 @@ namespace KreativerName.Scenes
                     Exit?.Invoke();
                 else 
                 {
+                    Level level = world.levels[levelIndex];
+                    level.completed = true;
+                    world.levels[levelIndex] = level;
+                    world.SaveToFile($"{worldIndex:000}");
+
                     if (levelIndex < Levels)
                         levelIndex++;
-
+                                       
                     if (levelIndex == Levels)
                     {
                         WorldCompleted?.Invoke(worldIndex);
@@ -234,7 +239,7 @@ namespace KreativerName.Scenes
         private void LoadLevel()
         {
             if (world.levels != null && levelIndex < world.levels.Count)
-                level = world.levels[levelIndex];
+                level = world.levels[levelIndex].Copy();
             else
                 Exit?.Invoke();
 

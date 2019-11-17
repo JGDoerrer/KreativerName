@@ -90,6 +90,7 @@
     <Compile Include="Scenes\MainMenu.cs" />
     <Compile Include="Scenes\Scene.cs" />
     <Compile Include="Scenes\Scenes.cs" />
+    <Compile Include="Scenes\WorldMenu.cs" />
     <Compile Include="UI\Button.cs" />
     <Compile Include="UI\Constraints\CenterConstraint.cs" />
     <Compile Include="UI\Constraints\Constraint.cs" />
@@ -100,7 +101,6 @@
     <Compile Include="UI\Frame.cs" />
     <Compile Include="UI\Image.cs" />
     <Compile Include="UI\TextBlock.cs" />
-    <Compile Include="UI\TextBox.cs" />
     <Compile Include="UI\UI.cs" />
     <Compile Include="UI\UIElement.cs" />
     <Compile Include="World.cs" />
@@ -133,6 +133,7 @@
     <None Include="Resources\Worlds\001.wld">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Resources\Worlds\002.wld" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

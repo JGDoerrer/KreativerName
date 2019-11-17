@@ -16,6 +16,8 @@ namespace KreativerName.Scenes
     {
         public Editor()
         {
+            input = new Input(Scenes.Window);
+
             InitUI();
 
             LoadWorld();
@@ -26,7 +28,7 @@ namespace KreativerName.Scenes
         {
             editorUi = new UI.UI();
 
-            editorUi.Input = new Input(Scenes.Window);
+            editorUi.Input = input;
 
             // Levelselection
             {
@@ -119,17 +121,6 @@ namespace KreativerName.Scenes
                     button.AddChild(text);
                     frame.AddChild(button);
                 }
-                // Text
-                {
-                    TextBox box = new TextBox();
-                    box.SetConstraints(
-                        new PixelConstraint(20),
-                        new PixelConstraint(230),
-                        new PixelConstraint(150),
-                        new PixelConstraint(40));
-
-                    frame.AddChild(box);
-                }
 
                 editorUi.Add(frame);
             }
@@ -214,7 +205,12 @@ namespace KreativerName.Scenes
                 if (Grid != null && Grid[mouse] != null && drawType != null)
                 {
                     Hex hex = Grid[mouse].Value;
-                    hex.Type = drawType.Value;
+
+                    if (drawType.HasValue && (drawType == HexType.Normal || drawType == HexType.Solid))
+                        hex.Type = drawType.Value;
+                    else if (drawType.HasValue && !hex.Type.HasFlag(HexType.Solid))
+                        hex.Type |= drawType.Value;
+
                     Grid[mouse] = hex;
                 }
             }
@@ -225,7 +221,7 @@ namespace KreativerName.Scenes
                     if (Grid[mouse].HasValue)
                         Grid[mouse] = null;
                     else
-                        Grid[mouse] = new Hex(mouse, 0);
+                        Grid[mouse] = new Hex(mouse, HexType.Normal);
                 }
             }
             if (input.KeyPress(Key.A))
@@ -334,11 +330,11 @@ namespace KreativerName.Scenes
             testGame.LoadLevel(level);
             testGame.Exit += () =>
             {
-                Scenes.LoadScene(this);
+                Scenes.LoadScene(new Transition(this, 10));
                 level = copy;
             };
             drawType = null;
-            Scenes.LoadScene(testGame);
+            Scenes.LoadScene(new Transition(testGame,10));
         }
 
         private void NextLevel()
@@ -399,6 +395,8 @@ namespace KreativerName.Scenes
         private void SaveLevel()
         {
             level.startPos = player;
+            level.completed = false;
+
             if (world.levels == null)
                 world.levels = new List<Level>();
 
@@ -425,7 +423,7 @@ namespace KreativerName.Scenes
             {
                 for (int i = -(j / 2); i < w - (j + 1) / 2; i++)
                 {
-                    Grid[i, j] = new Hex(i, j, 0);
+                    Grid[i, j] = new Hex(i, j, HexType.Normal);
                 }
             }
         }

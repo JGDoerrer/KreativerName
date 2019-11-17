@@ -36,6 +36,7 @@ namespace KreativerName
             window.MouseUp += MouseUp;
             window.MouseMove += MouseMove;
             window.MouseWheel += MouseWheel;
+            window.KeyPress += KeyPress;
         }
 
         public void PressKey(Key key) => keysDown.Add(key);
@@ -76,12 +77,17 @@ namespace KreativerName
             keysDown.Add(e.Key);
             keyState = e.Keyboard;
         }
+        private void KeyPress(object sender, KeyPressEventArgs e)
+        {
+            KeyString += e.KeyChar;
+        }
 
         public void Update()
         {
             keysDownLast = new List<Key>(keysDown);
             mouseDownLast = new List<MouseButton>(mouseDown);
             mouseWheelLast = mouseWheel;
+            KeyString = "";
         }
 
         public void Reset()
@@ -98,6 +104,7 @@ namespace KreativerName
             keysDownLast = new List<Key>();
             mouseDown = new List<MouseButton>();
             mouseDownLast = new List<MouseButton>();
+            KeyString = "";
         }
 
         public bool KeyPress(Key key) => keysDown.Contains(key) && !keysDownLast.Contains(key);
@@ -110,6 +117,7 @@ namespace KreativerName
         public Vector2 MousePosition => mousePosition;
         public MouseState MouseState => mouseState;
         public KeyboardState KeyState => keyState;
+        public string KeyString { get; private set; }
 
         public int MouseWheel() => mouseWheel;
         public int MouseScroll() => mouseWheel - mouseWheelLast;
