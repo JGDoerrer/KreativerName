@@ -17,6 +17,7 @@ namespace KreativerName.Scenes
         public Editor()
         {
             input = new Input(Scenes.Window);
+            renderer = new GridRenderer(null, layout);
 
             InitUI();
 
@@ -49,7 +50,7 @@ namespace KreativerName.Scenes
                 {
                     Button button = new Button(20, 50, 60, 40);
                     button.OnClick += NewLevel;
-
+                    
                     TextBlock text = new TextBlock("Neu", 2);
                     text.SetConstraints(new PixelConstraint(10), new PixelConstraint(10), new PixelConstraint(90), new RelativeConstraint(1));
 
@@ -60,6 +61,7 @@ namespace KreativerName.Scenes
                 {
                     Button button = new Button(100, 50, 90, 40);
                     button.OnClick += TestLevel;
+                    button.Shortcut = Key.T;
 
                     TextBlock text = new TextBlock("Testen", 2, 10, 10);
 
@@ -70,6 +72,7 @@ namespace KreativerName.Scenes
                 {
                     Button button = new Button(20, 170, 130, 40);
                     button.OnClick += SaveWorld;
+                    button.Shortcut = Key.S;
 
                     TextBlock text = new TextBlock("Speichern", 2);
                     text.SetConstraints(new PixelConstraint(10), new PixelConstraint(10), new PixelConstraint(130), new RelativeConstraint(1));
@@ -184,6 +187,7 @@ namespace KreativerName.Scenes
                         new PixelConstraint(size - 10),
                         new PixelConstraint(size - 10));
                     button.AddChild(image);
+                    button.Shortcut = (Key)(110 + i);
 
                     int copy = i;
                     button.OnClick += () =>
@@ -222,6 +226,7 @@ namespace KreativerName.Scenes
             new Matrix2(sqrt3 / 3f, -1f / 3f, 0, 2f / 3f),
             new Vector2(0, 0),
             hexSize, 0.5f);
+        GridRenderer renderer;
 
         public event EmptyEvent Exit;
 
@@ -311,9 +316,11 @@ namespace KreativerName.Scenes
 
                 //int totalWidth = (int)(layout.size * sqrt3 * (maxX - minX + 1));
                 //int totalHeight = (int)(layout.size * 1.5f * (maxY - minY + 1.25f));
+
+                renderer.Layout = layout;
             }
 
-            GridRenderer.RenderGrid(Grid, layout, GetPlayerMoves(), selectedHex, player);
+            renderer.Render(player, selectedHex, GetPlayerMoves());
 
             ui.Render(windowSize);
         }
@@ -421,6 +428,8 @@ namespace KreativerName.Scenes
                 level = new Level();
 
             player = level.startPos;
+            renderer.Grid = level.grid;
+
             textLevel.Text = $"Level {levelIndex + 1:000}";
             textMoves.Text = $"Min. Zuege: {level.minMoves:00}";
         }

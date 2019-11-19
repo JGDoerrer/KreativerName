@@ -43,18 +43,18 @@ namespace KreativerName.Grid
                 foreach (HexType value in Enum.GetValues(typeof(HexType)))
                 {
                     if (Type.HasFlag(value))
-                        flags |= value switch
+                        switch (value)
                         {
-                            HexType.Normal => 0,
-                            HexType.Solid => HexFlags.Solid,
-                            HexType.Deadly => HexFlags.Deadly,
-                            HexType.Goal => HexFlags.Goal,
-                            HexType.DeadlyTwoStateOn => HexFlags.Deadly,
-                            HexType.DeadlyTwoStateOff => 0,
-                            HexType.DeadlyOneUseOn => HexFlags.Deadly,
-                            HexType.DeadlyOneUseOff => 0,
+                            case HexType.Normal: break;
+                            case HexType.Solid: flags |= HexFlags.Solid; break;
+                            case HexType.Deadly: flags |= HexFlags.Deadly; break;
+                            case HexType.Goal: flags |= HexFlags.Goal; break;
+                            case HexType.DeadlyTwoStateOn: flags |= HexFlags.Deadly; break;
+                            case HexType.DeadlyTwoStateOff: break;
+                            case HexType.DeadlyOneUseOn: flags |= HexFlags.Deadly; break;
+                            case HexType.DeadlyOneUseOff: break;
 
-                            _ => 0,
+                            default: break;
                         };
                 }
 
@@ -86,7 +86,7 @@ namespace KreativerName.Grid
 
         public int FromBytes(byte[] bytes, int startIndex)
         {
-            Position.FromBytes(bytes, startIndex);            
+            Position.FromBytes(bytes, startIndex);
             Type = (HexType)BitConverter.ToInt32(bytes, startIndex + 8);
             return 12;
         }

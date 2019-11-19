@@ -2,6 +2,7 @@
 using KreativerName.Rendering;
 using KreativerName.UI.Constraints;
 using OpenTK;
+using OpenTK.Input;
 
 namespace KreativerName.UI
 {
@@ -27,15 +28,18 @@ namespace KreativerName.UI
         public bool Clicked => clicked;
         public event ButtonClickEvent OnClick;
 
+        public Key Shortcut { get; set; }
+
         public override void Update(Vector2 windowSize)
         {
             UpdateChildren(windowSize);
 
-            if (!clicked && MouseOver(windowSize) && !mouseDown && MouseLeftDown)
+            if ((!clicked && MouseOver(windowSize) && !mouseDown && MouseLeftDown) || (ui.Input.KeyDown(Shortcut) && !clicked))
             {
                 OnClick?.Invoke();
             }
-            clicked = MouseOver(windowSize) && MouseLeftDown;
+
+            clicked = (MouseOver(windowSize) && MouseLeftDown) || ui.Input.KeyDown(Shortcut);
             mouseDown = MouseLeftDown;           
         }
 

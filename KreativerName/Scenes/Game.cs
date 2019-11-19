@@ -72,11 +72,12 @@ namespace KreativerName.Scenes
         const float sqrt3 = 1.732050807568877293527446341505872366942805253810380628055f;
 
         const float size = 16 * 2;
-        public HexLayout layout = new HexLayout(
+        HexLayout layout = new HexLayout(
             new Matrix2((float)Math.Sqrt(3), (float)Math.Sqrt(3) / 2f, 0, 3f / 2f),
             new Matrix2((float)Math.Sqrt(3) / 3f, -1f / 3f, 0, 2f / 3f),
             new Vector2(0, 0),
             size, 0.5f);
+        GridRenderer renderer = new GridRenderer();
 
         public HexGrid<Hex> Grid { get => level.grid; set => level.grid = value; }
         public World World { get => world; }
@@ -140,9 +141,10 @@ namespace KreativerName.Scenes
 
                 //int totalWidth = (int)(editor.layout.size * sqrt3 * (maxX - minX + 1));
                 //int totalHeight = (int)(editor.layout.size * 1.5f * (maxY - minY + 1.25f));
+                renderer.Layout = layout;
             }
 
-            GridRenderer.RenderGrid(Grid, layout, GetPlayerMoves(), selectedHex, player);
+            renderer.Render(player, selectedHex, GetPlayerMoves());
 
             ui.Render(new Vector2(width, height));
             ui.Render(windowSize);
@@ -281,6 +283,7 @@ namespace KreativerName.Scenes
 
             player = level.startPos;
             moves = 0;
+            renderer.Grid = level.grid;
         }
 
         public void LoadLevel(int index)

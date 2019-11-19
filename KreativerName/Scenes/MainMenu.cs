@@ -28,6 +28,7 @@ namespace KreativerName.Scenes
 
             Button startButton = new Button();
             startButton.Color = Color.FromArgb(100, 255, 100);
+            startButton.Shortcut = OpenTK.Input.Key.S;
             startButton.SetConstraints(new CenterConstraint(), new PixelConstraint(150), new PixelConstraint(300), new PixelConstraint(60));
             startButton.OnClick += () => { Scenes.LoadScene(new Transition(new WorldMenu(), 10)); };
 
@@ -38,6 +39,7 @@ namespace KreativerName.Scenes
             mainMenu.Add(startButton);
 
             Button editorButton = new Button();
+            editorButton.Shortcut = OpenTK.Input.Key.E;
             editorButton.SetConstraints(new CenterConstraint(), new PixelConstraint(250), new PixelConstraint(300), new PixelConstraint(60));
             editorButton.OnClick += NewEditor;
 
@@ -48,6 +50,7 @@ namespace KreativerName.Scenes
             mainMenu.Add(editorButton);
 
             Button exitButton = new Button();
+            exitButton.Shortcut = OpenTK.Input.Key.Escape;
             exitButton.Color = Color.FromArgb(255, 100, 100);
             exitButton.SetConstraints(new CenterConstraint(), new PixelConstraint(350), new PixelConstraint(300), new PixelConstraint(60));
             exitButton.OnClick += () => { Scenes.CloseWindow(); };
@@ -65,14 +68,14 @@ namespace KreativerName.Scenes
 
         public override void UpdateUI(Vector2 windowSize)
         {
-                mainMenu.Update(windowSize);
+            mainMenu.Update(windowSize);
         }
 
         public override void Render(Vector2 windowSize)
         {
-                mainMenu.Render(windowSize);
+            mainMenu.Render(windowSize);
         }
-        
+
         private void NewEditor()
         {
             Editor editor = new Editor
