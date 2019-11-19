@@ -18,6 +18,8 @@ namespace KreativerName.Scenes
 
     public class Game : Scene
     {
+        #region Constructors
+
         public Game()
         {
             InitUI();
@@ -36,8 +38,25 @@ namespace KreativerName.Scenes
             LoadWorld(world);
             LoadLevel(level);
         }
+        public Game(int world, bool perfect)
+        {
+            InitUI();
+            LoadWorld(world);
+            LoadLevel(0);
+            this.perfect = perfect;
+        }
+        public Game(int world, int level, bool perfect)
+        {
+            InitUI();
+            LoadWorld(world);
+            LoadLevel(level);
+            this.perfect = perfect;
+        }
+
+        #endregion
 
         bool singleLevel = false;
+        bool perfect = false;
         int levelIndex = 0;
         int worldIndex = 0;
         int moves = 0;
@@ -73,7 +92,6 @@ namespace KreativerName.Scenes
                 if (GetPlayerMoves().Contains(mouse))
                 {
                     player = mouse;
-                    moves++;
                     level.Update(player);
                     UpdatePlayer();
                 }
@@ -162,44 +180,62 @@ namespace KreativerName.Scenes
 
         private void UpdatePlayer()
         {
-            if (Grid == null)
-                return;
+            moves++;
+
+            if (!singleLevel)
+                Stats.Current.TotalMoves++;
 
             HexFlags flags = Grid[player].Value.Flags;
             
             if (flags.HasFlag(HexFlags.Deadly))
             {
                 LoadLevel();
+                return;
             }
 
             if (flags.HasFlag(HexFlags.Goal))
             {
-                LevelCompleted?.Invoke(levelIndex);
+                CompleteLevel();
+                return;
+            }
 
-                if (singleLevel)
-                    Exit?.Invoke();
-                else 
+            if (perfect && moves >= level.minMoves)
+            {
+                LoadLevel();
+                return;
+            }
+        }
+
+        private void CompleteLevel()
+        {
+            LevelCompleted?.Invoke(levelIndex);
+
+            if (singleLevel)
+                Exit?.Invoke();
+            else
+            {
+                Level level = world.levels[levelIndex];
+                level.completed = true;
+                if (perfect)
+                    level.perfect = true;
+
+                world.levels[levelIndex] = level;
+                world.SaveToFile($"{worldIndex:000}");
+
+                if (levelIndex < Levels)
+                    levelIndex++;
+
+                if (levelIndex == Levels)
                 {
-                    Level level = world.levels[levelIndex];
-                    level.completed = true;
-                    world.levels[levelIndex] = level;
-                    world.SaveToFile($"{worldIndex:000}");
+                    WorldCompleted?.Invoke(worldIndex);
 
-                    if (levelIndex < Levels)
-                        levelIndex++;
-                                       
-                    if (levelIndex == Levels)
-                    {
-                        WorldCompleted?.Invoke(worldIndex);
-
-                        worldIndex++;
-                        levelIndex = 0;
-                        LoadWorld();
-                    }
-
-                    UpdateTitle();
-                    LoadLevel();
+                    worldIndex++;
+                    levelIndex = 0;
+                    LoadWorld();
                 }
+
+                UpdateTitle();
+                LoadLevel();
             }
         }
 
@@ -256,7 +292,7 @@ namespace KreativerName.Scenes
         public void LoadLevel(Level level)
         {
             singleLevel = true;
-            this.level = level;
+            this.level = level.Copy();
             world = new World();
 
             player = level.startPos;

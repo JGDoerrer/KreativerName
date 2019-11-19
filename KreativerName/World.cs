@@ -10,7 +10,28 @@ namespace KreativerName
     {
         public List<Level> levels;
 
-        public bool AllCompleted => levels.All(x => x.completed);
+        public bool AllCompleted
+        {
+            get
+            {
+                return levels.All(x => x.completed);
+            }
+            set
+            {
+                levels.ForEach(x => x.completed = value);
+            }
+        }
+        public bool AllPerfect
+        {
+            get
+            {
+                return levels.All(x => x.perfect);
+            }
+            set
+            {
+                levels.ForEach(x => x.perfect = value);
+            }
+        }
 
         #region Load & Save
 
@@ -96,5 +117,7 @@ namespace KreativerName
         }
 
         #endregion
+
+        public override string ToString() => $"Levels: {levels.Count}, Completed: {AllCompleted}, Perfect: {AllPerfect}";
     }
 }

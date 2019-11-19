@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using KreativerName.UI;
 using KreativerName.UI.Constraints;
 using OpenTK;
@@ -51,7 +50,12 @@ namespace KreativerName.Scenes
             {
                 Button button = new Button(50 * i + 20, 20, 40, 40);
 
-                button.Color = worlds[i].AllCompleted ? Color.Green : Color.White;
+                if (worlds[i].AllPerfect)
+                    button.Color = Color.Gold;
+                else if (worlds[i].AllCompleted)
+                    button.Color = Color.Green;
+                else
+                    button.Color = Color.White;
 
                 int world = i;
                 button.OnClick += () =>

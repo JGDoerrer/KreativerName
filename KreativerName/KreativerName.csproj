@@ -91,6 +91,7 @@
     <Compile Include="Scenes\Scene.cs" />
     <Compile Include="Scenes\Scenes.cs" />
     <Compile Include="Scenes\WorldMenu.cs" />
+    <Compile Include="Stats.cs" />
     <Compile Include="UI\Button.cs" />
     <Compile Include="UI\Constraints\CenterConstraint.cs" />
     <Compile Include="UI\Constraints\Constraint.cs" />

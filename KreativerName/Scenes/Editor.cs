@@ -26,11 +26,11 @@ namespace KreativerName.Scenes
 
         private void InitUI()
         {
-            editorUi = new UI.UI();
+            ui = new UI.UI();
 
-            editorUi.Input = input;
+            ui.Input = input;
 
-            // Levelselection
+            // Level
             {
                 Frame frame = new Frame();
                 frame.SetConstraints(new PixelConstraint(20), new PixelConstraint(20), new PixelConstraint(220), new PixelConstraint(240));
@@ -45,23 +45,23 @@ namespace KreativerName.Scenes
 
                 frame.AddChild(textLevel);
 
-                // Test
+                // New
                 {
-                    Button button = new Button(20, 50, 90, 40);
-                    button.OnClick += TestLevel;
-
-                    TextBlock text = new TextBlock("Testen", 2, 10, 10);
-
-                    button.AddChild(text);
-                    frame.AddChild(button);
-                }
-                // Generate
-                {
-                    Button button = new Button(20, 110, 60, 40);
+                    Button button = new Button(20, 50, 60, 40);
                     button.OnClick += NewLevel;
 
                     TextBlock text = new TextBlock("Neu", 2);
                     text.SetConstraints(new PixelConstraint(10), new PixelConstraint(10), new PixelConstraint(90), new RelativeConstraint(1));
+
+                    button.AddChild(text);
+                    frame.AddChild(button);
+                }
+                // Test
+                {
+                    Button button = new Button(100, 50, 90, 40);
+                    button.OnClick += TestLevel;
+
+                    TextBlock text = new TextBlock("Testen", 2, 10, 10);
 
                     button.AddChild(text);
                     frame.AddChild(button);
@@ -121,8 +121,45 @@ namespace KreativerName.Scenes
                     button.AddChild(text);
                     frame.AddChild(button);
                 }
+                // Min Moves
+                {
+                    textMoves = new TextBlock($"Min. Zuege: {level.minMoves:00}", 2, 20, 100);
 
-                editorUi.Add(frame);
+                    frame.AddChild(textMoves);
+                    // +
+                    {
+                        Button button = new Button(160, 120, 20, 20);
+                        button.OnClick += () =>
+                        {
+                            level.minMoves++;
+                            textMoves.Text = $"Min. Zuege: {level.minMoves:00}";
+                        };
+
+                        TextBlock text = new TextBlock("+", 2f);
+                        text.SetConstraints(new PixelConstraint(5), new PixelConstraint(3), new PixelConstraint(80), new RelativeConstraint(1));
+
+                        button.AddChild(text);
+                        frame.AddChild(button);
+                    }
+                    // -
+                    {
+                        Button button = new Button(180, 120, 20, 20);
+                        button.OnClick += () =>
+                        {
+                            if (level.minMoves > 0)
+                                level.minMoves--;
+                            textMoves.Text = $"Min. Zuege: {level.minMoves:00}";
+                        };
+
+                        TextBlock text = new TextBlock("-", 2f);
+                        text.SetConstraints(new PixelConstraint(5), new PixelConstraint(3), new PixelConstraint(80), new RelativeConstraint(1));
+
+                        button.AddChild(text);
+                        frame.AddChild(button);
+                    }
+                }
+
+                ui.Add(frame);
             }
             // Hexagons
             {
@@ -156,7 +193,7 @@ namespace KreativerName.Scenes
 
                     buttonFrame.AddChild(button);
                 }
-                editorUi.Add(buttonFrame);
+                ui.Add(buttonFrame);
             }
         }
 
@@ -169,9 +206,10 @@ namespace KreativerName.Scenes
 
         TextBlock textLevel;
         TextBlock textWorld;
+        TextBlock textMoves;
         Frame buttonFrame;
 
-        public UI.UI editorUi;
+        public UI.UI ui;
         public Input input;
         public HexPoint selectedHex;
         public HexPoint player;
@@ -277,12 +315,12 @@ namespace KreativerName.Scenes
 
             GridRenderer.RenderGrid(Grid, layout, GetPlayerMoves(), selectedHex, player);
 
-            editorUi.Render(windowSize);
+            ui.Render(windowSize);
         }
 
         public override void UpdateUI(Vector2 windowSize)
         {
-            editorUi.Update(windowSize);
+            ui.Update(windowSize);
         }
 
         public List<HexPoint> GetPlayerMoves()
@@ -321,7 +359,7 @@ namespace KreativerName.Scenes
         {
             Level copy = new Level();
             // copy
-            copy.FromBytes(level.ToBytes(),0);
+            copy.FromBytes(level.ToBytes(), 0);
 
             testGame = new Game
             {
@@ -334,7 +372,7 @@ namespace KreativerName.Scenes
                 level = copy;
             };
             drawType = null;
-            Scenes.LoadScene(new Transition(testGame,10));
+            Scenes.LoadScene(new Transition(testGame, 10));
         }
 
         private void NextLevel()
@@ -384,6 +422,7 @@ namespace KreativerName.Scenes
 
             player = level.startPos;
             textLevel.Text = $"Level {levelIndex + 1:000}";
+            textMoves.Text = $"Min. Zuege: {level.minMoves:00}";
         }
 
         public void LoadWorld()
@@ -409,6 +448,8 @@ namespace KreativerName.Scenes
         private void SaveWorld()
         {
             SaveLevel();
+            world.AllCompleted = false;
+            world.AllPerfect = false;
             world.SaveToFile($"{worldIndex:000}");
         }
 
@@ -416,9 +457,10 @@ namespace KreativerName.Scenes
         {
             Grid = new HexGrid<Hex>();
 
-            int w = 11;
-            int h = 3;
+            int w = 10;
+            int h = 5;
 
+            // make rectangle
             for (int j = 0; j < h; j++)
             {
                 for (int i = -(j / 2); i < w - (j + 1) / 2; i++)

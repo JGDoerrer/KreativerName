@@ -1,4 +1,5 @@
-﻿using KreativerName.Rendering;
+﻿using System;
+using KreativerName.Rendering;
 using KreativerName.Scenes;
 using OpenTK;
 using OpenTK.Graphics;
@@ -41,6 +42,11 @@ namespace KreativerName
             Vector2 size = new Vector2(Width, Height);
 
             Scenes.Scenes.Update(size);
+
+            // Update TimePlaying
+            Stats.Current.TimePlaying = Stats.Current.TimePlaying.Add(TimeSpan.FromSeconds(e.Time));
+
+            Console.WriteLine(Stats.Current.TimePlaying.TotalSeconds);
 
             input.Update();
         }

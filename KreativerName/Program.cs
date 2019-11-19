@@ -15,7 +15,10 @@ namespace KreativerName
         [STAThread]
         static void Main()
         {
-            new MainWindow().Run();
+            mainWindow = new MainWindow();
+            mainWindow.Run();
         }
+
+        static MainWindow mainWindow;
     }
 }

@@ -13,6 +13,7 @@ namespace KreativerName
         public HexPoint startPos;
         public int minMoves;
         public bool completed;
+        public bool perfect;
 
         HexPoint lastPlayer;
         bool updated;
@@ -105,7 +106,8 @@ namespace KreativerName
             bytes.AddRange(grid.ToBytes());
             bytes.AddRange(startPos.ToBytes());
             bytes.AddRange(minMoves.ToBytes());
-            bytes.Add(completed ? (byte)1 : (byte)0);
+            byte flags = (byte)((completed ? 1 : 0) << 0 | (perfect ? 1 : 0) << 1);
+            bytes.Add(flags);
 
             return bytes.ToArray();
         }
@@ -120,7 +122,8 @@ namespace KreativerName
             count += startPos.FromBytes(bytes, startIndex + count);
             minMoves = BitConverter.ToInt32(bytes, startIndex + count);
             count += 4;
-            completed = bytes[startIndex + count] == 1;
+            completed = (bytes[startIndex + count] & (1 << 0)) > 0;
+            perfect = (bytes[startIndex + count] & (1 << 1)) > 0;
             count += 1;
 
             return count;
@@ -129,10 +132,17 @@ namespace KreativerName
         public Level Copy()
         {
             Level level = new Level();
-            level.FromBytes(ToBytes(),0);
+            level.FromBytes(ToBytes(), 0);
             return level;
         }
 
         #endregion
+
+        public override string ToString()
+        {
+            string s = $"MinMoves: {minMoves}, Completed: {completed}, Perfect: {perfect}";
+
+            return s;
+        }
     }
 }
