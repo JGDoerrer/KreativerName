@@ -25,21 +25,24 @@ namespace KreativerName.UI
         bool mouseDown;
 
         public Color Color { get; set; } = Color.White;
+        public Key Shortcut { get; set; }
+        public bool Enabled { get; set; } = true;
         public bool Clicked => clicked;
         public event ButtonClickEvent OnClick;
 
-        public Key Shortcut { get; set; }
 
         public override void Update(Vector2 windowSize)
         {
             UpdateChildren(windowSize);
 
-            if ((!clicked && MouseOver(windowSize) && !mouseDown && MouseLeftDown) || (ui.Input.KeyDown(Shortcut) && !clicked))
+            bool b = (MouseOver(windowSize) && !mouseDown && MouseLeftDown) || ui.Input.KeyDown(Shortcut);
+            if (Enabled && !clicked && b)
             {
                 OnClick?.Invoke();
             }
 
-            clicked = (MouseOver(windowSize) && MouseLeftDown) || ui.Input.KeyDown(Shortcut);
+            clicked = b;
+            
             mouseDown = MouseLeftDown;           
         }
 
@@ -56,6 +59,11 @@ namespace KreativerName.UI
             float offset;
             Color color = Color;
             Texture2D tex = Textures.Get("Button");
+
+            if (!Enabled)
+            {
+                color = Color.FromArgb(Color.R / 2, Color.B / 2, Color.G / 2);
+            }
 
             if (MouseOver(windowSize))
             {

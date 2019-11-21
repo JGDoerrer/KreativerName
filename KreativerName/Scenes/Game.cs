@@ -144,6 +144,7 @@ namespace KreativerName.Scenes
                 renderer.Layout = layout;
             }
 
+            renderer.Grid = Grid;
             renderer.Render(player, selectedHex, GetPlayerMoves());
 
             ui.Render(new Vector2(width, height));
@@ -191,6 +192,9 @@ namespace KreativerName.Scenes
             
             if (flags.HasFlag(HexFlags.Deadly))
             {
+                if (!singleLevel)
+                    Stats.Current.Deaths++;
+
                 LoadLevel();
                 return;
             }
@@ -224,6 +228,11 @@ namespace KreativerName.Scenes
                 world.levels[levelIndex] = level;
                 world.SaveToFile($"{worldIndex:000}");
 
+                if (perfect)
+                    Stats.Current.LevelsCompletedPerfect++;
+                else
+                    Stats.Current.LevelsCompleted++;
+
                 if (levelIndex < Levels)
                     levelIndex++;
 
@@ -233,7 +242,8 @@ namespace KreativerName.Scenes
 
                     worldIndex++;
                     levelIndex = 0;
-                    LoadWorld();
+                    Exit?.Invoke();
+                    //LoadWorld();
                 }
 
                 UpdateTitle();
@@ -299,6 +309,7 @@ namespace KreativerName.Scenes
             world = new World();
 
             player = level.startPos;
+            moves = 0;
         }
 
         public void LoadWorld()

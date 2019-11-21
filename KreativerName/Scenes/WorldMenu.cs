@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using KreativerName.Rendering;
 using KreativerName.UI;
 using KreativerName.UI.Constraints;
 using OpenTK;
@@ -15,7 +16,7 @@ namespace KreativerName.Scenes
             InitUI();
         }
 
-        UI.UI worldMenu;
+        UI.UI ui;
 
         bool normalMode = true;
 
@@ -29,8 +30,10 @@ namespace KreativerName.Scenes
                 worldcount++;
             }
 
-            worldMenu = new UI.UI();
-            worldMenu.Input = new Input(Scenes.Window);
+            const int ButtonSize = 60;
+
+            ui = new UI.UI();
+            ui.Input = new Input(Scenes.Window);
 
             TextBlock title = new TextBlock("Welten", 4);
             title.Color = Color.White;
@@ -39,15 +42,15 @@ namespace KreativerName.Scenes
                 new PixelConstraint(50),
                 new PixelConstraint((int)title.TextWidth),
                 new PixelConstraint((int)title.TextHeight));
-            worldMenu.Add(title);
+            ui.Add(title);
 
-            Frame frame = new Frame();
-            frame.Color = Color.Transparent;
-            frame.SetConstraints(
+            Frame worldFrame = new Frame();
+            worldFrame.Color = Color.Transparent;
+            worldFrame.SetConstraints(
                 new CenterConstraint(),
                 new PixelConstraint(180),
-                new PixelConstraint(worldcount * 80 + 20),
-                new PixelConstraint(100));
+                new PixelConstraint(worldcount * (ButtonSize + 20) + 20),
+                new PixelConstraint(ButtonSize + 40));
 
             Button modeButton = new Button();
             modeButton.Shortcut = Key.Tab;
@@ -69,21 +72,44 @@ namespace KreativerName.Scenes
                 modeButton.Color = normalMode ? Color.FromArgb(100, 255, 100) : Color.FromArgb(255, 100, 100);
                 modeText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)modeText.TextWidth), new PixelConstraint((int)modeText.TextHeight));
             };
-            worldMenu.Add(modeButton);
+            ui.Add(modeButton);
 
+            Button exitButton = new Button(40, 40, 40, 40);
+            exitButton.Shortcut = Key.Escape;
+            exitButton.OnClick += () =>
+            {
+                Scenes.LoadScene(new Transition(new MainMenu(), 10));
+            };
+            UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black);
+            exitImage.SetConstraints(new UIConstaints(10, 10, 20, 20));
+
+            exitButton.AddChild(exitImage);
+            ui.Add(exitButton);
+
+            // Worlds
             for (int i = 0; i < worldcount; i++)
             {
-                Button button = new Button(80 * i + 20, 20, 60, 60);
+                Button button = new Button((ButtonSize + 20) * i + 20, 20, ButtonSize, ButtonSize);
 
-                if (worlds[i].AllPerfect)
-                    button.Color = Color.Gold;
-                else if (worlds[i].AllCompleted)
-                    button.Color = Color.Green;
-                else
-                    button.Color = Color.White;
+                List<bool> stars = new List<bool>();
+                stars.Add(worlds[i].AllCompleted);
+                stars.Add(worlds[i].AllPerfect);
+
+                for (int j = 0; j < stars.Count; j++)
+                {
+                    UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(stars[j] ? 10 : 0, 0, 10, 10));
+                    image.SetConstraints(new UIConstaints(
+                        ButtonSize * (j + 1) / (stars.Count + 1) - 10,
+                        ButtonSize - 15, 20, 20));
+
+                    button.AddChild(image);
+                }
 
                 if (i < 10)
                     button.Shortcut = (Key)(110 + i);
+
+                if (i > 0)
+                    button.Enabled = worlds[i - 1].AllCompleted || worlds[i - 1].AllPerfect;
 
                 int world = i;
                 button.OnClick += () =>
@@ -94,26 +120,23 @@ namespace KreativerName.Scenes
                 TextBlock text = new TextBlock((i + 1).ToString(), 3);
                 text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)text.TextWidth), new PixelConstraint((int)text.TextHeight));
                 button.AddChild(text);
-                frame.AddChild(button);
+                worldFrame.AddChild(button);
             }
 
-            worldMenu.Add(frame);
+            ui.Add(worldFrame);
         }
 
         public override void Update()
-        {
-            if (Scenes.Input.KeyPress(Key.Escape))
-                Scenes.LoadScene(new Transition(new MainMenu(), 10));
-        }
+        { }
 
         public override void UpdateUI(Vector2 windowSize)
         {
-            worldMenu.Update(windowSize);
+            ui.Update(windowSize);
         }
 
         public override void Render(Vector2 windowSize)
         {
-            worldMenu.Render(windowSize);
+            ui.Render(windowSize);
         }
 
         private void NewGame(int world)
@@ -121,7 +144,7 @@ namespace KreativerName.Scenes
             Game game = new Game(world, !normalMode);
             game.input = Scenes.Input;
             game.Exit += () =>
-            { 
+            {
                 Scenes.LoadScene(new Transition(new WorldMenu(), 10));
             };
 

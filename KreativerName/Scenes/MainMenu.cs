@@ -26,40 +26,55 @@ namespace KreativerName.Scenes
             title.Color = Color.White;
             mainMenu.Add(title);
 
-            Button startButton = new Button();
-            startButton.Color = Color.FromArgb(100, 255, 100);
-            startButton.Shortcut = OpenTK.Input.Key.S;
-            startButton.SetConstraints(new CenterConstraint(), new PixelConstraint(150), new PixelConstraint(300), new PixelConstraint(60));
-            startButton.OnClick += () => { Scenes.LoadScene(new Transition(new WorldMenu(), 10)); };
+            {
+                Button button = new Button();
+                button.Color = Color.FromArgb(100, 255, 100);
+                button.Shortcut = OpenTK.Input.Key.S;
+                button.SetConstraints(new CenterConstraint(), new PixelConstraint(150), new PixelConstraint(300), new PixelConstraint(60));
+                button.OnClick += () => { Scenes.LoadScene(new Transition(new WorldMenu(), 10)); };
 
-            TextBlock startText = new TextBlock("Spiel starten", 3);
-            startText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)startText.TextWidth), new PixelConstraint((int)startText.TextHeight));
-            startButton.AddChild(startText);
+                TextBlock startText = new TextBlock("Spiel starten", 3);
+                startText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)startText.TextWidth), new PixelConstraint((int)startText.TextHeight));
+                button.AddChild(startText);
 
-            mainMenu.Add(startButton);
+                mainMenu.Add(button);
+            }
+            {
+                Button button = new Button();
+                button.Shortcut = OpenTK.Input.Key.E;
+                button.SetConstraints(new CenterConstraint(), new PixelConstraint(250), new PixelConstraint(300), new PixelConstraint(60));
+                button.OnClick += NewEditor;
 
-            Button editorButton = new Button();
-            editorButton.Shortcut = OpenTK.Input.Key.E;
-            editorButton.SetConstraints(new CenterConstraint(), new PixelConstraint(250), new PixelConstraint(300), new PixelConstraint(60));
-            editorButton.OnClick += NewEditor;
+                TextBlock editorText = new TextBlock("Editor", 3);
+                editorText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)editorText.TextWidth), new PixelConstraint((int)editorText.TextHeight));
+                button.AddChild(editorText);
 
-            TextBlock editorText = new TextBlock("Editor", 3);
-            editorText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)editorText.TextWidth), new PixelConstraint((int)editorText.TextHeight));
-            editorButton.AddChild(editorText);
+                mainMenu.Add(button);
+            }
+            {
+                Button button = new Button();
+                button.SetConstraints(new CenterConstraint(), new PixelConstraint(350), new PixelConstraint(300), new PixelConstraint(60));
+                button.OnClick += () => { Scenes.LoadScene(new Transition(new Statistics(), 10)); };
 
-            mainMenu.Add(editorButton);
+                TextBlock text = new TextBlock("Statistik", 3);
+                text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)text.TextWidth), new PixelConstraint((int)text.TextHeight));
+                button.AddChild(text);
 
-            Button exitButton = new Button();
-            exitButton.Shortcut = OpenTK.Input.Key.Escape;
-            exitButton.Color = Color.FromArgb(255, 100, 100);
-            exitButton.SetConstraints(new CenterConstraint(), new PixelConstraint(350), new PixelConstraint(300), new PixelConstraint(60));
-            exitButton.OnClick += () => { Scenes.CloseWindow(); };
+                mainMenu.Add(button);
+            }
+            {
+                Button button = new Button();
+                button.Shortcut = OpenTK.Input.Key.Escape;
+                button.Color = Color.FromArgb(255, 100, 100);
+                button.SetConstraints(new CenterConstraint(), new PixelConstraint(450), new PixelConstraint(300), new PixelConstraint(60));
+                button.OnClick += () => { Scenes.CloseWindow(); };
 
-            TextBlock exitText = new TextBlock("Schliessen", 3);
-            exitText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)exitText.TextWidth), new PixelConstraint((int)exitText.TextHeight));
-            exitButton.AddChild(exitText);
+                TextBlock exitText = new TextBlock("Schliessen", 3);
+                exitText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)exitText.TextWidth), new PixelConstraint((int)exitText.TextHeight));
+                button.AddChild(exitText);
 
-            mainMenu.Add(exitButton);
+                mainMenu.Add(button);
+            }
         }
 
         public override void Update()

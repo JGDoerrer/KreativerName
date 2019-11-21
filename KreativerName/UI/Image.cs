@@ -20,9 +20,16 @@ namespace KreativerName.UI
             this.texture = texture;
             this.sourceRect = sourceRect;
         }
+        public Image(Texture2D texture, RectangleF? sourceRect, Color color)
+        {
+            this.texture = texture;
+            this.sourceRect = sourceRect;
+            Color = color;
+        }
 
         Texture2D texture;
         RectangleF? sourceRect;
+        public Color Color { get; set; } = Color.White;
 
         public override void Update(Vector2 windowSize)
         {
@@ -35,7 +42,7 @@ namespace KreativerName.UI
             float height = sourceRect.HasValue ? sourceRect.Value.Height : texture.Height;
             Vector2 scale = new Vector2(GetWidth(windowSize) / width, GetHeight(windowSize) / height);
 
-            TextureRenderer.Draw(texture, pos, scale, Color.White, sourceRect);
+            TextureRenderer.Draw(texture, pos, scale, Color, sourceRect);
         }
     }
 }

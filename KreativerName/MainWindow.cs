@@ -15,6 +15,10 @@ namespace KreativerName
             input = new Input(this);
 
             Textures.LoadTextures(@"Resources\Textures");
+            Stats.Current = Stats.LoadFromFile("statistics");
+
+            if (Stats.Current.FirstStart.Ticks == 0)
+                Stats.Current.FirstStart = DateTime.Now;
 
             Scenes.Scenes.SetWindow(this);
             Scenes.Scenes.LoadScene(new MainMenu());
@@ -46,8 +50,6 @@ namespace KreativerName
             // Update TimePlaying
             Stats.Current.TimePlaying = Stats.Current.TimePlaying.Add(TimeSpan.FromSeconds(e.Time));
 
-            Console.WriteLine(Stats.Current.TimePlaying.TotalSeconds);
-
             input.Update();
         }
 
@@ -61,6 +63,11 @@ namespace KreativerName
             Scenes.Scenes.Render(size);
 
             SwapBuffers();
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            Stats.Current.SaveToFile("statistics");
         }
     }
 }

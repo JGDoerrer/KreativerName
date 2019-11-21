@@ -86,11 +86,13 @@
     <Compile Include="Rendering\Texture2D.cs" />
     <Compile Include="Rendering\TextureRenderer.cs" />
     <Compile Include="Rendering\Textures.cs" />
+    <Compile Include="Scenes\Statistics.cs" />
     <Compile Include="Scenes\Transition.cs" />
     <Compile Include="Scenes\MainMenu.cs" />
     <Compile Include="Scenes\Scene.cs" />
     <Compile Include="Scenes\Scenes.cs" />
     <Compile Include="Scenes\WorldMenu.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="Stats.cs" />
     <Compile Include="UI\Button.cs" />
     <Compile Include="UI\Constraints\CenterConstraint.cs" />
@@ -125,6 +127,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Content Include="Resources\Textures\Icons.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Textures\TextBox.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -1,21 +1,68 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace KreativerName
 {
-    public class Stats
+    public struct Stats : IBytes
     {
-        //TODO: Save & Load
+        public int TotalMoves;
+        public TimeSpan TimePlaying;
+        public DateTime FirstStart;
+        public int LevelsCompleted;
+        public int LevelsCompletedPerfect;
+        public int Deaths;
 
-        public int TotalMoves { get; set; }
-        public TimeSpan TimePlaying { get; set; }
-        public int LevelsCompleted { get; set; }
-        public int LevelsCompletedPerfect { get; set; }
+        public byte[] ToBytes()
+        {
+            List<byte> bytes = new List<byte>();
 
+            bytes.AddRange(TotalMoves.ToBytes());
+            bytes.AddRange(TimePlaying.ToBytes());
+            bytes.AddRange(FirstStart.ToBytes());
+            bytes.AddRange(LevelsCompleted.ToBytes());
+            bytes.AddRange(LevelsCompletedPerfect.ToBytes());
+            bytes.AddRange(Deaths.ToBytes());
 
-        public static Stats Current { get; set; } = new Stats();
+            return bytes.ToArray();
+        }
+
+        public int FromBytes(byte[] bytes, int startIndex)
+        {
+            int count = 0;
+
+            count += TotalMoves.FromBytes(bytes, startIndex + count);
+            count += TimePlaying.FromBytes(bytes, startIndex + count);
+            count += FirstStart.FromBytes(bytes, startIndex + count);
+            count += LevelsCompleted.FromBytes(bytes, startIndex + count);
+            count += LevelsCompletedPerfect.FromBytes(bytes, startIndex + count);
+            count += Deaths.FromBytes(bytes, startIndex + count);
+
+            return count;
+        }
+        
+        public static Stats Current = new Stats();
+
+        public void SaveToFile(string name)
+        {
+            string path = $@"Resources\{name}.sts";
+
+            byte[] bytes = ToBytes();
+            File.WriteAllBytes(path, bytes);
+        }
+
+        public static Stats LoadFromFile(string name)
+        {
+            Stats stats = new Stats();
+            string path = $@"Resources\{name}.sts";
+
+            if (File.Exists(path))
+            {
+                byte[] bytes = File.ReadAllBytes(path);
+                stats.FromBytes(bytes, 0);
+            }
+
+            return stats;
+        }
     }
 }

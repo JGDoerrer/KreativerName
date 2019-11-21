@@ -36,7 +36,7 @@ namespace KreativerName.UI
         public string Text { get => s; set => s = value; }//.ToUpper(); }
         public float Size { get; set; }
         public Color Color { get; set; } = Color.Black;
-        public float TextWidth => s.Sum(x => char.IsLower(x) || char.IsDigit(x) ? Size * 6 : Size * 7);
+        public float TextWidth => s.Sum(x => !char.IsUpper(x) ? Size * 6 : Size * 7);
         public float TextHeight => Size*6;
 
         public override void Update(Vector2 windowSize)

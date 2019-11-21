@@ -18,7 +18,12 @@ namespace KreativerName
             }
             set
             {
-                levels.ForEach(x => x.completed = value);
+                for (int i = 0; i < levels.Count; i++)
+                {
+                    Level level = levels[i];
+                    level.completed = value;
+                    levels[i] = level;
+                }
             }
         }
         public bool AllPerfect
@@ -29,7 +34,12 @@ namespace KreativerName
             }
             set
             {
-                levels.ForEach(x => x.perfect = value);
+                for (int i = 0; i < levels.Count; i++)
+                {
+                    Level level = levels[i];
+                    level.perfect = value;
+                    levels[i] = level;
+                }
             }
         }
 

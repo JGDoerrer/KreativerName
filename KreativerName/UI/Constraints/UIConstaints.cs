@@ -15,6 +15,13 @@ namespace KreativerName.UI.Constraints
             widthCon = width;
             heightCon = height;
         }
+        public UIConstaints(int x, int y, int width, int height)
+        {
+            xCon = new PixelConstraint(x);
+            yCon = new PixelConstraint(y);
+            widthCon = new PixelConstraint(width);
+            heightCon = new PixelConstraint(height);
+        }
 
         Constraint xCon;
         Constraint yCon;
