@@ -352,10 +352,7 @@ namespace KreativerName.Scenes
 
         private void TestLevel()
         {
-            testGame = new Game
-            {
-                input = Scenes.Input
-            };
+            testGame = new Game();
             testGame.LoadLevel(level);
             testGame.Exit += () =>
             {

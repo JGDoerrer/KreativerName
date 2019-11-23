@@ -96,6 +96,7 @@
     <Compile Include="Settings.cs" />
     <Compile Include="Stats.cs" />
     <Compile Include="UI\Button.cs" />
+    <Compile Include="UI\CheckBox.cs" />
     <Compile Include="UI\Constraints\CenterConstraint.cs" />
     <Compile Include="UI\Constraints\Constraint.cs" />
     <Compile Include="UI\Constraints\PixelConstraint.cs" />
@@ -128,6 +129,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Content Include="Resources\Textures\CheckBox.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Textures\Icons.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

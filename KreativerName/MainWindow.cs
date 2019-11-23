@@ -4,6 +4,7 @@ using KreativerName.Scenes;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
 
 namespace KreativerName
 {
@@ -15,7 +16,8 @@ namespace KreativerName
             input = new Input(this);
 
             Textures.LoadTextures(@"Resources\Textures");
-            Stats.Current = Stats.LoadFromFile("statistics");
+
+            WindowState = Settings.Current.Fullscreen ? WindowState.Fullscreen : WindowState.Normal;
 
             if (Stats.Current.FirstStart.Ticks == 0)
                 Stats.Current.FirstStart = DateTime.Now;
@@ -34,15 +36,17 @@ namespace KreativerName
         {
             Title = $"KerativerName {RenderFrequency:N1} fps, {UpdateFrequency:N1} ups";
 
-            if (input.KeyPress(OpenTK.Input.Key.F11))
+            if (input.KeyPress(Key.F11))
             {
                 if (WindowState != WindowState.Fullscreen)
                     WindowState = WindowState.Fullscreen;
                 else
                     WindowState = WindowState.Normal;
+
+                Settings.Current.Fullscreen = WindowState == WindowState.Fullscreen;
             }
 
-            if (input.KeyDown(OpenTK.Input.Key.AltLeft) && input.KeyDown(OpenTK.Input.Key.F4))
+            if (input.KeyDown(Key.AltLeft) && input.KeyDown(Key.F4))
                 Close();
 
             Vector2 size = new Vector2(Width, Height);
@@ -67,9 +71,22 @@ namespace KreativerName
             SwapBuffers();
         }
 
+        protected override void OnFileDrop(FileDropEventArgs e)
+        {
+            if (World.IsValidFile(e.FileName))
+            {
+                Game game = new Game(World.LoadFromFile(e.FileName, false));
+                game.Exit += () => 
+                {
+                    game.World.SaveToFile(e.FileName, false);
+                    Scenes.Scenes.LoadScene(new Transition(new MainMenu(), 10));
+                };
+                Scenes.Scenes.LoadScene(new Transition(game, 10));
+            }
+        }
+
         protected override void OnClosed(EventArgs e)
         {
-            Stats.Current.SaveToFile("statistics");
         }
     }
 }

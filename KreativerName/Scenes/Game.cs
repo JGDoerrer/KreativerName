@@ -22,35 +22,47 @@ namespace KreativerName.Scenes
 
         public Game()
         {
-            InitUI();
+            Init();
             LoadWorld(0);
             LoadLevel(0);
         }
         public Game(int world)
         {
-            InitUI();
+            Init();
             LoadWorld(world);
             LoadLevel(0);
         }
         public Game(int world, int level)
         {
-            InitUI();
+            Init();
             LoadWorld(world);
             LoadLevel(level);
         }
         public Game(int world, bool perfect)
         {
-            InitUI();
+            Init();
             LoadWorld(world);
             LoadLevel(0);
             this.perfect = perfect;
         }
         public Game(int world, int level, bool perfect)
         {
-            InitUI();
+            Init();
             LoadWorld(world);
             LoadLevel(level);
             this.perfect = perfect;
+        }
+        public Game(World world)
+        {
+            Init();
+            LoadWorld(world);
+            LoadLevel(0);
+        }
+
+        private void Init()
+        {
+            input = new Input(Scenes.Window);
+            InitUI();
         }
 
         #endregion
@@ -69,8 +81,8 @@ namespace KreativerName.Scenes
         Level level;
         TextBlock title;
 
-        public UI.UI ui;
-        public Input input;
+        UI.UI ui;
+        Input input;
         public HexPoint selectedHex;
         public HexPoint player;
 
@@ -231,7 +243,7 @@ namespace KreativerName.Scenes
                     level.perfect = true;
 
                 world.levels[levelIndex] = level;
-                world.SaveToFile($"{worldIndex:000}");
+                //world.SaveToFile($"{worldIndex:000}");
 
                 if (perfect)
                     Stats.Current.LevelsCompletedPerfect++;
@@ -266,7 +278,7 @@ namespace KreativerName.Scenes
 
         #region UI
 
-        public void InitUI()
+        private void InitUI()
         {
             ui = new UI.UI();
             ui.Input = new Input(Scenes.Window);
@@ -329,6 +341,15 @@ namespace KreativerName.Scenes
         {
             world = World.LoadFromFile($"{index:000}");
             worldIndex = index;
+            levelIndex = 0;
+            UpdateTitle();
+            singleLevel = false;
+        }
+
+        public void LoadWorld(World world)
+        {
+            this.world = world;
+            worldIndex = -1;
             levelIndex = 0;
             UpdateTitle();
             singleLevel = false;

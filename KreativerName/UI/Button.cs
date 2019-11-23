@@ -28,7 +28,7 @@ namespace KreativerName.UI
         public Key Shortcut { get; set; }
         public bool Enabled { get; set; } = true;
         public bool Clicked => clicked;
-        public event ButtonClickEvent OnClick;
+        public event ClickEvent OnClick;
 
 
         public override void Update(Vector2 windowSize)

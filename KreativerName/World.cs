@@ -49,15 +49,24 @@ namespace KreativerName
         {
             byte[] bytes = Compress(ToBytes());
             //Console.WriteLine($"World {name}: {bytes.Length}/{ToBytes().Length} {100f*bytes.Length/ToBytes().Length:N1}%");
-            File.WriteAllBytes($@"Resources\Worlds\{name}.wld", bytes);
+            File.WriteAllBytes($@"{BasePath}{name}.wld", bytes);
         }
+
+        public void SaveToFile(string path, bool useBasePath)
+        {
+            byte[] bytes = Compress(ToBytes());
+            //Console.WriteLine($"World {name}: {bytes.Length}/{ToBytes().Length} {100f*bytes.Length/ToBytes().Length:N1}%");
+            File.WriteAllBytes($@"{(useBasePath ? BasePath : "")}{path}", bytes);
+        }
+
+        public static string BasePath => @"Resources\Worlds\";
 
         public static World LoadFromFile(string name)
         {
             World world = new World();
-            string path = $@"Resources\Worlds\{name}.wld";
+            string path = $@"{BasePath}{name}.wld";
 
-            if (File.Exists(path))
+            if (IsValidFile(path))
             {
                 byte[] bytes = File.ReadAllBytes(path);
                 bytes = Decompress(bytes);
@@ -65,6 +74,26 @@ namespace KreativerName
             }
 
             return world;
+        }
+
+        public static World LoadFromFile(string path, bool useBasePath)
+        {
+            World world = new World();
+            path = $"{(useBasePath ? BasePath : "")}{path}";
+
+            if (IsValidFile(path))
+            {
+                byte[] bytes = File.ReadAllBytes(path);
+                bytes = Decompress(bytes);
+                world.FromBytes(bytes, 0);
+            }
+
+            return world;
+        }
+
+        public static bool IsValidFile(string path)
+        {
+            return File.Exists(path) && Path.GetExtension(path) == ".wld";
         }
 
         static byte[] Compress(byte[] data)

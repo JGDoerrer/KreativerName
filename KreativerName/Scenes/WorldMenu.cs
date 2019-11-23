@@ -142,7 +142,6 @@ namespace KreativerName.Scenes
         private void NewGame(int world)
         {
             Game game = new Game(world, !normalMode);
-            game.input = Scenes.Input;
             game.Exit += () =>
             {
                 Scenes.LoadScene(new Transition(new WorldMenu(), 10));

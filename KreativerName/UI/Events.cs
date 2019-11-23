@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace KreativerName.UI
 {
-    public delegate void ButtonClickEvent();
+    public delegate void ClickEvent();
 }
