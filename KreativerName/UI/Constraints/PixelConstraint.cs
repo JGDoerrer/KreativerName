@@ -10,23 +10,23 @@ namespace KreativerName.UI.Constraints
     {
         public PixelConstraint(int value)
         {
-            this.value = value;
+            Value = value;
             relation = RelativeTo.Parent;
         }
 
         public PixelConstraint(int value, RelativeTo relation)
         {
-            this.value = value;
+            Value = value;
             this.relation = relation;
         }
         public PixelConstraint(int value, RelativeTo relation, Direction direction)
         {
-            this.value = value;
+            Value = value;
             this.relation = relation;
             this.direction = direction;
         }
 
-        int value;
+        public int Value;
 
         public override float GetX(Vector2 windowSize, UIElement element)
         {
@@ -47,10 +47,10 @@ namespace KreativerName.UI.Constraints
             {
                 default:
                 case Direction.Left:
-                    x += value;
+                    x += Value;
                     break;
                 case Direction.Right:
-                    x += width - value- element.GetWidth(windowSize);
+                    x += width - Value- element.GetWidth(windowSize);
                     break;
             }
 
@@ -76,10 +76,10 @@ namespace KreativerName.UI.Constraints
             {
                 default:
                 case Direction.Top:
-                    y += value;
+                    y += Value;
                     break;
                 case Direction.Bottom:
-                    y += height - value - element.GetHeight(windowSize);
+                    y += height - Value - element.GetHeight(windowSize);
                     break;
             }
 
@@ -88,12 +88,12 @@ namespace KreativerName.UI.Constraints
 
         public override float GetWidth(Vector2 windowSize, UIElement element)
         {
-            return value;
+            return Value;
         }
 
         public override float GetHeight(Vector2 windowSize, UIElement element)
         {
-            return value;
+            return Value;
         }
     }
 }

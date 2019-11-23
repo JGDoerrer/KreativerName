@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using KreativerName.Rendering;
 using KreativerName.UI;
 using KreativerName.UI.Constraints;
 using OpenTK;
@@ -40,33 +41,62 @@ namespace KreativerName.Scenes
                 mainMenu.Add(button);
             }
             {
-                Button button = new Button();
-                button.Shortcut = OpenTK.Input.Key.E;
-                button.SetConstraints(new CenterConstraint(), new PixelConstraint(250), new PixelConstraint(300), new PixelConstraint(60));
-                button.OnClick += NewEditor;
+                Frame frame = new Frame();
+                frame.Color = Color.Transparent;
+                frame.SetConstraints(new CenterConstraint(), new PixelConstraint(250), new PixelConstraint(300), new PixelConstraint(60));
 
-                TextBlock editorText = new TextBlock("Editor", 3);
-                editorText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)editorText.TextWidth), new PixelConstraint((int)editorText.TextHeight));
-                button.AddChild(editorText);
+                {
+                    Button button = new Button(0, 0, 60, 60);
+                    button.OnClick += () => { Scenes.LoadScene(new Transition(new Statistics(), 10)); };
 
-                mainMenu.Add(button);
-            }
-            {
-                Button button = new Button();
-                button.SetConstraints(new CenterConstraint(), new PixelConstraint(350), new PixelConstraint(300), new PixelConstraint(60));
-                button.OnClick += () => { Scenes.LoadScene(new Transition(new Statistics(), 10)); };
+                    UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(10, 10, 10, 10));
+                    image.Color = Color.Black;
+                    image.SetConstraints(new UIConstaints(10, 10, 40, 40));
 
-                TextBlock text = new TextBlock("Statistik", 3);
-                text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)text.TextWidth), new PixelConstraint((int)text.TextHeight));
-                button.AddChild(text);
+                    button.AddChild(image);
+                    frame.AddChild(button);
+                }
+                {
+                    Button button = new Button(80, 0, 60, 60);
+                    button.OnClick += () => { Scenes.LoadScene(new Transition(new Settings(), 10)); };
 
-                mainMenu.Add(button);
+                    UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(20, 10, 10, 10));
+                    image.Color = Color.Black;
+                    image.SetConstraints(new UIConstaints(10, 10, 40, 40));
+
+                    button.AddChild(image);
+                    frame.AddChild(button);
+                }
+                {
+                    Button button = new Button(160,0,60,60);
+                    button.Shortcut = OpenTK.Input.Key.E;
+                    button.OnClick += NewEditor;
+
+                    UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(30, 10, 10, 10));
+                    image.Color = Color.Black;
+                    image.SetConstraints(new UIConstaints(10, 10, 40, 40));
+
+                    button.AddChild(image);
+                    frame.AddChild(button);
+                }
+                {
+                    Button button = new Button(240,0,60,60);
+                    button.OnClick += () => { };
+
+                    UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(40, 10, 10, 10));
+                    image.Color = Color.Black;
+                    image.SetConstraints(new UIConstaints(10, 10, 40, 40));
+
+                    button.AddChild(image);
+                    frame.AddChild(button);
+                }
+                mainMenu.Add(frame);
             }
             {
                 Button button = new Button();
                 button.Shortcut = OpenTK.Input.Key.Escape;
                 button.Color = Color.FromArgb(255, 100, 100);
-                button.SetConstraints(new CenterConstraint(), new PixelConstraint(450), new PixelConstraint(300), new PixelConstraint(60));
+                button.SetConstraints(new CenterConstraint(), new PixelConstraint(350), new PixelConstraint(300), new PixelConstraint(60));
                 button.OnClick += () => { Scenes.CloseWindow(); };
 
                 TextBlock exitText = new TextBlock("Schliessen", 3);

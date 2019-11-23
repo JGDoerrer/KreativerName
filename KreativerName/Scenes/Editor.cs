@@ -460,6 +460,8 @@ namespace KreativerName.Scenes
                     Grid[i, j] = new Hex(i, j, HexType.Normal);
                 }
             }
+
+            renderer.Grid = Grid;
         }
 
         #endregion

@@ -55,6 +55,11 @@ namespace KreativerName.Scenes
 
         #endregion
 
+        ~Game()
+        {
+            ui.Dispose();
+        }
+
         bool singleLevel = false;
         bool perfect = false;
         int levelIndex = 0;
@@ -189,7 +194,7 @@ namespace KreativerName.Scenes
                 Stats.Current.TotalMoves++;
 
             HexFlags flags = Grid[player].Value.Flags;
-            
+
             if (flags.HasFlag(HexFlags.Deadly))
             {
                 if (!singleLevel)

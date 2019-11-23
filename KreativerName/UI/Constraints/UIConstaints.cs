@@ -23,10 +23,10 @@ namespace KreativerName.UI.Constraints
             heightCon = new PixelConstraint(height);
         }
 
-        Constraint xCon;
-        Constraint yCon;
-        Constraint widthCon;
-        Constraint heightCon;
+        public Constraint xCon;
+        public Constraint yCon;
+        public Constraint widthCon;
+        public Constraint heightCon;
 
         public float GetX(Vector2 windowSize, UIElement element) => xCon.GetX(windowSize, element);
         public float GetY(Vector2 windowSize, UIElement element) => yCon.GetY(windowSize, element);

@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using KreativerName.UI.Constraints;
 using OpenTK;
 using OpenTK.Input;
 
 namespace KreativerName.UI
 {
-    public abstract class UIElement
+    public abstract class UIElement : IDisposable
     {
         public UIElement()
         {
@@ -25,6 +26,7 @@ namespace KreativerName.UI
         internal bool HasParent => parent != null;
         public List<UIElement> Children => children;
         public bool Visible { get; set; } = true;
+        public UIConstaints Constaints => constaints;
 
         public abstract void Update(Vector2 windowSize);
 
@@ -49,7 +51,7 @@ namespace KreativerName.UI
 
         public void SetConstraints(UIConstaints constaints) => this.constaints = constaints;
         public void SetConstraints(Constraint x, Constraint y, Constraint width, Constraint height) => constaints = new UIConstaints(x, y, width, height);
-
+        
         public void AddChild(UIElement element)
         {
             element.parent = this;
@@ -95,7 +97,41 @@ namespace KreativerName.UI
         protected bool MouseMiddleDown => ui.Input.MouseDown(MouseButton.Middle);
         protected bool MouseMiddleUp => !MouseMiddleDown;
         protected bool MouseMiddleClick => ui.Input.MousePress(MouseButton.Middle);
+        
+        #endregion
 
+        #region IDisposable Support
+        private bool disposedValue = false; // Dient zur Erkennung redundanter Aufrufe.
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                }
+
+                parent = null;
+                ui = null;
+                children = null;
+
+                disposedValue = true;
+            }
+        }
+
+        ~UIElement()
+        {
+            // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
+            Dispose(false);
+        }
+
+        // Dieser Code wird hinzugefügt, um das Dispose-Muster richtig zu implementieren.
+        public void Dispose()
+        {
+            // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
         #endregion
     }
 }

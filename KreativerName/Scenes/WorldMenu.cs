@@ -20,7 +20,7 @@ namespace KreativerName.Scenes
 
         bool normalMode = true;
 
-        public void InitUI()
+        private void InitUI()
         {
             List<World> worlds = new List<World>();
             int worldcount = 0;

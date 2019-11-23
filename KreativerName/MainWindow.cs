@@ -32,6 +32,8 @@ namespace KreativerName
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+            Title = $"KerativerName {RenderFrequency:N1} fps, {UpdateFrequency:N1} ups";
+
             if (input.KeyPress(OpenTK.Input.Key.F11))
             {
                 if (WindowState != WindowState.Fullscreen)
@@ -49,7 +51,7 @@ namespace KreativerName
 
             // Update TimePlaying
             Stats.Current.TimePlaying = Stats.Current.TimePlaying.Add(TimeSpan.FromSeconds(e.Time));
-
+            
             input.Update();
         }
 

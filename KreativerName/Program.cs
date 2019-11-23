@@ -15,7 +15,7 @@ namespace KreativerName
         [STAThread]
         static void Main()
         {
-            new MainWindow().Run();
+            new MainWindow().Run(60);
         }
     }
 }

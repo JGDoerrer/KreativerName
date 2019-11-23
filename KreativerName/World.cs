@@ -109,19 +109,19 @@ namespace KreativerName
 
             int total = 0;
 
-                int count = BitConverter.ToInt32(bytes, startIndex);
-                startIndex += 4;
-                total += 4;
+            int count = BitConverter.ToInt32(bytes, startIndex);
+            startIndex += 4;
+            total += 4;
 
-                for (int i = 0; i < count; i++)
-                {
-                    Level level = new Level();
-                    int length = level.FromBytes(bytes, startIndex);
-                    levels.Add(level);
+            for (int i = 0; i < count; i++)
+            {
+                Level level = new Level();
+                int length = level.FromBytes(bytes, startIndex);
+                levels.Add(level);
 
-                    startIndex += length;
-                    total += length;
-                }
+                startIndex += length;
+                total += length;
+            }
 
             return total;
         }

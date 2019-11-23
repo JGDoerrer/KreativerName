@@ -49,12 +49,16 @@ namespace KreativerName.Scenes
         {
             duration--;
 
+            //next?.Update();
+
             if (duration == 0)
                 Scenes.LoadScene(next);
         }
 
         public override void UpdateUI(Vector2 windowSize)
-        { }
+        {
+            //next?.UpdateUI(windowSize);
+        }
 
         private float QuadraticInOut(float t)
            => t * t / (2 * t * t - 2 * t + 1);
