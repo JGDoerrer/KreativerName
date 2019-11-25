@@ -90,8 +90,8 @@ namespace KreativerName.Scenes
 
         const float size = 16 * 2;
         HexLayout layout = new HexLayout(
-            new Matrix2((float)Math.Sqrt(3), (float)Math.Sqrt(3) / 2f, 0, 3f / 2f),
-            new Matrix2((float)Math.Sqrt(3) / 3f, -1f / 3f, 0, 2f / 3f),
+            new Matrix2(sqrt3, sqrt3 / 2f, 0, 3f / 2f),
+            new Matrix2(sqrt3 / 3f, -1f / 3f, 0, 2f / 3f),
             new Vector2(0, 0),
             size, 0.5f);
         GridRenderer renderer = new GridRenderer();
@@ -162,7 +162,11 @@ namespace KreativerName.Scenes
             }
 
             renderer.Grid = Grid;
-            renderer.Render(player, selectedHex, GetPlayerMoves());
+            
+            if (Settings.Current.ShowMoves)
+                renderer.Render(player, selectedHex, GetPlayerMoves());
+            else
+                renderer.Render(player, selectedHex, null);
 
             ui.Render(new Vector2(width, height));
             ui.Render(windowSize);
@@ -260,7 +264,6 @@ namespace KreativerName.Scenes
                     worldIndex++;
                     levelIndex = 0;
                     Exit?.Invoke();
-                    //LoadWorld();
                 }
 
                 UpdateTitle();

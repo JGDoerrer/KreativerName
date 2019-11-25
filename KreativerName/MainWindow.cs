@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using KreativerName.Rendering;
 using KreativerName.Scenes;
 using OpenTK;
@@ -18,12 +19,12 @@ namespace KreativerName
             Textures.LoadTextures(@"Resources\Textures");
 
             WindowState = Settings.Current.Fullscreen ? WindowState.Fullscreen : WindowState.Normal;
-
+            
             if (Stats.Current.FirstStart.Ticks == 0)
                 Stats.Current.FirstStart = DateTime.Now;
 
             Scenes.Scenes.SetWindow(this);
-            Scenes.Scenes.LoadScene(new MainMenu());
+            Scenes.Scenes.LoadScene(new Tetris());
 
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
@@ -31,10 +32,13 @@ namespace KreativerName
         }
 
         Input input;
+        static Random random = new Random();
+        public int FrameCounter;
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            Title = $"KerativerName {RenderFrequency:N1} fps, {UpdateFrequency:N1} ups";
+            if (FrameCounter % 10 == 0)
+                Title = $"KerativerName {RenderFrequency:N1} fps, {UpdateFrequency:N1} ups";
 
             if (input.KeyPress(Key.F11))
             {
@@ -50,20 +54,29 @@ namespace KreativerName
                 Close();
 
             Vector2 size = new Vector2(Width, Height);
-
+            
             Scenes.Scenes.Update(size);
 
             // Update TimePlaying
             Stats.Current.TimePlaying = Stats.Current.TimePlaying.Add(TimeSpan.FromSeconds(e.Time));
-            
+
             input.Update();
+
+            FrameCounter++;
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             GL.Viewport(0, 0, Width, Height);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.ClearColor(Color.Black);
+            
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
+            GL.Ortho(0, Width, Height, 0, -1, 1);
 
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
             Vector2 size = new Vector2(Width, Height);
 
             Scenes.Scenes.Render(size);
@@ -76,7 +89,7 @@ namespace KreativerName
             if (World.IsValidFile(e.FileName))
             {
                 Game game = new Game(World.LoadFromFile(e.FileName, false));
-                game.Exit += () => 
+                game.Exit += () =>
                 {
                     game.World.SaveToFile(e.FileName, false);
                     Scenes.Scenes.LoadScene(new Transition(new MainMenu(), 10));
@@ -84,7 +97,7 @@ namespace KreativerName
                 Scenes.Scenes.LoadScene(new Transition(game, 10));
             }
         }
-
+        
         protected override void OnClosed(EventArgs e)
         {
         }

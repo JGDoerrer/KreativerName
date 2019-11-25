@@ -69,7 +69,7 @@ namespace KreativerName.Scenes
                 Settings.Current.Fullscreen = b;
                 Scenes.Window.WindowState = b ? WindowState.Fullscreen : WindowState.Normal;
             });
-            AddCheckBox("Zuege anzeigen", 150, Settings.Current.ShowMoves, (b) =>
+            AddCheckBox("Züge anzeigen", 150, Settings.Current.ShowMoves, (b) =>
             {
                 Settings.Current.ShowMoves = b;
             });

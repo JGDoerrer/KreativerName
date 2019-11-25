@@ -29,7 +29,7 @@ namespace KreativerName
                 }
             }
 
-            new MainWindow().Run(60);
+            new MainWindow().Run();
 
             Stats.Current.SaveToFile("statistics");
             Settings.Current.SaveToFile("settings");

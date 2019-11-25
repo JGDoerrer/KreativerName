@@ -24,6 +24,8 @@ namespace KreativerName.Grid
         internal float size;
         internal float startAngle;
 
+        const float sqrt3 = 1.732050807568877293527446341505872366942805253810380628055f;
+
         public Vector2 HexToPixel(HexPoint h)
         {
             float x = (f.M11 * h.X + f.M12 * h.Y) * size;
@@ -61,7 +63,66 @@ namespace KreativerName.Grid
         public Vector2 HexCorner(HexPoint h, int i)
         {
             double angle = 2 * Math.PI * (startAngle + i) / 6;
-            return HexToPixel(h) + new Vector2((float)Math.Cos(angle) * size, (float)Math.Sin(angle) * size);
+            float cos;
+            float sin;
+
+            switch ((startAngle + i) % 6)
+            {
+                case 0f:
+                    sin = 0;
+                    cos = 1;
+                    break;
+                case 0.5f:
+                    sin = 0.5f;
+                    cos = sqrt3 / 2f;
+                    break;
+                case 1f:
+                    sin = sqrt3 / 2f;
+                    cos = 0.5f;
+                    break;
+                case 1.5f:
+                    sin = 1;
+                    cos = 0;
+                    break;
+                case 2f:
+                    sin = sqrt3 / 2f;
+                    cos = -0.5f;
+                    break;
+                case 2.5f:
+                    sin = 0.5f;
+                    cos = -sqrt3 / 2f;
+                    break;
+                case 3f:
+                    sin = 0;
+                    cos = -1;
+                    break;
+                case 3.5f:
+                    sin = -0.5f;
+                    cos = -sqrt3 / 2f;
+                    break;
+                case 4f:
+                    sin = -sqrt3 / 2f;
+                    cos = -0.5f;
+                    break;
+                case 4.5f:
+                    sin = -1;
+                    cos = 0;
+                    break;
+                case 5f:
+                    sin = -sqrt3 / 2f;
+                    cos = 0.5f;
+                    break;
+                case 5.5f:
+                    sin = -0.5f;
+                    cos = sqrt3 / 2f;
+                    break;
+                default:
+                    cos = (float)Math.Cos(angle);
+                    sin = (float)Math.Sin(angle);
+                    break;
+            }
+
+            return HexToPixel(h) + new Vector2(cos * size, sin * size);
         }
     }
 }

@@ -34,6 +34,7 @@ namespace KreativerName.UI
         bool mouseDown;
 
         public event ClickEvent OnClick;
+        public event CheckEvent OnChecked;
 
         public override void Update(Vector2 windowSize)
         {
@@ -45,6 +46,7 @@ namespace KreativerName.UI
                 Checked = !Checked;
 
                 OnClick?.Invoke();
+                OnChecked?.Invoke(Checked);
             }
 
             clicked = b;

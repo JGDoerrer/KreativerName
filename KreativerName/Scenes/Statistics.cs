@@ -14,7 +14,7 @@ namespace KreativerName.Scenes
         {
             InitUI();
 
-            background = new List<Number>();
+            background = new List<Numbers>();
         }
 
         ~Statistics()
@@ -57,40 +57,40 @@ namespace KreativerName.Scenes
             button.AddChild(exitImage);
             ui.Add(button);
 
-            AddText("Zuege: ", Stats.Current.TotalMoves.ToString(), 100);
+            AddText("Züge: ", Stats.Current.TotalMoves.ToString(), 100);
             AddText("Level geschafft: ", Stats.Current.LevelsCompleted.ToString(), 130);
             AddText("Level perfekt geschafft: ", Stats.Current.LevelsCompletedPerfect.ToString(), 160);
-            AddText("Erstes Spiel: ", Stats.Current.FirstStart.ToString("dd.mm.yy"), 190);
+            AddText("Erstes Spiel: ", Stats.Current.FirstStart.ToString("dd.MM.yy"), 190);
             AddText("Spielzeit: ", Stats.Current.TimePlaying.ToString("hh\\:mm\\:ss"), 220);
             AddText("Tode: ", Stats.Current.Deaths.ToString(), 250);
         }
 
         UI.UI ui;
-        List<Number> background;
+        List<Numbers> background;
         static Random random = new Random();
 
         public override void Update()
         {
-            if (random.NextDouble() < .12)
+            if (random.NextDouble() < .09)
             {
-                background.Add(new Number()
+                int length = random.Next(3, 10);
+                List<int> values = new List<int>();
+                for (int i = 0; i < length; i++)
+                {
+                    values.Add(random.Next(0, 10));
+                }
+
+                background.Add(new Numbers()
                 {
                     Color = Color.FromArgb(50, 50, 50),
-                    Value = random.Next(0,10),
+                    Value = values,
                     Position = new Vector2((float)random.NextDouble(), 0)
                 });
             }
 
             for (int i = background.Count - 1; i >= 0; i--)
             {
-                Number item = background[i];
-
-                item.Position.Y += 0.0015f;
-
-                if (random.NextDouble() < .01)
-                    item.Value = (item.Value + 1) % 10;
-
-                background[i] = item;
+                Numbers item = background[i];
 
                 if (item.Position.Y > 1.1)
                 {
@@ -101,26 +101,54 @@ namespace KreativerName.Scenes
 
         public override void UpdateUI(Vector2 windowSize)
         {
+            for (int i = background.Count - 1; i >= 0; i--)
+            {
+                Numbers number = background[i];
+
+                Vector2 position = number.Position * windowSize - new Vector2(0, 12);
+                number.Position.Y += 0.0015f;
+                Vector2 newPosition = number.Position * windowSize - new Vector2(0, 12);
+
+                float prevY = (float)Math.Round(position.Y / 16) * 16;
+                float newY = (float)Math.Round((newPosition.Y) / 16) * 16;
+
+                if (prevY != newY)
+                {
+                    for (int j = number.Value.Count - 1; j >= 1; j--)
+                    {
+                        number.Value[j] = number.Value[j - 1];
+
+                        if (j == 1)
+                            number.Value[0] = random.Next(0, 10);
+                    }
+                }
+                background[i] = number;
+            }
+
             ui.Update(windowSize);
         }
 
         public override void Render(Vector2 windowSize)
         {
-            foreach (Number number in background)
+            foreach (Numbers number in background)
             {
                 Vector2 position = number.Position * windowSize - new Vector2(0, 12);
                 position.X = (float)Math.Round(position.X / 16) * 16;
-                // position.Y = (float)Math.Round(position.Y / 16) * 16;
+                position.Y = (float)Math.Round(position.Y / 16) * 16;
 
-                TextureRenderer.Draw(Textures.Get("Font"), position, Vector2.One * 2, number.Color, new RectangleF(((number.Value + 16) % 16) * 6, ((number.Value + 16) / 16) * 6, 6, 6));
+                for (int i = 0; i < number.Value.Count; i++)
+                {
+                    int value = number.Value[i];
+                    TextureRenderer.Draw(Textures.Get("Font"), position + new Vector2(0, -i * 16), Vector2.One * 2, number.Color, new RectangleF(((value + 16) % 16) * 6, ((value + 16) / 16) * 6, 6, 6));
+                }
             }
 
             ui.Render(windowSize);
         }
 
-        struct Number
+        struct Numbers
         {
-            public int Value;
+            public List<int> Value;
             public Vector2 Position;
             public Color Color;
         }

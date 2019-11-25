@@ -144,6 +144,7 @@ namespace KreativerName.Scenes
             Game game = new Game(world, !normalMode);
             game.Exit += () =>
             {
+                game.World.SaveToFile($"{world:000}");
                 Scenes.LoadScene(new Transition(new WorldMenu(), 10));
             };
 

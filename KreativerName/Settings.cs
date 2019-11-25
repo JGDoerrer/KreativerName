@@ -13,6 +13,12 @@ namespace KreativerName
         public bool Fullscreen;
 
         public static Settings Current;
+        public static Settings New => new Settings()
+        {
+            ShowMoves = true,
+            Fullscreen = false,
+        };
+
 
         public int FromBytes(byte[] bytes, int startIndex)
         {
@@ -44,7 +50,7 @@ namespace KreativerName
 
         public static Settings LoadFromFile(string name)
         {
-            Settings settings = new Settings();
+            Settings settings = New;
             string path = $@"Resources\{name}.set";
 
             if (File.Exists(path))

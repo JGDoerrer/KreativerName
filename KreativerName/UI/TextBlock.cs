@@ -51,7 +51,7 @@ namespace KreativerName.UI
 
             foreach (char c in Text)
             {
-                if (c <= 126 && c >= 32 && pos.X < GetX(windowSize) + GetWidth(windowSize))
+                if (c <= 255 && c >= 32 && pos.X < GetX(windowSize) + GetWidth(windowSize))
                 {
                     if (!char.IsUpper(c))
                         pos.X -= 1 * Size;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace KreativerName.Grid
@@ -40,7 +41,7 @@ namespace KreativerName.Grid
             {
                 HexFlags flags = 0;
 
-                foreach (HexType value in Enum.GetValues(typeof(HexType)))
+                foreach (HexType value in HexTypes)
                 {
                     if (Type.HasFlag(value))
                         switch (value)
@@ -67,7 +68,7 @@ namespace KreativerName.Grid
             get
             {
                 List<HexType> types = new List<HexType>();
-                foreach (HexType type in Enum.GetValues(typeof(HexType)))
+                foreach (HexType type in HexTypes)
                 {
                     if (Type.HasFlag(type))
                         types.Add(type);
@@ -75,6 +76,18 @@ namespace KreativerName.Grid
                 return types;
             }
         }
+
+        static List<HexType> hexTypes;
+        public static List<HexType> HexTypes
+        {
+            get
+            {
+                if (hexTypes == null)
+                    hexTypes = ((HexType[])Enum.GetValues(typeof(HexType))).ToList();
+                return hexTypes;
+            }
+        }
+
 
         public byte[] ToBytes()
         {

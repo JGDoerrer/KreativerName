@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using KreativerName.Grid;
 using KreativerName.Rendering;
 using KreativerName.UI;
 using KreativerName.UI.Constraints;
@@ -15,6 +16,15 @@ namespace KreativerName.Scenes
 
         UI.UI mainMenu;
 
+        const float sqrt3 = 1.732050807568877293527446341505872366942805253810380628055f;
+        const float size = 16 * 2;
+
+        HexLayout layout = new HexLayout(
+            new Matrix2(sqrt3, sqrt3 / 2f, 0, 3f / 2f),
+            new Matrix2(sqrt3 / 3f, -1f / 3f, 0, 2f / 3f),
+            new Vector2(0, 0),
+            size, 0.5f);
+
         private void InitUI()
         {
             mainMenu = new UI.UI();
@@ -27,23 +37,27 @@ namespace KreativerName.Scenes
             title.Color = Color.White;
             mainMenu.Add(title);
 
+            Frame mainFrame = new Frame();
+            mainFrame.Color = Color.Transparent;
+            mainFrame.SetConstraints(new CenterConstraint(), new CenterConstraint(-50), new PixelConstraint(300), new PixelConstraint(200));
+
             {
                 Button button = new Button();
                 button.Color = Color.FromArgb(100, 255, 100);
                 button.Shortcut = OpenTK.Input.Key.S;
-                button.SetConstraints(new CenterConstraint(), new PixelConstraint(150), new PixelConstraint(300), new PixelConstraint(60));
+                button.SetConstraints(new CenterConstraint(), new PixelConstraint(0), new PixelConstraint(300), new PixelConstraint(60));
                 button.OnClick += () => { Scenes.LoadScene(new Transition(new WorldMenu(), 10)); };
 
                 TextBlock startText = new TextBlock("Spiel starten", 3);
                 startText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)startText.TextWidth), new PixelConstraint((int)startText.TextHeight));
                 button.AddChild(startText);
 
-                mainMenu.Add(button);
+                mainFrame.AddChild(button);
             }
             {
                 Frame frame = new Frame();
                 frame.Color = Color.Transparent;
-                frame.SetConstraints(new CenterConstraint(), new PixelConstraint(250), new PixelConstraint(300), new PixelConstraint(60));
+                frame.SetConstraints(new CenterConstraint(), new PixelConstraint(100), new PixelConstraint(300), new PixelConstraint(60));
 
                 {
                     Button button = new Button(0, 0, 60, 60);
@@ -58,7 +72,7 @@ namespace KreativerName.Scenes
                 }
                 {
                     Button button = new Button(80, 0, 60, 60);
-                    button.OnClick += () => { Scenes.LoadScene(new Transition(new Settings(), 10)); };
+                    button.OnClick += () => { Scenes.LoadScene(new Transition(new SettingsScene(), 10)); };
 
                     UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(20, 10, 10, 10));
                     image.Color = Color.Black;
@@ -68,7 +82,7 @@ namespace KreativerName.Scenes
                     frame.AddChild(button);
                 }
                 {
-                    Button button = new Button(160,0,60,60);
+                    Button button = new Button(160, 0, 60, 60);
                     button.Shortcut = OpenTK.Input.Key.E;
                     button.OnClick += NewEditor;
 
@@ -80,7 +94,7 @@ namespace KreativerName.Scenes
                     frame.AddChild(button);
                 }
                 {
-                    Button button = new Button(240,0,60,60);
+                    Button button = new Button(240, 0, 60, 60);
                     button.OnClick += () => { };
 
                     UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(40, 10, 10, 10));
@@ -90,21 +104,23 @@ namespace KreativerName.Scenes
                     button.AddChild(image);
                     frame.AddChild(button);
                 }
-                mainMenu.Add(frame);
+                mainFrame.AddChild(frame);
             }
             {
                 Button button = new Button();
                 button.Shortcut = OpenTK.Input.Key.Escape;
                 button.Color = Color.FromArgb(255, 100, 100);
-                button.SetConstraints(new CenterConstraint(), new PixelConstraint(350), new PixelConstraint(300), new PixelConstraint(60));
+                button.SetConstraints(new CenterConstraint(), new PixelConstraint(200), new PixelConstraint(300), new PixelConstraint(60));
                 button.OnClick += () => { Scenes.CloseWindow(); };
 
                 TextBlock exitText = new TextBlock("Schliessen", 3);
                 exitText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)exitText.TextWidth), new PixelConstraint((int)exitText.TextHeight));
                 button.AddChild(exitText);
 
-                mainMenu.Add(button);
+                mainFrame.AddChild(button);
             }
+
+            mainMenu.Add(mainFrame);
         }
 
         public override void Update()
@@ -114,10 +130,28 @@ namespace KreativerName.Scenes
         public override void UpdateUI(Vector2 windowSize)
         {
             mainMenu.Update(windowSize);
+
+            layout.origin += new Vector2(-.5f, .5f);
+
+            while (layout.origin.X <= -layout.size * sqrt3)
+                layout.origin.X += layout.size * sqrt3;
+            while (layout.origin.Y >= layout.size * 3f)
+            layout.origin.Y -= layout.size * 3f;
         }
 
         public override void Render(Vector2 windowSize)
         {
+            float w = windowSize.X / (layout.size * sqrt3) + 4;
+            float h = windowSize.Y / (layout.size * 1.5f) + 8;
+
+            for (int y = -4; y < h - 4; y++)
+            {
+                for (int x = -(y / 2); x < w - (y + 1) / 2; x++)
+                {
+                    TextureRenderer.DrawHex(Textures.Get("Hex"), new HexPoint(x, y), layout, Vector2.One, Color.FromArgb(20, 20, 20), new RectangleF(0, 0, 32, 32));
+                }
+            }
+
             mainMenu.Render(windowSize);
         }
 
