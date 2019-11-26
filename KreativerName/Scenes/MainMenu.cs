@@ -95,7 +95,7 @@ namespace KreativerName.Scenes
                 }
                 {
                     Button button = new Button(240, 0, 60, 60);
-                    button.OnClick += () => { };
+                    button.OnClick += () => { Scenes.LoadScene(new Transition(new Tetris(5), 10)); };
 
                     UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(40, 10, 10, 10));
                     image.Color = Color.Black;

@@ -24,7 +24,7 @@ namespace KreativerName
                 Stats.Current.FirstStart = DateTime.Now;
 
             Scenes.Scenes.SetWindow(this);
-            Scenes.Scenes.LoadScene(new Tetris());
+            Scenes.Scenes.LoadScene(new MainMenu());
 
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);

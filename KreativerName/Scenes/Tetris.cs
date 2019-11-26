@@ -9,9 +9,11 @@ namespace KreativerName.Scenes
 {
     public class Tetris : Scene
     {
-        public Tetris()
+        public Tetris(int level = 0)
         {
             NextPiece();
+            NextPiece();
+            SetLevel(level);
         }
 
         const int Width = 10;
@@ -20,193 +22,59 @@ namespace KreativerName.Scenes
 
         static Random random = new Random();
 
-        readonly byte[,,] pieces =
+        readonly int[,] pieces =
         {
-            {
-                {
-                    0,0,0,0,
-                    0,0,0,0,
-                    1,1,1,1,
-                    0,0,0,0,
-                },
-                {
-                    0,0,1,0,
-                    0,0,1,0,
-                    0,0,1,0,
-                    0,0,1,0,
-                },
-                {
-                    0,0,0,0,
-                    0,0,0,0,
-                    1,1,1,1,
-                    0,0,0,0,
-                },
-                {
-                    0,0,1,0,
-                    0,0,1,0,
-                    0,0,1,0,
-                    0,0,1,0,
-                },
+            { // Line
+                0b0000111100000000,
+                0b0100010001000100,                
+                0b0000111100000000,
+                0b0100010001000100,
+                
             },
-            {
-                {
-                    0,0,0,0,
-                    0,1,1,0,
-                    0,1,1,0,
-                    0,0,0,0,
-                },
-                {
-                    0,0,0,0,
-                    0,1,1,0,
-                    0,1,1,0,
-                    0,0,0,0,
-                },
-                {
-                    0,0,0,0,
-                    0,1,1,0,
-                    0,1,1,0,
-                    0,0,0,0,
-                },
-                {
-                    0,0,0,0,
-                    0,1,1,0,
-                    0,1,1,0,
-                    0,0,0,0,
-                },
+            { // O        
+                0b0000011001100000,                
+                0b0000011001100000,                
+                0b0000011001100000,                
+                0b0000011001100000,
             },
-            {
-                {
-                    0,0,0,0,
-                    0,0,0,0,
-                    1,1,1,0,
-                    0,0,1,0,
-                },
-                {
-                    0,0,0,0,
-                    0,1,0,0,
-                    0,1,0,0,
-                    1,1,0,0,
-                },
-                {
-                    0,0,0,0,
-                    1,0,0,0,
-                    1,1,1,0,
-                    0,0,0,0,
-                },
-                {
-                    0,0,0,0,
-                    0,1,1,0,
-                    0,1,0,0,
-                    0,1,0,0,
-                },
+            { // j         
+                0b0000000011100010,
+                0b0000010001001100,
+                0b0000100011100000,                
+                0b0000011001000100,
             },
-            {
-                {
-                    0,0,0,0,
-                    0,0,0,0,
-                    1,1,1,0,
-                    1,0,0,0,
-                },
-                {
-                    0,0,0,0,
-                    1,1,0,0,
-                    0,1,0,0,
-                    0,1,0,0,
-                },
-                {
-                    0,0,0,0,
-                    0,0,1,0,
-                    1,1,1,0,
-                    0,0,0,0,
-                },
-                {
-                    0,0,0,0,
-                    0,1,0,0,
-                    0,1,0,0,
-                    0,1,1,0,
-                },
+            { // l               
+                0b0000000011101000,
+                0b0000110001000100,
+                0b0000001011100000,                
+                0b0000010001000110,
             },
-            {
-                {
-                    0,0,0,0,
-                    0,0,0,0,
-                    0,1,1,0,
-                    1,1,0,0,
-                },
-                {
-                    0,0,0,0,
-                    0,1,0,0,
-                    0,1,1,0,
-                    0,0,1,0,
-                },
-                {
-                    0,0,0,0,
-                    0,0,0,0,
-                    0,1,1,0,
-                    1,1,0,0,
-                },
-                {
-                    0,0,0,0,
-                    0,1,0,0,
-                    0,1,1,0,
-                    0,0,1,0,
-                },
+            { // s
+                
+                0b0000000001101100,                
+                0b0000010001100010,
+                0b0000000001101100,                
+                0b0000010001100010,
             },
-            {
-                {
-                    0,0,0,0,
-                    0,0,0,0,
-                    1,1,0,0,
-                    0,1,1,0,
-                },
-                {
-                    0,0,0,0,
-                    0,0,1,0,
-                    0,1,1,0,
-                    0,1,0,0,
-                },
-                {
-                    0,0,0,0,
-                    0,0,0,0,
-                    1,1,0,0,
-                    0,1,1,0,
-                },
-                {
-                    0,0,0,0,
-                    0,0,1,0,
-                    0,1,1,0,
-                    0,1,0,0,
-                },
+            { // z
+                
+                0b0000000011000110,
+                0b0000001001100100,
+                0b0000000011000110,                
+                0b0000001001100100,
             },
-            {
-                {
-                    0,0,0,0,
-                    0,0,0,0,
-                    1,1,1,0,
-                    0,1,0,0,
-                },
-                {
-                    0,0,0,0,
-                    0,1,0,0,
-                    1,1,0,0,
-                    0,1,0,0,
-                },
-                {
-                    0,0,0,0,
-                    0,1,0,0,
-                    1,1,1,0,
-                    0,0,0,0,
-                },
-                {
-                    0,0,0,0,
-                    0,1,0,0,
-                    0,1,1,0,
-                    0,1,0,0,
-                },
+            { // t
+                
+                0b0000000011100100,                
+                0b0000010011000100,                
+                0b0000010011100000,                
+                0b0000010001100100,
             }
         };
 
         byte[,] field = new byte[Width, Height];
+
+        bool gameOver = false;
 
         int currentX, currentY;
         int currentRot;
@@ -221,14 +89,20 @@ namespace KreativerName.Scenes
         int score = 0;
         int linesCleared = 0;
 
+        int left = 0;
+        int right = 0;
+        int down = 0;
+
         public override void Update()
         {
-            currentX += Scenes.Input.KeyPress(Key.Right) && Fits(currentPiece, currentRot, currentX + 1, currentY) ? 1 : 0;
-            currentX -= Scenes.Input.KeyPress(Key.Left) && Fits(currentPiece, currentRot, currentX - 1, currentY) ? 1 : 0;
-            currentY += Scenes.Input.KeyDown(Key.Down) && Fits(currentPiece, currentRot, currentX, currentY + 1) ? 1 : 0;
+            if (gameOver)
+            {
+                if (Scenes.Input.KeyPress(Key.Escape))
+                    Scenes.LoadScene(new Transition(new MainMenu(), 10));
+                return;
+            }
 
-            currentRot += Scenes.Input.KeyPress(Key.X) && Fits(currentPiece, currentRot + 1, currentX, currentY) ? 1 : 0;
-            currentRot += Scenes.Input.KeyPress(Key.Z) && Fits(currentPiece, currentRot + 3, currentX, currentY) ? 3 : 0;
+            HandleInput();
 
             if (frameCount % speed == 0)
             {
@@ -242,7 +116,7 @@ namespace KreativerName.Scenes
                     for (int px = 0; px < 4; px++)
                         for (int py = 0; py < 4; py++)
                         {
-                            if (pieces[currentPiece, currentRot % 4, py * 4 + px] > 0)
+                            if ((pieces[currentPiece, currentRot % 4] & (1 << (py * 4 + px))) > 0)
                                 field[currentX + px, currentY + py] = (byte)(currentPiece + 1);
                         }
 
@@ -262,39 +136,12 @@ namespace KreativerName.Scenes
                     if (lines > 0 && linesCleared % 10 == 0)
                         level++;
 
-                    switch (level)
-                    {
-                        case 0: speed = 48; break;
-                        case 1: speed = 43; break;
-                        case 2: speed = 38; break;
-                        case 3: speed = 33; break;
-                        case 4: speed = 28; break;
-                        case 5: speed = 23; break;
-                        case 6: speed = 18; break;
-                        case 7: speed = 13; break;
-                        case 8: speed = 8; break;
-                        case 9: speed = 6; break;
-                        case 10: speed = 5; break;
-                        case 11: speed = 5; break;
-                        case 12: speed = 5; break;
-                        case 13: speed = 4; break;
-                        case 14: speed = 4; break;
-                        case 15: speed = 4; break;
-                        case 16: speed = 3; break;
-                        case 17: speed = 3; break;
-                        case 18: speed = 3; break;
-                        default:
-                            if (level >= 19 && level <= 28)
-                                speed = 2;
-                            else
-                                speed = 1;
-                            break;
-                    }
+                    SetLevel(level);
 
                     NextPiece();
 
                     if (!Fits(currentPiece, currentRot, currentX, currentY))
-                        Scenes.LoadScene(new Transition(new MainMenu(), 10));
+                        gameOver = true;
                 }
             }
 
@@ -321,7 +168,7 @@ namespace KreativerName.Scenes
             // current piece
             for (int x = 0; x < 4; x++)
                 for (int y = 0; y < 4; y++)
-                    if (pieces[currentPiece, currentRot % 4, y * 4 + x] > 0)
+                    if ((pieces[currentPiece, currentRot % 4] & (1 << (y * 4 + x))) > 0)
                     {
                         Vector2 position = new Vector2(currentX + x, currentY + y) * 8 * Scale;
                         position += windowSize / 2;
@@ -333,7 +180,7 @@ namespace KreativerName.Scenes
             // next piece
             for (int x = 0; x < 4; x++)
                 for (int y = 0; y < 4; y++)
-                    if (pieces[nextPiece, 0, y * 4 + x] > 0)
+                    if ((pieces[nextPiece, 0] & (1 << (y * 4 + x))) > 0)
                     {
                         Vector2 position = new Vector2(x, y) * 8 * Scale + new Vector2(50, 50);
 
@@ -366,6 +213,91 @@ namespace KreativerName.Scenes
             }
         }
 
+        public void SetLevel(int level)
+        {
+            switch (level)
+            {
+                case 0: speed = 48; break;
+                case 1: speed = 43; break;
+                case 2: speed = 38; break;
+                case 3: speed = 33; break;
+                case 4: speed = 28; break;
+                case 5: speed = 23; break;
+                case 6: speed = 18; break;
+                case 7: speed = 13; break;
+                case 8: speed = 8; break;
+                case 9: speed = 6; break;
+                case 10: speed = 5; break;
+                case 11: speed = 5; break;
+                case 12: speed = 5; break;
+                case 13: speed = 4; break;
+                case 14: speed = 4; break;
+                case 15: speed = 4; break;
+                case 16: speed = 3; break;
+                case 17: speed = 3; break;
+                case 18: speed = 3; break;
+                default:
+                    if (level >= 19 && level <= 28)
+                        speed = 2;
+                    else
+                        speed = 1;
+                    break;
+            }
+
+            this.level = level;
+        }
+
+        private void HandleInput()
+        {
+            if (Scenes.Input.KeyDown(Key.Down))
+            {
+                if (down == 0)
+                {
+                    if (Fits(currentPiece, currentRot, currentX, currentY + 1))
+                        currentY += 1;
+                    down = 2;
+                }
+                down--;
+            }
+
+            if (Scenes.Input.KeyPress(Key.Right))
+            {
+                if (Fits(currentPiece, currentRot, currentX + 1, currentY))
+                    currentX += 1;
+                right = 20;
+            }
+            if (Scenes.Input.KeyDown(Key.Right))
+            {
+                if (right == 0)
+                {
+                    if (Fits(currentPiece, currentRot, currentX + 1, currentY))
+                        currentX += 1;
+                    right = 2;
+                }
+                right--;
+            }
+
+            if (Scenes.Input.KeyPress(Key.Left))
+            {
+                if (Fits(currentPiece, currentRot, currentX - 1, currentY))
+                    currentX -= 1;
+                left = 20;
+            }
+            if (Scenes.Input.KeyDown(Key.Left))
+            {
+                if (left == 0)
+                {
+                    if (Fits(currentPiece, currentRot, currentX - 1, currentY))
+                        currentX -= 1;
+                    left = 2;
+                }
+                left--;
+            }
+
+            currentRot += Scenes.Input.KeyPress(Key.X) && Fits(currentPiece, currentRot + 1, currentX, currentY) ? 1 : 0;
+            currentRot += Scenes.Input.KeyPress(Key.Z) && Fits(currentPiece, currentRot + 3, currentX, currentY) ? 3 : 0;
+        }
+
         private void NextPiece()
         {
             currentX = Width / 2 - 2;
@@ -383,7 +315,7 @@ namespace KreativerName.Scenes
                 {
                     if ((x + px < 0 || x + px >= Width ||
                         y + py < 0 || y + py >= Height ||
-                        field[x + px, y + py] > 0) && pieces[piece, rotation % 4, py * 4 + px] > 0)
+                        field[x + px, y + py] > 0) && (pieces[piece, rotation % 4] & (1 << (py * 4 + px))) > 0)
                     {
                         return false;
                     }
