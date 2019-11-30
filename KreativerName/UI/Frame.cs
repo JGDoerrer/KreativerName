@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
+﻿using System.Drawing;
 using KreativerName.UI.Constraints;
 using OpenTK;
-using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
 namespace KreativerName.UI
@@ -54,7 +50,7 @@ namespace KreativerName.UI
 
             GL.End();
             GL.Enable(EnableCap.Texture2D);
-            
+
             RenderChildren(windowSize);
         }
     }

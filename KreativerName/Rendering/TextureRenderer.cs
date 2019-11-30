@@ -9,7 +9,7 @@ namespace KreativerName.Rendering
     class TextureRenderer
     {
         const float sqrt3 = 1.732050807568877293527446341505872366942805253810380628055f;
-        
+
         public static void Draw(Texture2D texture, Vector2 position, Vector2 scale, Color color, RectangleF? sourceRect)
             => Draw(texture, position, scale, color, sourceRect, new Vector2(0, 0));
 
@@ -59,7 +59,7 @@ namespace KreativerName.Rendering
             for (int i = 0; i < 6; i++)
             {
                 double angle = 2 * Math.PI * (layout.startAngle + i) / 6;
-                vertecies[i] = new Vector2((float)Math.Cos(angle) + sqrt3 / 2, (float)Math.Sin(angle) + 1)/ 2;
+                vertecies[i] = new Vector2((float)Math.Cos(angle) + sqrt3 / 2, (float)Math.Sin(angle) + 1) / 2;
             }
 
             GL.BindTexture(TextureTarget.Texture2D, texture.ID);

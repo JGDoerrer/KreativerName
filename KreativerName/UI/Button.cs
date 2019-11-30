@@ -42,8 +42,8 @@ namespace KreativerName.UI
             }
 
             clicked = b;
-            
-            mouseDown = MouseLeftDown;           
+
+            mouseDown = MouseLeftDown;
         }
 
         public override void Render(Vector2 windowSize)
@@ -92,8 +92,8 @@ namespace KreativerName.UI
             // bottom
             TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + h - a * scale), new Vector2(w / (a * scale) - 2, 1) * scale, color, new RectangleF(offset + a, a * 2, a, a));
             // center
-            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + a * scale), new Vector2(w / (a * scale) - 2 , h / (a * scale) - 2) * scale, color, new RectangleF(offset + a, a, a, a));
-            
+            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + a * scale), new Vector2(w / (a * scale) - 2, h / (a * scale) - 2) * scale, color, new RectangleF(offset + a, a, a, a));
+
             RenderChildren(windowSize);
         }
     }

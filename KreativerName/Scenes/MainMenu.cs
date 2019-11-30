@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using KreativerName.Grid;
 using KreativerName.Rendering;
 using KreativerName.UI;
@@ -12,18 +13,27 @@ namespace KreativerName.Scenes
         public MainMenu()
         {
             InitUI();
+
+            if (random.NextDouble() < 0.001f)
+                backScroll = new Vector2(.5f, .5f);
+            else
+                backScroll = new Vector2(-.5f, .5f);
         }
 
         UI.UI mainMenu;
 
         const float sqrt3 = 1.732050807568877293527446341505872366942805253810380628055f;
         const float size = 16 * 2;
+        static Random random = new Random();
 
         HexLayout layout = new HexLayout(
             new Matrix2(sqrt3, sqrt3 / 2f, 0, 3f / 2f),
             new Matrix2(sqrt3 / 3f, -1f / 3f, 0, 2f / 3f),
             new Vector2(0, 0),
             size, 0.5f);
+
+        Vector2 backScroll;
+
 
         private void InitUI()
         {
@@ -95,7 +105,7 @@ namespace KreativerName.Scenes
                 }
                 {
                     Button button = new Button(240, 0, 60, 60);
-                    button.OnClick += () => { Scenes.LoadScene(new Transition(new Tetris(5), 10)); };
+                    button.OnClick += () => { };
 
                     UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(40, 10, 10, 10));
                     image.Color = Color.Black;
@@ -131,22 +141,26 @@ namespace KreativerName.Scenes
         {
             mainMenu.Update(windowSize);
 
-            layout.origin += new Vector2(-.5f, .5f);
+            layout.origin += backScroll;
 
-            while (layout.origin.X <= -layout.size * sqrt3)
+            if (layout.origin.X <= -layout.size * sqrt3)
                 layout.origin.X += layout.size * sqrt3;
-            while (layout.origin.Y >= layout.size * 3f)
-            layout.origin.Y -= layout.size * 3f;
+            if (layout.origin.X >= layout.size * sqrt3)
+                layout.origin.X -= layout.size * sqrt3;
+            if (layout.origin.Y >= layout.size * 3f)
+                layout.origin.Y -= layout.size * 3f;
+            if (layout.origin.Y <= -layout.size * 3f)
+                layout.origin.Y += layout.size * 3f;
         }
 
         public override void Render(Vector2 windowSize)
         {
-            float w = windowSize.X / (layout.size * sqrt3) + 4;
+            float w = windowSize.X / (layout.size * sqrt3) + 8;
             float h = windowSize.Y / (layout.size * 1.5f) + 8;
 
             for (int y = -4; y < h - 4; y++)
             {
-                for (int x = -(y / 2); x < w - (y + 1) / 2; x++)
+                for (int x = -(y / 2) - 4; x < w - (y + 1) / 2; x++)
                 {
                     TextureRenderer.DrawHex(Textures.Get("Hex"), new HexPoint(x, y), layout, Vector2.One, Color.FromArgb(20, 20, 20), new RectangleF(0, 0, 32, 32));
                 }

@@ -1,8 +1,4 @@
-﻿using KreativerName.UI;
-using OpenTK;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using OpenTK;
 
 namespace KreativerName.UI.Constraints
 {

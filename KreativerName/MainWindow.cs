@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using KreativerName.Grid;
 using KreativerName.Rendering;
 using KreativerName.Scenes;
 using OpenTK;
@@ -19,7 +20,7 @@ namespace KreativerName
             Textures.LoadTextures(@"Resources\Textures");
 
             WindowState = Settings.Current.Fullscreen ? WindowState.Fullscreen : WindowState.Normal;
-            
+
             if (Stats.Current.FirstStart.Ticks == 0)
                 Stats.Current.FirstStart = DateTime.Now;
 
@@ -54,7 +55,7 @@ namespace KreativerName
                 Close();
 
             Vector2 size = new Vector2(Width, Height);
-            
+
             Scenes.Scenes.Update(size);
 
             // Update TimePlaying
@@ -70,7 +71,7 @@ namespace KreativerName
             GL.Viewport(0, 0, Width, Height);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearColor(Color.Black);
-            
+
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
             GL.Ortho(0, Width, Height, 0, -1, 1);
@@ -96,10 +97,6 @@ namespace KreativerName
                 };
                 Scenes.Scenes.LoadScene(new Transition(game, 10));
             }
-        }
-        
-        protected override void OnClosed(EventArgs e)
-        {
         }
     }
 }

@@ -57,12 +57,20 @@ namespace KreativerName.Scenes
             button.AddChild(exitImage);
             ui.Add(button);
 
-            AddText("Züge: ", Stats.Current.TotalMoves.ToString(), 100);
-            AddText("Level geschafft: ", Stats.Current.LevelsCompleted.ToString(), 130);
-            AddText("Level perfekt geschafft: ", Stats.Current.LevelsCompletedPerfect.ToString(), 160);
-            AddText("Erstes Spiel: ", Stats.Current.FirstStart.ToString("dd.MM.yy"), 190);
-            AddText("Spielzeit: ", Stats.Current.TimePlaying.ToString("hh\\:mm\\:ss"), 220);
-            AddText("Tode: ", Stats.Current.Deaths.ToString(), 250);
+            int y = 100;
+
+            AddText("Züge: ", Stats.Current.TotalMoves.ToString(), y += 30);
+            AddText("Level geschafft: ", Stats.Current.LevelsCompleted.ToString(), y += 30);
+            AddText("Level perfekt geschafft: ", Stats.Current.LevelsCompletedPerfect.ToString(), y += 30);
+            AddText("Erstes Spiel: ", Stats.Current.FirstStart.ToString("dd.MM.yy"), y += 30);
+            AddText("Spielzeit: ", Stats.Current.TimePlaying.ToString("hh\\:mm\\:ss"), y += 30);
+            AddText("Tode: ", Stats.Current.Deaths.ToString(), y += 30);
+            if (Stats.Current.TetrisHighScore > 0)
+            {
+                AddText("Tetris höchste Punktzahl: ", Stats.Current.TetrisHighScore.ToString(), y += 30);
+                AddText("Tetris meiste Linien: ", Stats.Current.TetrisMostLines.ToString(), y += 30);
+                AddText("Tetris höchstes Level: ", Stats.Current.TetrisHighLevel.ToString(), y += 30);
+            }
         }
 
         UI.UI ui;
@@ -83,7 +91,7 @@ namespace KreativerName.Scenes
                 background.Add(new Numbers()
                 {
                     Color = Color.FromArgb(50, 50, 50),
-                    Value = values,
+                    Values = values,
                     Position = new Vector2((float)random.NextDouble(), 0)
                 });
             }
@@ -101,6 +109,28 @@ namespace KreativerName.Scenes
 
         public override void UpdateUI(Vector2 windowSize)
         {
+            if (Scenes.Input.MouseDown(OpenTK.Input.MouseButton.Left))
+            {
+                foreach (Numbers number in background)
+                {
+                    for (int i = 0; i < number.Values.Count; i++)
+                    {
+                        Vector2 mousePos = Scenes.Input.MousePosition;
+                        Vector2 position = number.Position * windowSize - new Vector2(0, 12);
+
+                        position.X = (float)Math.Round(position.X / 16) * 16;
+                        position.Y = (float)Math.Round((position.Y / 16) - i) * 16;
+
+                        if (mousePos.X >= position.X &&
+                            mousePos.X <= position.X + 16 &&
+                            mousePos.Y >= position.Y &&
+                            mousePos.Y <= position.Y + 16 &&
+                            number.Values[i] == 1)
+                            Scenes.LoadScene(new Transition(new Tetris(), 10));
+                    }
+                }
+            }
+
             for (int i = background.Count - 1; i >= 0; i--)
             {
                 Numbers number = background[i];
@@ -114,12 +144,12 @@ namespace KreativerName.Scenes
 
                 if (prevY != newY)
                 {
-                    for (int j = number.Value.Count - 1; j >= 1; j--)
+                    for (int j = number.Values.Count - 1; j >= 1; j--)
                     {
-                        number.Value[j] = number.Value[j - 1];
+                        number.Values[j] = number.Values[j - 1];
 
                         if (j == 1)
-                            number.Value[0] = random.Next(0, 10);
+                            number.Values[0] = random.Next(0, 10);
                     }
                 }
                 background[i] = number;
@@ -136,9 +166,9 @@ namespace KreativerName.Scenes
                 position.X = (float)Math.Round(position.X / 16) * 16;
                 position.Y = (float)Math.Round(position.Y / 16) * 16;
 
-                for (int i = 0; i < number.Value.Count; i++)
+                for (int i = 0; i < number.Values.Count; i++)
                 {
-                    int value = number.Value[i];
+                    int value = number.Values[i];
                     TextureRenderer.Draw(Textures.Get("Font"), position + new Vector2(0, -i * 16), Vector2.One * 2, number.Color, new RectangleF(((value + 16) % 16) * 6, ((value + 16) / 16) * 6, 6, 6));
                 }
             }
@@ -148,7 +178,7 @@ namespace KreativerName.Scenes
 
         struct Numbers
         {
-            public List<int> Value;
+            public List<int> Values;
             public Vector2 Position;
             public Color Color;
         }

@@ -1,9 +1,5 @@
-﻿using OpenTK;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using OpenTK;
 
 namespace KreativerName.Grid
 {
@@ -33,7 +29,7 @@ namespace KreativerName.Grid
             get => y;
             set => y = value;
         }
-        
+
         public override string ToString()
         {
             return $"({x}, {y})";
@@ -72,7 +68,7 @@ namespace KreativerName.Grid
                 left.y / right
                 );
         }
-        
+
         public static HexPoint operator *(int left, HexPoint right)
         {
             return new HexPoint(

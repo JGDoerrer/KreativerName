@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KreativerName
 {
@@ -39,7 +35,7 @@ namespace KreativerName
 
             return bytes.ToArray();
         }
-               
+
         public void SaveToFile(string name)
         {
             string path = $@"Resources\{name}.set";

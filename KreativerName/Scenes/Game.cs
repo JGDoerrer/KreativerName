@@ -162,7 +162,7 @@ namespace KreativerName.Scenes
             }
 
             renderer.Grid = Grid;
-            
+
             if (Settings.Current.ShowMoves)
                 renderer.Render(player, selectedHex, GetPlayerMoves());
             else

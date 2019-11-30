@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using KreativerName.Rendering;
 using KreativerName.UI.Constraints;
 using OpenTK;
@@ -37,7 +33,7 @@ namespace KreativerName.UI
         public float Size { get; set; }
         public Color Color { get; set; } = Color.Black;
         public float TextWidth => s.Sum(x => !char.IsUpper(x) ? Size * 6 : Size * 7);
-        public float TextHeight => Size*6;
+        public float TextHeight => Size * 6;
 
         public override void Update(Vector2 windowSize)
         {

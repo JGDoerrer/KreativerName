@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using OpenTK.Input;
 
 namespace KreativerName.UI
 {
@@ -69,7 +68,7 @@ namespace KreativerName.UI
                         element.Dispose();
                     }
                 }
-                
+
                 Elements = null;
 
                 disposedValue = true;

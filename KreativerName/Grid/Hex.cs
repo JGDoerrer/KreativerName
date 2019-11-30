@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace KreativerName.Grid
 {
@@ -32,6 +32,7 @@ namespace KreativerName.Grid
 
         public HexPoint Position;
         public HexType Type;
+
         public int X => Position.X;
         public int Y => Position.Y;
 
@@ -111,7 +112,7 @@ namespace KreativerName.Grid
     }
 
     [Flags]
-    public enum HexType : int
+    public enum HexType : int // 32 bits
     {
         Normal = 1 << 0,
         Solid = 1 << 1,

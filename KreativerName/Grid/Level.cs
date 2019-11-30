@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using KreativerName.Grid;
 
-namespace KreativerName
+namespace KreativerName.Grid
 {
     public struct Level : IBytes
     {

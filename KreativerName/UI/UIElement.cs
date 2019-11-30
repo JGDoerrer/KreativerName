@@ -51,7 +51,7 @@ namespace KreativerName.UI
 
         public void SetConstraints(UIConstaints constaints) => this.constaints = constaints;
         public void SetConstraints(Constraint x, Constraint y, Constraint width, Constraint height) => constaints = new UIConstaints(x, y, width, height);
-        
+
         public void AddChild(UIElement element)
         {
             element.parent = this;
@@ -97,7 +97,7 @@ namespace KreativerName.UI
         protected bool MouseMiddleDown => ui.Input.MouseDown(MouseButton.Middle);
         protected bool MouseMiddleUp => !MouseMiddleDown;
         protected bool MouseMiddleClick => ui.Input.MousePress(MouseButton.Middle);
-        
+
         #endregion
 
         #region IDisposable Support

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using KreativerName.UI;
-using OpenTK;
+﻿using OpenTK;
 
 namespace KreativerName.UI.Constraints
 {
@@ -37,7 +33,7 @@ namespace KreativerName.UI.Constraints
                 x = element.parent.GetX(windowSize);
                 width = element.parent.GetWidth(windowSize);
             }
-            else 
+            else
             {
                 x = 0;
                 width = windowSize.X;
@@ -50,7 +46,7 @@ namespace KreativerName.UI.Constraints
                     x += Value;
                     break;
                 case Direction.Right:
-                    x += width - Value- element.GetWidth(windowSize);
+                    x += width - Value - element.GetWidth(windowSize);
                     break;
             }
 

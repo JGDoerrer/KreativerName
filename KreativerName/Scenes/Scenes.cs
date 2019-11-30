@@ -28,7 +28,7 @@ namespace KreativerName.Scenes
         }
 
         public static void SetWindow(GameWindow window)
-        {            
+        {
             Window = window;
             Input = new Input(window);
         }

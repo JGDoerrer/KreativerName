@@ -1,7 +1,4 @@
 ﻿using OpenTK;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace KreativerName.UI.Constraints
 {
@@ -33,7 +30,7 @@ namespace KreativerName.UI.Constraints
         public float GetWidth(Vector2 windowSize, UIElement element) => widthCon.GetWidth(windowSize, element);
         public float GetHeight(Vector2 windowSize, UIElement element) => heightCon.GetHeight(windowSize, element);
 
-        public static UIConstaints FullWindow => 
+        public static UIConstaints FullWindow =>
             new UIConstaints(new PixelConstraint(0), new PixelConstraint(0), new RelativeConstraint(1, RelativeTo.Window), new RelativeConstraint(1, RelativeTo.Window));
     }
 

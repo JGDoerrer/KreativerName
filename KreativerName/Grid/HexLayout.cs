@@ -1,9 +1,5 @@
-﻿using OpenTK;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using OpenTK;
 
 namespace KreativerName.Grid
 {
@@ -37,7 +33,7 @@ namespace KreativerName.Grid
         {
             v -= origin;
             v /= size;
-            
+
             float x = b.M11 * v.X + b.M12 * v.Y;
             float y = b.M21 * v.X + b.M22 * v.Y;
             float z = -x - y;

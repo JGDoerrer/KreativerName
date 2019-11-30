@@ -12,6 +12,9 @@ namespace KreativerName
         public int LevelsCompleted;
         public int LevelsCompletedPerfect;
         public int Deaths;
+        public int TetrisMostLines;
+        public int TetrisHighScore;
+        public int TetrisHighLevel;
 
         public byte[] ToBytes()
         {
@@ -23,6 +26,9 @@ namespace KreativerName
             bytes.AddRange(LevelsCompleted.ToBytes());
             bytes.AddRange(LevelsCompletedPerfect.ToBytes());
             bytes.AddRange(Deaths.ToBytes());
+            bytes.AddRange(TetrisMostLines.ToBytes());
+            bytes.AddRange(TetrisHighScore.ToBytes());
+            bytes.AddRange(TetrisHighLevel.ToBytes());
 
             return bytes.ToArray();
         }
@@ -37,10 +43,13 @@ namespace KreativerName
             count += LevelsCompleted.FromBytes(bytes, startIndex + count);
             count += LevelsCompletedPerfect.FromBytes(bytes, startIndex + count);
             count += Deaths.FromBytes(bytes, startIndex + count);
+            count += TetrisMostLines.FromBytes(bytes, startIndex + count);
+            count += TetrisHighScore.FromBytes(bytes, startIndex + count);
+            count += TetrisHighLevel.FromBytes(bytes, startIndex + count);
 
             return count;
         }
-        
+
         public static Stats Current = new Stats();
 
         public void SaveToFile(string name)

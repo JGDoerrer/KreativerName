@@ -1,12 +1,8 @@
-﻿using OpenTK.Graphics.OpenGL;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using OpenTK.Graphics.OpenGL;
 
 namespace KreativerName.Rendering
 {
@@ -29,7 +25,7 @@ namespace KreativerName.Rendering
                 textures.Add(Path.GetFileNameWithoutExtension(file), LoadTexture(file));
             }
         }
-               
+
         static Texture2D LoadTexture(string path)
         {
             if (!File.Exists(path))

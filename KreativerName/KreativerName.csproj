@@ -57,7 +57,9 @@
       <HintPath>..\packages\OpenTK.3.1.0\lib\net20\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -69,6 +71,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Grid\HexData.cs" />
     <Compile Include="Rendering\GridRenderer.cs" />
     <Compile Include="Scenes\Editor.cs" />
     <Compile Include="Extentions.cs" />
@@ -76,7 +79,7 @@
     <Compile Include="Grid\HexGrid.cs" />
     <Compile Include="Grid\HexLayout.cs" />
     <Compile Include="IBytes.cs" />
-    <Compile Include="Level.cs" />
+    <Compile Include="Grid\Level.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="MainWindow.cs" />
     <Compile Include="Grid\HexPoint.cs" />
@@ -109,7 +112,7 @@
     <Compile Include="UI\TextBlock.cs" />
     <Compile Include="UI\UI.cs" />
     <Compile Include="UI\UIElement.cs" />
-    <Compile Include="World.cs" />
+    <Compile Include="Grid\World.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
