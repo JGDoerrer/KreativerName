@@ -18,20 +18,20 @@ namespace KreativerName.Grid
             Type = 0;
         }
 
-        public Hex(int x, int y, HexType type)
+        public Hex(int x, int y, int type)
         {
             Position = new HexPoint(x, y);
             Type = type;
         }
 
-        public Hex(HexPoint pos, HexType type)
+        public Hex(HexPoint pos, int type)
         {
             Position = pos;
             Type = type;
         }
 
         public HexPoint Position;
-        public HexType Type;
+        public int Type;
 
         public int X => Position.X;
         public int Y => Position.Y;
@@ -42,53 +42,29 @@ namespace KreativerName.Grid
             {
                 HexFlags flags = 0;
 
-                foreach (HexType value in HexTypes)
+                foreach (HexData hexData in Types)
                 {
-                    if (Type.HasFlag(value))
-                        switch (value)
-                        {
-                            case HexType.Normal: break;
-                            case HexType.Solid: flags |= HexFlags.Solid; break;
-                            case HexType.Deadly: flags |= HexFlags.Deadly; break;
-                            case HexType.Goal: flags |= HexFlags.Goal; break;
-                            case HexType.DeadlyTwoStateOn: flags |= HexFlags.Deadly; break;
-                            case HexType.DeadlyTwoStateOff: break;
-                            case HexType.DeadlyOneUseOn: flags |= HexFlags.Deadly; break;
-                            case HexType.DeadlyOneUseOff: break;
-
-                            default: break;
-                        };
+                    flags |= hexData.Flags;
                 }
 
                 return flags;
             }
         }
 
-        public List<HexType> Types
+        public List<HexData> Types
         {
             get
             {
-                List<HexType> types = new List<HexType>();
-                foreach (HexType type in HexTypes)
+                List<HexData> types = new List<HexData>();
+                foreach (HexData data in HexData.Data)
                 {
-                    if (Type.HasFlag(type))
-                        types.Add(type);
+                    if ((Type & (1 << data.ID)) > 0)
+                        types.Add(data);
                 }
-                return types;
+
+                return types.OrderBy(x => x.ID).ToList();
             }
         }
-
-        static List<HexType> hexTypes;
-        public static List<HexType> HexTypes
-        {
-            get
-            {
-                if (hexTypes == null)
-                    hexTypes = ((HexType[])Enum.GetValues(typeof(HexType))).ToList();
-                return hexTypes;
-            }
-        }
-
 
         public byte[] ToBytes()
         {
@@ -101,7 +77,7 @@ namespace KreativerName.Grid
         public int FromBytes(byte[] bytes, int startIndex)
         {
             Position.FromBytes(bytes, startIndex);
-            Type = (HexType)BitConverter.ToInt32(bytes, startIndex + 8);
+            Type = BitConverter.ToInt32(bytes, startIndex + 8);
             return 12;
         }
 
@@ -109,26 +85,5 @@ namespace KreativerName.Grid
         {
             return $"{Position}; {Type}";
         }
-    }
-
-    [Flags]
-    public enum HexType : int // 32 bits
-    {
-        Normal = 1 << 0,
-        Solid = 1 << 1,
-        Deadly = 1 << 2,
-        Goal = 1 << 3,
-        DeadlyTwoStateOn = 1 << 4,
-        DeadlyTwoStateOff = 1 << 5,
-        DeadlyOneUseOn = 1 << 6,
-        DeadlyOneUseOff = 1 << 7,
-    }
-
-    [Flags]
-    public enum HexFlags
-    {
-        Solid = 1 << 0,
-        Deadly = 1 << 1,
-        Goal = 1 << 2,
     }
 }

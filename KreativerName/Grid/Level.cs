@@ -29,23 +29,57 @@ namespace KreativerName.Grid
             {
                 Hex hex = grid.Values.ElementAt(i);
 
-                // Two states
-                if (hex.Type.HasFlag(HexType.DeadlyTwoStateOn))
+                foreach (HexData type in hex.Types)
                 {
-                    hex.Type &= ~HexType.DeadlyTwoStateOn; // delete state
-                    hex.Type |= HexType.DeadlyTwoStateOff;
-                }
-                else if (hex.Type.HasFlag(HexType.DeadlyTwoStateOff))
-                {
-                    hex.Type &= ~HexType.DeadlyTwoStateOff;
-                    hex.Type |= HexType.DeadlyTwoStateOn;
+                    foreach (HexChange change in type.Changes)
+                    {
+                        switch (change.Condition)
+                        {
+                            case HexCondition.Move:
+                                if ((hex.Type & (1 << type.ID)) > 0)
+                                {
+                                    hex.Type &= ~(1 << type.ID);
+                                    hex.Type |= 1 << change.ChangeTo;
+                                }
+                                break;
+                            case HexCondition.PlayerEnter:
+                                if (hex.Position == player && (hex.Type & (1 << type.ID)) > 0)
+                                {
+                                    hex.Type &= ~(1 << type.ID);
+                                    hex.Type |= 1 << change.ChangeTo;
+                                }
+                                break;
+                            case HexCondition.PlayerLeave:
+                                if (hex.Position == lastPlayer && (hex.Type & (1 << type.ID)) > 0)
+                                {
+                                    hex.Type &= ~(1 << type.ID);
+                                    hex.Type |= 1 << change.ChangeTo;
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                 }
 
-                if (hex.Type.HasFlag(HexType.DeadlyOneUseOff) && hex.Position == lastPlayer)
-                {
-                    hex.Type &= ~HexType.DeadlyOneUseOff;
-                    hex.Type |= HexType.DeadlyOneUseOn;
-                }
+
+                // Two states
+                //if (hex.Type.HasFlag(HexType.DeadlyTwoStateOn))
+                //{
+                //    hex.Type &= ~HexType.DeadlyTwoStateOn; // delete state
+                //    hex.Type |= HexType.DeadlyTwoStateOff;
+                //}
+                //else if (hex.Type.HasFlag(HexType.DeadlyTwoStateOff))
+                //{
+                //    hex.Type &= ~HexType.DeadlyTwoStateOff;
+                //    hex.Type |= HexType.DeadlyTwoStateOn;
+                //}
+
+                //if (hex.Type.HasFlag(HexType.DeadlyOneUseOff) && hex.Position == lastPlayer)
+                //{
+                //    hex.Type &= ~HexType.DeadlyOneUseOff;
+                //    hex.Type |= HexType.DeadlyOneUseOn;
+                //}
 
                 grid[hex.Position] = hex;
             }

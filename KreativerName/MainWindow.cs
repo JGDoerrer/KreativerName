@@ -39,7 +39,7 @@ namespace KreativerName
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             if (FrameCounter % 10 == 0)
-                Title = $"KerativerName {RenderFrequency:N1} fps, {UpdateFrequency:N1} ups";
+                Title = $"KreativerName {RenderFrequency:N1} fps, {UpdateFrequency:N1} ups";
 
             if (input.KeyPress(Key.F11))
             {

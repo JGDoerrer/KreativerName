@@ -1,4 +1,5 @@
 ﻿using System;
+using KreativerName.Grid;
 
 namespace KreativerName
 {
@@ -12,6 +13,7 @@ namespace KreativerName
         {
             Stats.Current = Stats.LoadFromFile("statistics");
             Settings.Current = Settings.LoadFromFile("settings");
+            HexData.LoadData(@"Resources\HexData");
 
             for (int i = 0; i < args.Length; i++)
             {

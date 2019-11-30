@@ -55,15 +55,7 @@ namespace KreativerName.Rendering
                 {
                     for (int i = 0; i < hex.Types.Count; i++)
                     {
-                        int type = (int)hex.Types[i];
-                        int count = 0;
-                        while ((type & 1) == 0)
-                        {
-                            type >>= 1;
-                            count++;
-                        }
-
-                        TextureRenderer.DrawHex(Textures.Get("Hex"), hex.Position, Layout, Vector2.One * Layout.size, color, new RectangleF(32 * count, 0, 32, 32));
+                        TextureRenderer.DrawHex(Textures.Get("Hex"), hex.Position, Layout, Vector2.One * Layout.size, color, new RectangleF(32 * hex.Types[i].Texture, 0, 32, 32));
                     }
                 }
             }

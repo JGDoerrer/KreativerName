@@ -159,7 +159,7 @@ namespace KreativerName.Scenes
             // Hexagons
             {
                 const int size = 42;
-                HexType[] values = (HexType[])Enum.GetValues(typeof(HexType));
+                byte[] values = HexData.Data.Select(x => x.ID).OrderBy(x => x).ToArray();
 
                 buttonFrame = new Frame();
                 buttonFrame.SetConstraints(
@@ -172,7 +172,7 @@ namespace KreativerName.Scenes
                 {
                     Button button = new Button(i * (size + 10) + 20, 20, size, size);
 
-                    UI.Image image = new UI.Image(Textures.Get("Hex"), new RectangleF(32 * i, 0, 32, 32));
+                    UI.Image image = new UI.Image(Textures.Get("Hex"), new RectangleF(32 * values[i], 0, 32, 32));
                     image.SetConstraints(new UIConstaints(6, 5, size - 10, size - 10));
                     button.AddChild(image);
                     button.Shortcut = (Key)(110 + i);
@@ -191,7 +191,7 @@ namespace KreativerName.Scenes
 
         int levelIndex = 0;
         int worldIndex = 0;
-        HexType? drawType = null;
+        byte? drawType = null;
         World world;
         Level level;
         Game testGame;
@@ -228,7 +228,7 @@ namespace KreativerName.Scenes
             for (int i = 0; i < buttonFrame.Children.Count; i++)
             {
                 Button item = (Button)buttonFrame.Children[i];
-                item.Color = drawType != null && (int)drawType == 1 << i ? Color.Green : Color.White;
+                item.Color = drawType != null && (int)drawType == i ? Color.Green : Color.White;
             }
 
             if (input.MouseDown(MouseButton.Left))
@@ -237,10 +237,10 @@ namespace KreativerName.Scenes
                 {
                     Hex hex = Grid[mouse].Value;
 
-                    if (drawType.HasValue && (drawType == HexType.Normal || drawType == HexType.Solid))
-                        hex.Type = drawType.Value;
-                    else if (drawType.HasValue && !hex.Type.HasFlag(HexType.Solid))
-                        hex.Type |= drawType.Value;
+                    if (drawType.HasValue && (drawType == 0))
+                        hex.Type = 1 << drawType.Value;
+                    else if (drawType.HasValue)
+                        hex.Type |= 1 << drawType.Value;
 
                     Grid[mouse] = hex;
                 }
@@ -252,7 +252,7 @@ namespace KreativerName.Scenes
                     if (Grid[mouse].HasValue)
                         Grid[mouse] = null;
                     else
-                        Grid[mouse] = new Hex(mouse, HexType.Normal);
+                        Grid[mouse] = new Hex(mouse, 0);
                 }
             }
             if (input.KeyPress(Key.A))
@@ -338,7 +338,7 @@ namespace KreativerName.Scenes
             {
                 int j = 1;
 
-                while (Grid[(directions[i] * j) + player].HasValue && Grid[(directions[i] * j) + player].Value.Type != HexType.Solid)
+                while (Grid[(directions[i] * j) + player].HasValue && !Grid[(directions[i] * j) + player].Value.Flags.HasFlag(HexFlags.Solid))
                 {
                     moves.Add(directions[i] * j + player);
                     j++;
@@ -358,7 +358,7 @@ namespace KreativerName.Scenes
             {
                 Scenes.LoadScene(new Transition(this, 10));
             };
-            drawType = null;
+            //drawType = null;
             Scenes.LoadScene(new Transition(testGame, 10));
         }
 
@@ -454,7 +454,7 @@ namespace KreativerName.Scenes
             {
                 for (int i = -(j / 2); i < w - (j + 1) / 2; i++)
                 {
-                    Grid[i, j] = new Hex(i, j, HexType.Normal);
+                    Grid[i, j] = new Hex(i, j, 1);
                 }
             }
 
