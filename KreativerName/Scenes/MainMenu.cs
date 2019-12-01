@@ -20,7 +20,7 @@ namespace KreativerName.Scenes
                 backScroll = new Vector2(-.5f, .5f);
         }
 
-        UI.UI mainMenu;
+        UI.UI ui;
 
         const float sqrt3 = 1.732050807568877293527446341505872366942805253810380628055f;
         const float size = 16 * 2;
@@ -37,15 +37,15 @@ namespace KreativerName.Scenes
 
         private void InitUI()
         {
-            mainMenu = new UI.UI();
+            ui = new UI.UI();
 
-            mainMenu.Input = new Input(Scenes.Window);
+            ui.Input = new Input(Scenes.Window);
 
             float size = 5;
             TextBlock title = new TextBlock("KREATIVER NAME", size);
             title.SetConstraints(new CenterConstraint(), new PixelConstraint(50), new PixelConstraint((int)title.TextWidth), new PixelConstraint((int)title.TextHeight));
             title.Color = Color.White;
-            mainMenu.Add(title);
+            ui.Add(title);
 
             Frame mainFrame = new Frame();
             mainFrame.Color = Color.Transparent;
@@ -130,7 +130,7 @@ namespace KreativerName.Scenes
                 mainFrame.AddChild(button);
             }
 
-            mainMenu.Add(mainFrame);
+            ui.Add(mainFrame);
         }
 
         public override void Update()
@@ -139,7 +139,7 @@ namespace KreativerName.Scenes
 
         public override void UpdateUI(Vector2 windowSize)
         {
-            mainMenu.Update(windowSize);
+            ui.Update(windowSize);
 
             layout.origin += backScroll;
 
@@ -166,7 +166,7 @@ namespace KreativerName.Scenes
                 }
             }
 
-            mainMenu.Render(windowSize);
+            ui.Render(windowSize);
         }
 
         private void NewEditor()
@@ -178,9 +178,43 @@ namespace KreativerName.Scenes
             editor.Exit += () =>
             {
                 Scenes.LoadScene(new Transition(this, 10));
+                editor.Dispose();
             };
 
             Scenes.LoadScene(new Transition(editor, 10));
         }
+
+        #region IDisposable Support
+
+        private bool disposedValue = false; // Dient zur Erkennung redundanter Aufrufe.
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    ui.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        ~MainMenu()
+        {
+            // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
+            Dispose(false);
+        }
+
+        // Dieser Code wird hinzugefügt, um das Dispose-Muster richtig zu implementieren.
+        public override void Dispose()
+        {
+            // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
     }
 }

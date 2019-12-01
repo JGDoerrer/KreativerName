@@ -22,9 +22,9 @@ namespace KreativerName.Grid
             bytes.Add((byte)Flags);
             bytes.AddRange(Texture.ToBytes());
 
-            bytes.AddRange(Changes.Count.ToBytes());
+            bytes.Add((byte)Changes.Count);
 
-            for (int i = 0; i < Changes.Count; i++)
+            for (int i = 0; i < (byte)Changes.Count; i++)
             {
                 bytes.AddRange(Changes[i].ToBytes());
             }
@@ -43,8 +43,8 @@ namespace KreativerName.Grid
 
             count += Texture.FromBytes(bytes, startIndex + count);
 
-            int changes = 0;
-            count += changes.FromBytes(bytes, startIndex + count);
+            int changes = bytes[startIndex + count];
+            count += 1;
 
             Changes = new List<HexChange>();
 

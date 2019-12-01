@@ -56,7 +56,16 @@ namespace KreativerName
 
             Vector2 size = new Vector2(Width, Height);
 
-            Scenes.Scenes.Update(size);
+            try
+            {
+                Scenes.Scenes.Update(size);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show($"Fehler: {ex.Message}\n{ex.StackTrace}");
+
+                throw ex;
+            }
 
             // Update TimePlaying
             Stats.Current.TimePlaying = Stats.Current.TimePlaying.Add(TimeSpan.FromSeconds(e.Time));
@@ -78,9 +87,19 @@ namespace KreativerName
 
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
+
             Vector2 size = new Vector2(Width, Height);
 
-            Scenes.Scenes.Render(size);
+            try
+            {
+                Scenes.Scenes.Render(size);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show($"Fehler: {ex.Message}\n{ex.StackTrace}");
+
+                throw ex;
+            }
 
             SwapBuffers();
         }

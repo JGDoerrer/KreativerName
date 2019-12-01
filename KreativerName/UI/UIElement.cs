@@ -109,9 +109,10 @@ namespace KreativerName.UI
             {
                 if (disposing)
                 {
+                    constaints?.Dispose();
+                    parent?.Dispose();
                 }
 
-                parent = null;
                 ui = null;
                 children = null;
 

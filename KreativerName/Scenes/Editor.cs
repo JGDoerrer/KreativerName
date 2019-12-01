@@ -252,7 +252,7 @@ namespace KreativerName.Scenes
                     if (Grid[mouse].HasValue)
                         Grid[mouse] = null;
                     else
-                        Grid[mouse] = new Hex(mouse, 0);
+                        Grid[mouse] = new Hex(mouse, 1);
                 }
             }
             if (input.KeyPress(Key.A))
@@ -357,6 +357,7 @@ namespace KreativerName.Scenes
             testGame.Exit += () =>
             {
                 Scenes.LoadScene(new Transition(this, 10));
+                testGame.Dispose();
             };
             //drawType = null;
             Scenes.LoadScene(new Transition(testGame, 10));
@@ -461,6 +462,44 @@ namespace KreativerName.Scenes
             renderer.Grid = Grid;
         }
 
+        #endregion
+
+        #region IDisposable Support
+
+        private bool disposedValue = false; // Dient zur Erkennung redundanter Aufrufe.
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    ui?.Dispose();
+                    textLevel?.Dispose();
+                    textMoves?.Dispose();
+                    textWorld?.Dispose();
+                    buttonFrame?.Dispose();
+                }
+
+                renderer = null;
+
+                disposedValue = true;
+            }
+        }
+
+        ~Editor()
+        {
+            // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
+            Dispose(false);
+        }
+
+        // Dieser Code wird hinzugefügt, um das Dispose-Muster richtig zu implementieren.
+        public override void Dispose()
+        {
+            // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
         #endregion
     }
 }

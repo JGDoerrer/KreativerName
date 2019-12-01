@@ -1,8 +1,9 @@
-﻿using OpenTK;
+﻿using System;
+using OpenTK;
 
 namespace KreativerName.UI.Constraints
 {
-    public class UIConstaints
+    public class UIConstaints : IDisposable
     {
         public UIConstaints() { }
         public UIConstaints(Constraint x, Constraint y, Constraint width, Constraint height)
@@ -32,6 +33,45 @@ namespace KreativerName.UI.Constraints
 
         public static UIConstaints FullWindow =>
             new UIConstaints(new PixelConstraint(0), new PixelConstraint(0), new RelativeConstraint(1, RelativeTo.Window), new RelativeConstraint(1, RelativeTo.Window));
+
+        #region IDisposable Support
+
+        private bool disposedValue = false; // Dient zur Erkennung redundanter Aufrufe.
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // verwalteten Zustand (verwaltete Objekte) entsorgen.
+                }
+
+                xCon = null;
+                yCon = null;
+                widthCon = null;
+                heightCon = null;
+
+                disposedValue = true;
+            }
+        }
+
+        //~UIConstaints()
+        //{
+        //    // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
+        //    Dispose(false);
+        //}
+
+        // Dieser Code wird hinzugefügt, um das Dispose-Muster richtig zu implementieren.
+        public void Dispose()
+        {
+            // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
     }
 
     public enum RelativeTo

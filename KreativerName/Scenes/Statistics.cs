@@ -17,11 +17,6 @@ namespace KreativerName.Scenes
             background = new List<Numbers>();
         }
 
-        ~Statistics()
-        {
-            ui.Dispose();
-        }
-
         private void InitUI()
         {
             ui = new UI.UI();
@@ -182,5 +177,40 @@ namespace KreativerName.Scenes
             public Vector2 Position;
             public Color Color;
         }
+
+        #region IDisposable Support
+
+        private bool disposedValue = false; // Dient zur Erkennung redundanter Aufrufe.
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    ui.Dispose();
+                }
+
+                background = null;
+
+                disposedValue = true;
+            }
+        }
+
+        ~Statistics()
+        {
+            // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
+            Dispose(false);
+        }
+
+        // Dieser Code wird hinzugefügt, um das Dispose-Muster richtig zu implementieren.
+        public override void Dispose()
+        {
+            // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
     }
 }
