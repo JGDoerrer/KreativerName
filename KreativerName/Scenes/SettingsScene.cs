@@ -69,6 +69,10 @@ namespace KreativerName.Scenes
             {
                 Settings.Current.ShowMoves = b;
             });
+            AddCheckBox("FPS anzeigen", 200, Settings.Current.ShowFps, (b) =>
+            {
+                Settings.Current.ShowFps = b;
+            });
         }
 
         public override void Update()

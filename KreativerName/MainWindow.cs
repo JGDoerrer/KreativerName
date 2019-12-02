@@ -3,6 +3,7 @@ using System.Drawing;
 using KreativerName.Grid;
 using KreativerName.Rendering;
 using KreativerName.Scenes;
+using KreativerName.UI;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -35,11 +36,15 @@ namespace KreativerName
         Input input;
         static Random random = new Random();
         public int FrameCounter;
+        double fps;
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             if (FrameCounter % 10 == 0)
+            {
                 Title = $"KreativerName {RenderFrequency:N1} fps, {UpdateFrequency:N1} ups";
+                fps = RenderFrequency;
+            }
 
             if (input.KeyPress(Key.F11))
             {
@@ -62,9 +67,7 @@ namespace KreativerName
             }
             catch (Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show($"Fehler: {ex.Message}\n{ex.StackTrace}");
-
-                throw ex;
+                Scenes.Scenes.LoadScene(new Transition(new ErrorScene(ex), 10));
             }
 
             // Update TimePlaying
@@ -96,10 +99,13 @@ namespace KreativerName
             }
             catch (Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show($"Fehler: {ex.Message}\n{ex.StackTrace}");
-
-                throw ex;
+                Scenes.Scenes.LoadScene(new Transition(new ErrorScene(ex), 10));
             }
+
+            // Render Fps
+            if (Settings.Current.ShowFps)
+                TextBlock.RenderString($"{fps:00} fps", new Vector2(Width - 80, Height - 20), Color.White);
+
 
             SwapBuffers();
         }

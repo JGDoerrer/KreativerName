@@ -21,6 +21,8 @@ namespace KreativerName.Rendering
         public HexGrid<Hex> Grid { get; set; }
         public HexLayout Layout { get; set; }
 
+        int frameCount = 0;
+
         public void Render(HexPoint player, HexPoint selectedHex, List<HexPoint> moves)
         {
             if (Grid == null)
@@ -55,10 +57,17 @@ namespace KreativerName.Rendering
                 {
                     for (int i = 0; i < hex.Types.Count; i++)
                     {
-                        TextureRenderer.DrawHex(Textures.Get("Hex"), hex.Position, Layout, Vector2.One * Layout.size, color, new RectangleF(32 * hex.Types[i].Texture, 0, 32, 32));
+                        int animation = 0;
+                        if (hex.Types[i].AnimationLength > 0 && hex.Types[i].AnimationSpeed > 0)
+                        {
+                            animation = ((frameCount + hex.Types[i].AnimationPhase) / hex.Types[i].AnimationSpeed) % hex.Types[i].AnimationLength;
+                        }
+                        TextureRenderer.DrawHex(Textures.Get("Hex"), hex.Position, Layout, Vector2.One * Layout.size, color, new RectangleF(32 * hex.Types[i].Texture, animation * 32, 32, 32));
                     }
                 }
             }
+
+            frameCount++;
         }
 
     }

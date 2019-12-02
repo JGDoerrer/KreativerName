@@ -103,6 +103,13 @@ namespace KreativerName.Grid
             return byteCount;
         }
 
+        public HexGrid<T> Copy()
+        {
+            HexGrid<T> copy = new HexGrid<T>();
+            copy.FromBytes(ToBytes(), 0);
+            return copy;
+        }
+
         public IEnumerator<T> GetEnumerator()
         {
             return dictonary.Select(x => x.Value).GetEnumerator();

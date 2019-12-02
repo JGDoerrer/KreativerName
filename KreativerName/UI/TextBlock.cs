@@ -42,18 +42,28 @@ namespace KreativerName.UI
 
         public override void Render(Vector2 windowSize)
         {
-            Texture2D tex = Textures.Get("Font");
             Vector2 pos = new Vector2(GetX(windowSize), GetY(windowSize));
 
-            foreach (char c in Text)
+            RenderString(Text, pos, Color, Size);
+        }
+
+        public static void RenderChar(char c, Vector2 position, Color color, float size = 2)
+        {
+            Texture2D tex = Textures.Get("Font");
+            RectangleF sourceRect = new RectangleF(((c - 32) % 16) * 6, ((c - 32) / 16) * 6, 6, 6);
+            TextureRenderer.Draw(tex, position, Vector2.One * size, color, sourceRect);
+        }
+
+        public static void RenderString(string s, Vector2 position, Color color, float size = 2)
+        {
+            foreach (char c in s)
             {
-                if (c <= 255 && c >= 32 && pos.X < GetX(windowSize) + GetWidth(windowSize))
+                if (c <= 255 && c >= 32)
                 {
                     if (!char.IsUpper(c))
-                        pos.X -= 1 * Size;
-                    RectangleF sourceRect = new RectangleF(((c - 32) % 16) * 6, ((c - 32) / 16) * 6, 6, 6);
-                    TextureRenderer.Draw(tex, pos, Vector2.One * Size, Color, sourceRect);
-                    pos.X += 7 * Size;
+                        position.X -= 1 * size;
+                    RenderChar(c, position, color, size);
+                    position.X += 7 * size;
                 }
             }
         }

@@ -214,6 +214,8 @@ namespace KreativerName.Scenes
             new Matrix2(sqrt3 / 3f, -1f / 3f, 0, 2f / 3f),
             new Vector2(0, 0),
             hexSize, 0.5f);
+        Vector2 scrolling;
+        float scale = 1;
         GridRenderer renderer;
 
         public event EmptyEvent Exit;
@@ -222,14 +224,23 @@ namespace KreativerName.Scenes
 
         public override void Update()
         {
-            HexPoint mouse = layout.PixelToHex(input.MousePosition);
-            selectedHex = mouse;
-
             for (int i = 0; i < buttonFrame.Children.Count; i++)
             {
                 Button item = (Button)buttonFrame.Children[i];
                 item.Color = drawType != null && (int)drawType == i ? Color.Green : Color.White;
             }
+
+            HandleInput();
+
+            input.Update();
+        }
+
+        private void HandleInput()
+        {
+            HexPoint mouse = layout.PixelToHex(input.MousePosition);
+            selectedHex = mouse;
+
+            float scrollSpeed = 8 * scale;
 
             if (input.MouseDown(MouseButton.Left))
             {
@@ -264,8 +275,23 @@ namespace KreativerName.Scenes
             {
                 Exit?.Invoke();
             }
-
-            input.Update();
+            if (input.KeyDown(Key.Left))
+            {
+                scrolling.X += scrollSpeed;
+            }
+            if (input.KeyDown(Key.Right))
+            {
+                scrolling.X -= scrollSpeed;
+            }
+            if (input.KeyDown(Key.Up))
+            {
+                scrolling.Y += scrollSpeed;
+            }
+            if (input.KeyDown(Key.Down))
+            {
+                scrolling.Y -= scrollSpeed;
+            }
+            scale *= (float)Math.Pow(2, input.MouseScroll());
         }
 
         public override void Render(Vector2 windowSize)
@@ -294,13 +320,13 @@ namespace KreativerName.Scenes
                 layout.size = Math.Min((width - margin) / (sqrt3 * (maxX - minX + 1)), (height - margin) / (1.5f * (maxY - minY + 1.25f)));
                 // Round to multiples of 16
                 layout.size = (float)Math.Floor(layout.size / 16) * 16;
-                layout.size = Math.Min(layout.size, 48);
+                layout.size = Math.Min(layout.size, 48) * scale;
 
                 int centerX = (int)(layout.size * sqrt3 * (maxX + minX));
                 int centerY = (int)(layout.size * 1.5f * (maxY + minY));
 
                 // Center grid
-                layout.origin = new Vector2((width - centerX) / 2, (height - centerY) / 2);
+                layout.origin = new Vector2((width - centerX) / 2, (height - centerY) / 2) + scrolling;
 
                 //int totalWidth = (int)(layout.size * sqrt3 * (maxX - minX + 1));
                 //int totalHeight = (int)(layout.size * 1.5f * (maxY - minY + 1.25f));
@@ -410,6 +436,7 @@ namespace KreativerName.Scenes
 
             player = level.startPos;
             renderer.Grid = level.grid;
+            scrolling = new Vector2(0,0);
 
             textLevel.Text = $"Level {levelIndex + 1:000}";
             textMoves.Text = $"Min. Zuege: {level.minMoves:00}";

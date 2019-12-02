@@ -7,12 +7,14 @@ namespace KreativerName
     {
         public bool ShowMoves;
         public bool Fullscreen;
+        public bool ShowFps;
 
         public static Settings Current;
         public static Settings New => new Settings()
         {
             ShowMoves = true,
             Fullscreen = false,
+            ShowFps = false,
         };
 
 
@@ -22,6 +24,7 @@ namespace KreativerName
 
             ShowMoves = (bytes[startIndex + count] & (1 << 0)) > 0;
             Fullscreen = (bytes[startIndex + count] & (1 << 1)) > 0;
+            ShowFps = (bytes[startIndex + count] & (1 << 2)) > 0;
 
             return count;
         }
@@ -30,7 +33,7 @@ namespace KreativerName
         {
             List<byte> bytes = new List<byte>();
 
-            byte b1 = (byte)((ShowMoves ? 1 : 0) << 0 | (Fullscreen ? 1 : 0) << 1);
+            byte b1 = (byte)((ShowMoves ? 1 : 0) << 0 | (Fullscreen ? 1 : 0) << 1 | (ShowFps ? 1 : 0) << 2);
             bytes.Add(b1);
 
             return bytes.ToArray();

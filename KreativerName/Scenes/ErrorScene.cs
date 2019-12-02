@@ -1,0 +1,101 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using KreativerName.UI;
+using KreativerName.UI.Constraints;
+using OpenTK;
+using OpenTK.Graphics.OpenGL;
+
+namespace KreativerName.Scenes
+{
+    public class ErrorScene : Scene
+    {
+        public ErrorScene(Exception e)
+        {
+            InitUI(e);
+        }
+
+        UI.UI ui;
+
+        private void InitUI(Exception e)
+        {
+            ui = new UI.UI();
+
+            void AddText(string s, float size, int y)
+            {
+                TextBlock text = new TextBlock(s, size);
+                text.SetConstraints(new CenterConstraint(), new PixelConstraint(y), new PixelConstraint((int)text.TextWidth), new PixelConstraint((int)text.TextHeight));
+
+                ui.Add(text);
+            }
+
+            AddText("Fehler!", 4, 50);
+            AddText($"{e.Message}", 3, 100);
+
+            string[] stack = e.StackTrace.Split('\n');
+            for (int i = 0; i < stack.Length; i++)
+            {
+                stack[i] = stack[i].Trim().Replace(@"D:\Programmieren\Source\KreativerName\KreativerName\", "");
+                AddText($"{stack[i]}", 2, 150 + i * 20);
+            }
+
+            AddText($"Bitte an den Entwickler weiterleiten!", 3, 180 + stack.Length * 20);
+        }
+
+        public override void Update()
+        {
+            if (Scenes.Input.KeyPress(OpenTK.Input.Key.Escape) ||
+                Scenes.Input.KeyPress(OpenTK.Input.Key.Space) ||
+                Scenes.Input.KeyPress(OpenTK.Input.Key.Enter))
+            {
+                Scenes.CloseWindow();
+            }
+        }
+
+        public override void UpdateUI(Vector2 windowSize)
+        {
+        }
+
+        public override void Render(Vector2 windowSize)
+        {
+            GL.ClearColor(Color.FromArgb(90, 0, 0));
+
+            ui.Render(windowSize);
+        }
+
+        #region IDisposable Support
+
+        private bool disposedValue = false; // Dient zur Erkennung redundanter Aufrufe.
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    ui.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        ~ErrorScene()
+        {
+            // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
+            Dispose(false);
+        }
+
+        // Dieser Code wird hinzugefügt, um das Dispose-Muster richtig zu implementieren.
+        public override void Dispose()
+        {
+            // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
+    }
+}

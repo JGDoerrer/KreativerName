@@ -75,6 +75,7 @@
     <Compile Include="Rendering\GridRenderer.cs" />
     <Compile Include="Scenes\Editor.cs" />
     <Compile Include="Extentions.cs" />
+    <Compile Include="Scenes\ErrorScene.cs" />
     <Compile Include="Scenes\Game.cs" />
     <Compile Include="Grid\HexGrid.cs" />
     <Compile Include="Grid\HexLayout.cs" />

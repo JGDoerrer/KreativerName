@@ -25,17 +25,19 @@ namespace KreativerName.Grid
                 updated = true;
             }
 
+            HexGrid<Hex> nextGrid = grid.Copy();
+
             for (int i = 0; i < grid.Count; i++)
             {
                 Hex hex = grid.Values.ElementAt(i);
 
                 foreach (HexData type in hex.Types)
                 {
-                    foreach (HexChange change in type.Changes)
+                    foreach (HexAction action in type.Changes)
                     {
                         bool conditionMet = false;
 
-                        switch (change.Condition)
+                        switch (action.Condition)
                         {
                             case HexCondition.Move:
                                 conditionMet = (hex.Type & (1 << type.ID)) > 0;
@@ -50,14 +52,32 @@ namespace KreativerName.Grid
 
                         if (conditionMet)
                         {
-                            hex.Type &= ~(1 << type.ID);
-                            hex.Type |= 1 << change.ChangeTo;
+                            // Perform Action
+                            HexPoint nextPos = hex.Position + new HexPoint(action.MoveX, action.MoveY);
+                            if (grid[nextPos].HasValue)
+                            {
+                                if (nextPos == hex.Position)
+                                {
+                                    hex.Type &= ~(1 << type.ID);
+                                    hex.Type |= 1 << action.ChangeTo;
+                                    nextGrid[hex.Position] = hex;
+                                }
+                                else
+                                {
+                                    hex.Type &= ~(1 << type.ID);
+                                    nextGrid[hex.Position] = hex;
+
+                                    Hex next = (Hex)grid[nextPos];
+                                    next.Type |= 1 << action.ChangeTo;
+                                    nextGrid[nextPos] = next;
+                                }
+                            }
                         }
                     }
                 }
-
-                grid[hex.Position] = hex;
             }
+
+            grid = nextGrid;
 
             lastPlayer = player;
         }

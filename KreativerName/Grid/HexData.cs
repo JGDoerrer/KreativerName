@@ -10,9 +10,12 @@ namespace KreativerName.Grid
 
         public byte ID;
         public HexFlags Flags;
-        public int Texture;
+        public byte Texture;
+        public byte AnimationLength;
+        public byte AnimationSpeed;
+        public byte AnimationPhase;
 
-        public List<HexChange> Changes;
+        public List<HexAction> Changes;
 
         public byte[] ToBytes()
         {
@@ -20,7 +23,10 @@ namespace KreativerName.Grid
 
             bytes.Add(ID);
             bytes.Add((byte)Flags);
-            bytes.AddRange(Texture.ToBytes());
+            bytes.Add(Texture);
+            bytes.Add(AnimationLength);
+            bytes.Add(AnimationSpeed);
+            bytes.Add(AnimationPhase);
 
             bytes.Add((byte)Changes.Count);
 
@@ -40,17 +46,23 @@ namespace KreativerName.Grid
             count += 1;
             Flags = (HexFlags)bytes[startIndex + count];
             count += 1;
-
-            count += Texture.FromBytes(bytes, startIndex + count);
+            Texture = bytes[startIndex + count];
+            count += 1;
+            AnimationLength = bytes[startIndex + count];
+            count += 1;
+            AnimationSpeed = bytes[startIndex + count];
+            count += 1;
+            AnimationPhase = bytes[startIndex + count];
+            count += 1;
 
             int changes = bytes[startIndex + count];
             count += 1;
 
-            Changes = new List<HexChange>();
+            Changes = new List<HexAction>();
 
             for (int i = 0; i < changes; i++)
             {
-                HexChange change = new HexChange();
+                HexAction change = new HexAction();
                 count += change.FromBytes(bytes, startIndex + count);
 
                 Changes.Add(change);
@@ -58,6 +70,9 @@ namespace KreativerName.Grid
 
             return count;
         }
+
+        public override string ToString() => $"ID: {ID}, Flags: {Flags}, Texture: {Texture}, Changes: {Changes.Count}";
+
 
         public static HexData[] Data;
 
@@ -101,9 +116,11 @@ namespace KreativerName.Grid
         }
     }
 
-    public struct HexChange : IBytes
+    public struct HexAction : IBytes
     {
         public byte ChangeTo;
+        public byte MoveX;
+        public byte MoveY;
         public HexCondition Condition;
 
         public int FromBytes(byte[] bytes, int startIndex)
@@ -111,6 +128,10 @@ namespace KreativerName.Grid
             int count = 0;
 
             ChangeTo = bytes[startIndex + count];
+            count += 1;
+            MoveX = bytes[startIndex + count];
+            count += 1;
+            MoveY = bytes[startIndex + count];
             count += 1;
             Condition = (HexCondition)bytes[startIndex + count];
             count += 1;
@@ -127,6 +148,8 @@ namespace KreativerName.Grid
 
             return bytes.ToArray();
         }
+
+        public override string ToString() => $"Condition: {Condition}, Change to: {ChangeTo}, Move by: {MoveX}, {MoveY}, ";
     }
 
     public enum HexCondition : byte
