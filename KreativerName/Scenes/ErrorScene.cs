@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace KreativerName.Scenes
 
             AddText("Fehler!", 4, 50);
             AddText($"{e.Message}", 3, 100);
-
+            
             string[] stack = e.StackTrace.Split('\n');
             for (int i = 0; i < stack.Length; i++)
             {

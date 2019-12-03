@@ -10,7 +10,6 @@ namespace KreativerName.Scenes
 
         public static void LoadScene(Scene scene)
         {
-            Scene = null;
             Scene = scene;
         }
 

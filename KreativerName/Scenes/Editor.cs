@@ -383,7 +383,6 @@ namespace KreativerName.Scenes
             testGame.Exit += () =>
             {
                 Scenes.LoadScene(new Transition(this, 10));
-                testGame.Dispose();
             };
             //drawType = null;
             Scenes.LoadScene(new Transition(testGame, 10));
@@ -506,6 +505,7 @@ namespace KreativerName.Scenes
                     textMoves?.Dispose();
                     textWorld?.Dispose();
                     buttonFrame?.Dispose();
+                    testGame?.Dispose();
                 }
 
                 renderer = null;
