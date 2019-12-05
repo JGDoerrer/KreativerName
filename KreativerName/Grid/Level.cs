@@ -36,41 +36,44 @@ namespace KreativerName.Grid
                     foreach (HexAction action in type.Changes)
                     {
                         bool conditionMet = false;
+                        bool move = true;
+                        HexPoint nextPos = hex.Position + new HexPoint(action.MoveX, action.MoveY);
 
                         switch (action.Condition)
                         {
                             case HexCondition.Move:
-                                conditionMet = (hex.Type & (1 << type.ID)) > 0;
+                                conditionMet = true;
                                 break;
                             case HexCondition.PlayerEnter:
-                                conditionMet = hex.Position == player && (hex.Type & (1 << type.ID)) > 0;
+                                conditionMet = hex.Position == player;
                                 break;
                             case HexCondition.PlayerLeave:
-                                conditionMet = hex.Position == lastPlayer && (hex.Type & (1 << type.ID)) > 0;
+                                conditionMet = hex.Position == lastPlayer;
+                                break;
+                            case HexCondition.NextSolid:
+                                conditionMet = grid[nextPos] == null || grid[nextPos]?.Flags.HasFlag(HexFlags.Solid) == true;
+                                move = false;
                                 break;
                         }
 
                         if (conditionMet)
                         {
-                            // Perform Action
-                            HexPoint nextPos = hex.Position + new HexPoint(action.MoveX, action.MoveY);
-                            if (grid[nextPos].HasValue)
+                            if (nextPos == hex.Position || !move)
                             {
-                                if (nextPos == hex.Position)
-                                {
-                                    hex.Type &= ~(1 << type.ID);
-                                    hex.Type |= 1 << action.ChangeTo;
-                                    nextGrid[hex.Position] = hex;
-                                }
-                                else
-                                {
-                                    hex.Type &= ~(1 << type.ID);
-                                    nextGrid[hex.Position] = hex;
+                                Hex temp = nextGrid[hex.Position].Value;
+                                temp.IDs.Remove(type.ID);
+                                temp.IDs.Add(action.ChangeTo);
+                                nextGrid[hex.Position] = temp;
+                            }
+                            else if (nextGrid[nextPos].HasValue && move)
+                            {
+                                Hex temp = nextGrid[hex.Position].Value;
+                                temp.IDs.Remove(type.ID);
+                                nextGrid[hex.Position] = temp;
 
-                                    Hex next = (Hex)grid[nextPos];
-                                    next.Type |= 1 << action.ChangeTo;
-                                    nextGrid[nextPos] = next;
-                                }
+                                Hex next = nextGrid[nextPos].Value;
+                                next.IDs.Add(action.ChangeTo);
+                                nextGrid[nextPos] = next;
                             }
                         }
                     }
@@ -81,7 +84,7 @@ namespace KreativerName.Grid
 
             lastPlayer = player;
         }
-
+               
         #region Load & Save
 
         public void SaveToFile(string name)

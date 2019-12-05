@@ -9,29 +9,29 @@ namespace KreativerName.Grid
         public Hex(int x, int y)
         {
             Position = new HexPoint(x, y);
-            Type = 0;
+            IDs = new List<byte>();
         }
 
         public Hex(HexPoint pos)
         {
             Position = pos;
-            Type = 0;
+            IDs = new List<byte>();
         }
 
         public Hex(int x, int y, int type)
         {
             Position = new HexPoint(x, y);
-            Type = type;
+            IDs = new List<byte>();
         }
 
         public Hex(HexPoint pos, int type)
         {
             Position = pos;
-            Type = type;
+            IDs = new List<byte>();
         }
 
         public HexPoint Position;
-        public int Type;
+        public List<byte> IDs;
 
         public int X => Position.X;
         public int Y => Position.Y;
@@ -58,7 +58,7 @@ namespace KreativerName.Grid
                 List<HexData> types = new List<HexData>();
                 foreach (HexData data in HexData.Data)
                 {
-                    if ((Type & (1 << data.ID)) > 0)
+                    if (IDs.Contains(data.ID))
                         types.Add(data);
                 }
 
@@ -68,22 +68,37 @@ namespace KreativerName.Grid
 
         public byte[] ToBytes()
         {
-            byte[] bytes = new byte[12];
-            Position.ToBytes().CopyTo(bytes, 0);
-            ((int)Type).ToBytes().CopyTo(bytes, 8);
-            return bytes;
+            List<byte> bytes = new List<byte>();
+
+            bytes.AddRange(Position.ToBytes());
+
+            bytes.Add((byte)IDs.Count);
+            bytes.AddRange(IDs);
+
+            return bytes.ToArray();
         }
 
         public int FromBytes(byte[] bytes, int startIndex)
         {
-            Position.FromBytes(bytes, startIndex);
-            Type = BitConverter.ToInt32(bytes, startIndex + 8);
-            return 12;
+            int count = 0;
+
+            count += Position.FromBytes(bytes, startIndex + count);
+            byte idCount = bytes[startIndex + count];
+            count += 1;
+
+            IDs = new List<byte>();
+            for (byte i = 0; i < idCount; i++)
+            {
+                IDs.Add(bytes[startIndex + count]);
+                count += 1;
+            }
+
+            return count;
         }
 
         public override string ToString()
         {
-            return $"{Position}; {Type}";
+            return $"{Position}; {IDs}";
         }
     }
 }

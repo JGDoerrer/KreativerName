@@ -91,6 +91,9 @@ namespace KreativerName.Scenes
             size, 0.5f);
         GridRenderer renderer = new GridRenderer();
 
+        Vector2 scrolling;
+        float scale = 1;
+
         public HexGrid<Hex> Grid { get => level.grid; set => level.grid = value; }
         public World World { get => world; }
         private int Levels => world.levels.Count;
@@ -99,7 +102,7 @@ namespace KreativerName.Scenes
         {
             HexPoint mouse = layout.PixelToHex(input.MousePosition);
             selectedHex = mouse;
-
+            
             if (input.MousePress(MouseButton.Left))
             {
                 if (GetPlayerMoves().Contains(mouse))
@@ -113,7 +116,27 @@ namespace KreativerName.Scenes
             {
                 Exit?.Invoke();
             }
+            
+            float scrollSpeed = 8 * scale;
 
+            if (input.KeyDown(Key.Left))
+            {
+                scrolling.X += scrollSpeed;
+            }
+            if (input.KeyDown(Key.Right))
+            {
+                scrolling.X -= scrollSpeed;
+            }
+            if (input.KeyDown(Key.Up))
+            {
+                scrolling.Y += scrollSpeed;
+            }
+            if (input.KeyDown(Key.Down))
+            {
+                scrolling.Y -= scrollSpeed;
+            }
+            scale *= (float)Math.Pow(2, input.MouseScroll());
+            
             input.Update();
         }
 
@@ -143,13 +166,13 @@ namespace KreativerName.Scenes
                 layout.size = Math.Min((width - margin) / (sqrt3 * (maxX - minX + 1)), (height - margin) / (1.5f * (maxY - minY + 1.25f)));
                 // Round to multiples of 16
                 layout.size = (float)Math.Floor(layout.size / 16) * 16;
-                layout.size = Math.Min(layout.size, 48);
+                layout.size = Math.Min(layout.size, 48) * scale;
 
                 int centerX = (int)(layout.size * sqrt3 * (maxX + minX));
                 int centerY = (int)(layout.size * 1.5f * (maxY + minY));
 
                 // Center grid
-                layout.origin = new Vector2((width - centerX) / 2, (height - centerY) / 2);
+                layout.origin = new Vector2((width - centerX) / 2, (height - centerY) / 2) + scrolling;
 
                 //int totalWidth = (int)(editor.layout.size * sqrt3 * (maxX - minX + 1));
                 //int totalHeight = (int)(editor.layout.size * 1.5f * (maxY - minY + 1.25f));
@@ -310,6 +333,9 @@ namespace KreativerName.Scenes
             player = level.startPos;
             moves = 0;
             renderer.Grid = level.grid;
+
+            scrolling = new Vector2();
+            scale = 1;
         }
 
         public void LoadLevel(int index)
@@ -322,7 +348,12 @@ namespace KreativerName.Scenes
         {
             singleLevel = true;
             this.level = level.Copy();
-            world = new World();
+            world = new World
+            {
+                levels = new List<Level> { level }
+            };
+
+            UpdateTitle();
 
             player = level.startPos;
             moves = 0;

@@ -249,9 +249,9 @@ namespace KreativerName.Scenes
                     Hex hex = Grid[mouse].Value;
 
                     if (drawType.HasValue && (drawType == 0))
-                        hex.Type = 1 << drawType.Value;
+                        hex.IDs = new List<byte> { drawType.Value };
                     else if (drawType.HasValue)
-                        hex.Type |= 1 << drawType.Value;
+                        hex.IDs.Add( drawType.Value);
 
                     Grid[mouse] = hex;
                 }

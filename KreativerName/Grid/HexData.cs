@@ -119,8 +119,8 @@ namespace KreativerName.Grid
     public struct HexAction : IBytes
     {
         public byte ChangeTo;
-        public byte MoveX;
-        public byte MoveY;
+        public sbyte MoveX;
+        public sbyte MoveY;
         public HexCondition Condition;
 
         public int FromBytes(byte[] bytes, int startIndex)
@@ -129,9 +129,9 @@ namespace KreativerName.Grid
 
             ChangeTo = bytes[startIndex + count];
             count += 1;
-            MoveX = bytes[startIndex + count];
+            MoveX = (sbyte)bytes[startIndex + count];
             count += 1;
-            MoveY = bytes[startIndex + count];
+            MoveY = (sbyte)bytes[startIndex + count];
             count += 1;
             Condition = (HexCondition)bytes[startIndex + count];
             count += 1;
@@ -144,6 +144,8 @@ namespace KreativerName.Grid
             List<byte> bytes = new List<byte>();
 
             bytes.Add(ChangeTo);
+            bytes.Add((byte)MoveX);
+            bytes.Add((byte)MoveY);
             bytes.Add((byte)Condition);
 
             return bytes.ToArray();
@@ -156,7 +158,8 @@ namespace KreativerName.Grid
     {
         Move,
         PlayerEnter,
-        PlayerLeave
+        PlayerLeave,
+        NextSolid,
     }
 
     [Flags]
