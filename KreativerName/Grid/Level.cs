@@ -54,9 +54,12 @@ namespace KreativerName.Grid
                                 conditionMet = grid[nextPos] == null || grid[nextPos]?.Flags.HasFlag(HexFlags.Solid) == true;
                                 move = false;
                                 break;
+                            case HexCondition.NextNotSolid:
+                                conditionMet = grid[nextPos] != null && grid[nextPos]?.Flags.HasFlag(HexFlags.Solid) != true;
+                                break;
                         }
 
-                        if (conditionMet)
+                        if (conditionMet && hex.IDs.Contains(type.ID))
                         {
                             if (nextPos == hex.Position || !move)
                             {
@@ -84,7 +87,7 @@ namespace KreativerName.Grid
 
             lastPlayer = player;
         }
-               
+
         #region Load & Save
 
         public void SaveToFile(string name)

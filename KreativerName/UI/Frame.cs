@@ -28,6 +28,9 @@ namespace KreativerName.UI
             {
                 element.Update(windowSize);
             }
+
+            if (MouseOver(windowSize))
+                ui.Input.Reset();
         }
 
         public override void Render(Vector2 windowSize)

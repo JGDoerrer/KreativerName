@@ -66,7 +66,7 @@ namespace KreativerName.Scenes
         }
 
         #endregion
-        
+
         bool singleLevel = false;
         bool perfect = false;
         int levelIndex = 0;
@@ -102,7 +102,7 @@ namespace KreativerName.Scenes
         {
             HexPoint mouse = layout.PixelToHex(input.MousePosition);
             selectedHex = mouse;
-            
+
             if (input.MousePress(MouseButton.Left))
             {
                 if (GetPlayerMoves().Contains(mouse))
@@ -116,7 +116,7 @@ namespace KreativerName.Scenes
             {
                 Exit?.Invoke();
             }
-            
+
             float scrollSpeed = 8 * scale;
 
             if (input.KeyDown(Key.Left))
@@ -136,7 +136,7 @@ namespace KreativerName.Scenes
                 scrolling.Y -= scrollSpeed;
             }
             scale *= (float)Math.Pow(2, input.MouseScroll());
-            
+
             input.Update();
         }
 

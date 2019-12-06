@@ -39,6 +39,16 @@ namespace KreativerName
         public void PressMouse(MouseButton button) => mouseDown.Add(button);
         public void MoveMouse(Vector2 pos) => mousePosition = pos;
         public void ScrollMouse(int amount) => mouseWheel += amount;
+        public void ReleaseKey(Key key)
+        {
+            while (keysDown.Contains(key))
+                keysDown.Remove(key);
+        }
+        public void ReleaseMouse(MouseButton button)
+        {
+            while (mouseDown.Contains(button))
+                mouseDown.Remove(button);
+        }
 
         private void MouseWheel(object sender, MouseWheelEventArgs e)
         {

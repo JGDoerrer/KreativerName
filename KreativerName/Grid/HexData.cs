@@ -160,6 +160,7 @@ namespace KreativerName.Grid
         PlayerEnter,
         PlayerLeave,
         NextSolid,
+        NextNotSolid,
     }
 
     [Flags]

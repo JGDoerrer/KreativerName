@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace KreativerName.Grid
@@ -18,16 +17,16 @@ namespace KreativerName.Grid
             IDs = new List<byte>();
         }
 
-        public Hex(int x, int y, int type)
+        public Hex(int x, int y, byte type)
         {
             Position = new HexPoint(x, y);
-            IDs = new List<byte>();
+            IDs = new List<byte>() { type };
         }
 
-        public Hex(HexPoint pos, int type)
+        public Hex(HexPoint pos, byte type)
         {
             Position = pos;
-            IDs = new List<byte>();
+            IDs = new List<byte>() { type };
         }
 
         public HexPoint Position;

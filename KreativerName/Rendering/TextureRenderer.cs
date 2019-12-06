@@ -55,7 +55,7 @@ namespace KreativerName.Rendering
         public static void DrawHex(Texture2D texture, HexPoint hex, HexLayout layout, Vector2 scale, Color color, RectangleF? sourceRect)
         {
             Vector2[] vertecies = new Vector2[6];
-            
+
             for (int i = 0; i < 6; i++)
             {
                 double angle = 2 * Math.PI * (layout.startAngle + i) / 6;

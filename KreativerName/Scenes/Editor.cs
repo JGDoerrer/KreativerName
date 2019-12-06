@@ -163,14 +163,14 @@ namespace KreativerName.Scenes
 
                 buttonFrame = new Frame();
                 buttonFrame.SetConstraints(
-                   new PixelConstraint(20, RelativeTo.Window),
-                   new PixelConstraint(20, RelativeTo.Window, Direction.Bottom),
-                   new PixelConstraint(values.Length * (size + 10) + 30),
+                   new PixelConstraint(0),
+                   new PixelConstraint(0 , RelativeTo.Window, Direction.Bottom),
+                   new RelativeConstraint(1, RelativeTo.Window),
                    new PixelConstraint(size + 40));
 
                 for (int i = 0; i < values.Length; i++)
                 {
-                    Button button = new Button(i * (size + 10) + 20, 20, size, size);
+                    Button button = new Button((i % 16) * (size+10) + 20, 20, size, size);
 
                     UI.Image image = new UI.Image(Textures.Get("Hex"), new RectangleF(32 * values[i], 0, 32, 32));
                     image.SetConstraints(new UIConstaints(6, 5, size - 10, size - 10));
@@ -250,8 +250,8 @@ namespace KreativerName.Scenes
 
                     if (drawType.HasValue && (drawType == 0))
                         hex.IDs = new List<byte> { drawType.Value };
-                    else if (drawType.HasValue)
-                        hex.IDs.Add( drawType.Value);
+                    else if (drawType.HasValue && !hex.IDs.Contains(drawType.Value))
+                        hex.IDs.Add(drawType.Value);
 
                     Grid[mouse] = hex;
                 }
@@ -263,7 +263,7 @@ namespace KreativerName.Scenes
                     if (Grid[mouse].HasValue)
                         Grid[mouse] = null;
                     else
-                        Grid[mouse] = new Hex(mouse, 1);
+                        Grid[mouse] = new Hex(mouse, 0);
                 }
             }
             if (input.KeyPress(Key.A))
@@ -342,6 +342,7 @@ namespace KreativerName.Scenes
         public override void UpdateUI(Vector2 windowSize)
         {
             ui.Update(windowSize);
+            input = ui.Input;
         }
 
         public List<HexPoint> GetPlayerMoves()
@@ -435,7 +436,7 @@ namespace KreativerName.Scenes
 
             player = level.startPos;
             renderer.Grid = level.grid;
-            scrolling = new Vector2(0,0);
+            scrolling = new Vector2(0, 0);
 
             textLevel.Text = $"Level {levelIndex + 1:000}";
             textMoves.Text = $"Min. Zuege: {level.minMoves:00}";
@@ -481,7 +482,7 @@ namespace KreativerName.Scenes
             {
                 for (int i = -(j / 2); i < w - (j + 1) / 2; i++)
                 {
-                    Grid[i, j] = new Hex(i, j, 1);
+                    Grid[i, j] = new Hex(i, j, 0);
                 }
             }
 

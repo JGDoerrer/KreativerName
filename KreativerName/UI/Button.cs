@@ -39,6 +39,7 @@ namespace KreativerName.UI
             if (Enabled && !clicked && b)
             {
                 OnClick?.Invoke();
+                ui.Input.ReleaseMouse(MouseButton.Left);
             }
 
             clicked = b;

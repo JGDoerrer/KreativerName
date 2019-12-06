@@ -13,7 +13,7 @@ namespace KreativerName.UI
         }
 
         List<UIElement> Elements { get; set; } = new List<UIElement>();
-        internal Input Input; //{ get; set; }
+        internal Input Input;// { get; set; }
 
         internal Vector2 MousePosition => Input?.MousePosition ?? new Vector2();
 
@@ -52,6 +52,11 @@ namespace KreativerName.UI
         {
             element.SetUI(this);
             Elements.Add(element);
+        }
+
+        public void SetInput(ref Input input)
+        {
+            Input = input;
         }
 
         #region IDisposable Support

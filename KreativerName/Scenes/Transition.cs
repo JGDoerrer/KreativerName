@@ -78,7 +78,7 @@ namespace KreativerName.Scenes
                 {
                     next.Dispose();
                 }
-                
+
                 disposedValue = true;
             }
         }
