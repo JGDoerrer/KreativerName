@@ -35,16 +35,17 @@ namespace KreativerName.UI
         {
             UpdateChildren(windowSize);
 
+            bool down = MouseLeftDown;
             bool b = (MouseOver(windowSize) && !mouseDown && MouseLeftDown) || ui.Input.KeyDown(Shortcut);
             if (Enabled && !clicked && b)
             {
                 OnClick?.Invoke();
-                ui.Input.ReleaseMouse(MouseButton.Left);
+                //ui.Input.ReleaseMouse(MouseButton.Left);
             }
 
             clicked = b;
 
-            mouseDown = MouseLeftDown;
+            mouseDown = down;
         }
 
         public override void Render(Vector2 windowSize)
@@ -68,7 +69,7 @@ namespace KreativerName.UI
 
             if (MouseOver(windowSize))
             {
-                if (MouseLeftDown)
+                if (mouseDown)
                     offset = a * 3 * 2;
                 else
                     offset = a * 3;

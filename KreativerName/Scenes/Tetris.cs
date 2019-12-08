@@ -66,9 +66,9 @@ namespace KreativerName.Scenes
                 0b0000010001000110,
             },
             { // I
-                0b0000111100000000,
+                0b0000000011110000,
                 0b0010001000100010,
-                0b0000111100000000,
+                0b0000000011110000,
                 0b0010001000100010,
             },
         };
@@ -187,7 +187,7 @@ namespace KreativerName.Scenes
         public override void Render(Vector2 windowSize)
         {
             for (int x = -1; x < Width + 1; x++)
-                for (int y = 1; y < Height + 1; y++)
+                for (int y = 2; y < Height + 1; y++)
                 {
                     if (x >= 0 && y >= 0 && x < Width && y < Height)
                     {
@@ -207,15 +207,7 @@ namespace KreativerName.Scenes
                 RenderPiece(windowSize, currentPiece, currentRot, currentX, currentY);
 
             // next piece
-            for (int x = 0; x < 4; x++)
-                for (int y = 0; y < 4; y++)
-                    if ((pieces[nextPiece, 0] & (1 << (y * 4 + x))) > 0)
-                    {
-                        Vector2 position = new Vector2(x, y) * 8 * Scale + new Vector2(50, 50);
-
-                        TextureRenderer.Draw(Textures.Get("Tetris"), position, Vector2.One * Scale, Color.White, new RectangleF((nextPiece % 3 == 0 ? 0 : 1) * 8, 0, 8, 8));
-                        TextureRenderer.Draw(Textures.Get("Tetris"), position, Vector2.One * Scale, nextPiece % 3 != 2 ? c1 : c2, new RectangleF((nextPiece % 3 == 0 ? 0 : 1) * 8, 8, 8, 8));
-                    }
+            RenderPiece(windowSize, nextPiece, 0, Width + 3, 5);
 
             {
                 TextBlock textBlock = new TextBlock($"Punkte: {score}", 2, 200, 50)
@@ -339,7 +331,7 @@ namespace KreativerName.Scenes
                 {
                     if (Fits(currentPiece, currentRot, currentX + 1, currentY))
                         currentX += 1;
-                    right = 2;
+                    right = 4;
                 }
                 right--;
             }
@@ -356,7 +348,7 @@ namespace KreativerName.Scenes
                 {
                     if (Fits(currentPiece, currentRot, currentX - 1, currentY))
                         currentX -= 1;
-                    left = 2;
+                    left = 4;
                 }
                 left--;
             }

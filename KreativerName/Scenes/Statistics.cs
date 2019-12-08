@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using KreativerName.Rendering;
 using KreativerName.UI;
 using KreativerName.UI.Constraints;
@@ -70,17 +71,51 @@ namespace KreativerName.Scenes
 
         UI.UI ui;
         List<Numbers> background;
+
+        const int maxNums = 5;
+        int numsClicked = 0;
+        byte?[] clickedNums = new byte?[maxNums];
+        int correctAnimation = -1;
+        Scene scene = null;
+
         static Random random = new Random();
 
         public override void Update()
         {
+            UpdateBackground();
+
+            if (numsClicked > maxNums)
+            {
+                clickedNums = new byte?[maxNums];
+                numsClicked = 0;
+            }
+
+            if (numsClicked == maxNums && correctAnimation < 0 && clickedNums.All(x => x == clickedNums[0]))
+            {
+                correctAnimation = 60;
+                scene = new Tetris((int)clickedNums[0]);
+            }
+
+            if (correctAnimation > 0)
+            {
+                correctAnimation--;
+            }
+            else if (correctAnimation == 0)
+            {
+                Scenes.LoadScene(new Transition(scene, 10));
+                correctAnimation--;
+            }
+        }
+
+        private void UpdateBackground()
+        {
             if (random.NextDouble() < .09)
             {
                 int length = random.Next(3, 10);
-                List<int> values = new List<int>();
+                List<byte> values = new List<byte>();
                 for (int i = 0; i < length; i++)
                 {
-                    values.Add(random.Next(0, 10));
+                    values.Add((byte)random.Next(0, 10));
                 }
 
                 background.Add(new Numbers()
@@ -104,7 +139,7 @@ namespace KreativerName.Scenes
 
         public override void UpdateUI(Vector2 windowSize)
         {
-            if (Scenes.Input.MouseDown(OpenTK.Input.MouseButton.Left))
+            if (Scenes.Input.MousePress(OpenTK.Input.MouseButton.Left))
             {
                 foreach (Numbers number in background)
                 {
@@ -119,9 +154,17 @@ namespace KreativerName.Scenes
                         if (mousePos.X >= position.X &&
                             mousePos.X <= position.X + 16 &&
                             mousePos.Y >= position.Y &&
-                            mousePos.Y <= position.Y + 16 &&
-                            number.Values[i] == 1)
-                            Scenes.LoadScene(new Transition(new Tetris(), 10));
+                            mousePos.Y <= position.Y + 16 && correctAnimation < 0)
+                        {
+                            // shift values
+                            for (int j = maxNums - 1; j >= 1; j--)
+                                clickedNums[j] = clickedNums[j - 1];
+
+                            clickedNums[0] = number.Values[i];
+                            numsClicked++;
+
+                            number.Values[i] = (byte)random.Next(0, 10);
+                        }                          
                     }
                 }
             }
@@ -144,7 +187,7 @@ namespace KreativerName.Scenes
                         number.Values[j] = number.Values[j - 1];
 
                         if (j == 1)
-                            number.Values[0] = random.Next(0, 10);
+                            number.Values[0] = (byte)random.Next(0, 10);
                     }
                 }
                 background[i] = number;
@@ -168,12 +211,36 @@ namespace KreativerName.Scenes
                 }
             }
 
+            if (!clickedNums.All(x => x == null))
+            {
+                string s = "";
+                for (int i = maxNums - 1; i >= 0; i--)
+                    s += clickedNums[i].ToString();
+
+                TextBlock number = new TextBlock(s, 3);
+                if (correctAnimation > 0)
+                {
+                    number.Color = (correctAnimation / 10) % 2 == 0 ? Color.Green : Color.White;
+                }
+                else
+                    number.Color = Color.White;
+
+                number.SetConstraints(
+                    new PixelConstraint(20),
+                    new PixelConstraint(20, RelativeTo.Window, Direction.Bottom),
+                    new PixelConstraint((int)number.TextWidth),
+                    new PixelConstraint((int)number.TextHeight));
+
+                number.Render(windowSize);
+                number.Dispose();
+            }
+
             ui.Render(windowSize);
         }
 
         struct Numbers
         {
-            public List<int> Values;
+            public List<byte> Values;
             public Vector2 Position;
             public Color Color;
         }

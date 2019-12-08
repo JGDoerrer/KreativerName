@@ -49,6 +49,18 @@ namespace KreativerName.UI
             }
         }
 
+        internal bool MouseOverChildren(Vector2 windowSize)
+        {
+            foreach (UIElement child in children)
+            {
+                if (child.MouseOver(windowSize))
+                    return true;
+                else if (child.MouseOverChildren(windowSize))
+                    return true;
+            }
+            return false;
+        }
+
         public void SetConstraints(UIConstaints constaints) => this.constaints = constaints;
         public void SetConstraints(Constraint x, Constraint y, Constraint width, Constraint height) => constaints = new UIConstaints(x, y, width, height);
 
@@ -75,7 +87,7 @@ namespace KreativerName.UI
 
         #region Mouse
 
-        protected bool MouseOver(Vector2 windowSize)
+        internal bool MouseOver(Vector2 windowSize)
         {
             float x = constaints.GetX(windowSize, this);
             float y = constaints.GetY(windowSize, this);

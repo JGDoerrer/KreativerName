@@ -101,7 +101,7 @@ namespace KreativerName.Scenes
         public override void Update()
         {
             HexPoint mouse = layout.PixelToHex(input.MousePosition);
-            selectedHex = mouse;
+            selectedHex = mouse;                  
 
             if (input.MousePress(MouseButton.Left))
             {

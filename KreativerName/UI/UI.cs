@@ -53,10 +53,18 @@ namespace KreativerName.UI
             element.SetUI(this);
             Elements.Add(element);
         }
-
-        public void SetInput(ref Input input)
+        
+        public bool MouseOver(Vector2 windowSize)
         {
-            Input = input;
+            foreach (UIElement element in Elements)
+            {
+                if (element.MouseOver(windowSize))
+                    return true;
+                if (element.MouseOverChildren(windowSize))
+                    return true;
+            }
+
+            return false;
         }
 
         #region IDisposable Support

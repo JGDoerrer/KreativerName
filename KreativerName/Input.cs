@@ -100,16 +100,21 @@ namespace KreativerName
         {
             ResetKeys();
             //mousePosition = new Vector2();
+            ResetMouse();
+        }
+
+        public void ResetMouse()
+        {
             mouseWheel = 0;
             mouseWheelLast = 0;
+            mouseDown = new List<MouseButton>();
+            mouseDownLast = new List<MouseButton>();
         }
 
         public void ResetKeys()
         {
             keysDown = new List<Key>();
             keysDownLast = new List<Key>();
-            mouseDown = new List<MouseButton>();
-            mouseDownLast = new List<MouseButton>();
             KeyString = "";
         }
 

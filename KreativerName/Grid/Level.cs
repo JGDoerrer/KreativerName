@@ -33,11 +33,13 @@ namespace KreativerName.Grid
 
                 foreach (HexData type in hex.Types)
                 {
+                    HexPoint position = hex.Position;
+
                     foreach (HexAction action in type.Changes)
                     {
                         bool conditionMet = false;
                         bool move = true;
-                        HexPoint nextPos = hex.Position + new HexPoint(action.MoveX, action.MoveY);
+                        HexPoint nextPos = position + new HexPoint(action.MoveX, action.MoveY);
 
                         switch (action.Condition)
                         {
@@ -45,10 +47,10 @@ namespace KreativerName.Grid
                                 conditionMet = true;
                                 break;
                             case HexCondition.PlayerEnter:
-                                conditionMet = hex.Position == player;
+                                conditionMet = position == player;
                                 break;
                             case HexCondition.PlayerLeave:
-                                conditionMet = hex.Position == lastPlayer;
+                                conditionMet = position == lastPlayer;
                                 break;
                             case HexCondition.NextSolid:
                                 conditionMet = grid[nextPos] == null || grid[nextPos]?.Flags.HasFlag(HexFlags.Solid) == true;
@@ -59,24 +61,26 @@ namespace KreativerName.Grid
                                 break;
                         }
 
-                        if (conditionMet && hex.IDs.Contains(type.ID))
+                        if (conditionMet && nextGrid[position].Value.IDs.Contains(type.ID))
                         {
-                            if (nextPos == hex.Position || !move)
+                            if (nextPos == position || !move)
                             {
-                                Hex temp = nextGrid[hex.Position].Value;
+                                Hex temp = nextGrid[position].Value;
                                 temp.IDs.Remove(type.ID);
                                 temp.IDs.Add(action.ChangeTo);
-                                nextGrid[hex.Position] = temp;
+                                nextGrid[position] = temp;
                             }
                             else if (nextGrid[nextPos].HasValue && move)
                             {
-                                Hex temp = nextGrid[hex.Position].Value;
+                                Hex temp = nextGrid[position].Value;
                                 temp.IDs.Remove(type.ID);
-                                nextGrid[hex.Position] = temp;
+                                nextGrid[position] = temp;
 
                                 Hex next = nextGrid[nextPos].Value;
                                 next.IDs.Add(action.ChangeTo);
                                 nextGrid[nextPos] = next;
+
+                                position = nextPos;
                             }
                         }
                     }

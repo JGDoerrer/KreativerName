@@ -156,21 +156,30 @@ namespace KreativerName.Scenes
 
                 ui.Add(frame);
             }
-            // Hexagons
             {
                 const int size = 42;
+                const int rowSize = 8;
+                const int margin = 5;
                 byte[] values = HexData.Data.Select(x => x.ID).OrderBy(x => x).ToArray();
+
+                Frame lowerFrame = new Frame();
+                lowerFrame.SetConstraints(
+                   new PixelConstraint(0),
+                   new PixelConstraint(0, RelativeTo.Window, Direction.Bottom),
+                   new RelativeConstraint(1, RelativeTo.Window),
+                   new PixelConstraint((values.Length / rowSize + 1) * (size + margin) + (40 - margin)));
 
                 buttonFrame = new Frame();
                 buttonFrame.SetConstraints(
-                   new PixelConstraint(0),
-                   new PixelConstraint(0 , RelativeTo.Window, Direction.Bottom),
-                   new RelativeConstraint(1, RelativeTo.Window),
-                   new PixelConstraint(size + 40));
+                    new PixelConstraint(20),
+                    new PixelConstraint(20),
+                    new PixelConstraint(0),
+                    new PixelConstraint(0));
 
+                // Hexagons
                 for (int i = 0; i < values.Length; i++)
                 {
-                    Button button = new Button((i % 16) * (size+10) + 20, 20, size, size);
+                    Button button = new Button((i % rowSize) * (size + margin), (i / rowSize) * (size + margin), size, size);
 
                     UI.Image image = new UI.Image(Textures.Get("Hex"), new RectangleF(32 * values[i], 0, 32, 32));
                     image.SetConstraints(new UIConstaints(6, 5, size - 10, size - 10));
@@ -185,12 +194,19 @@ namespace KreativerName.Scenes
 
                     buttonFrame.AddChild(button);
                 }
-                ui.Add(buttonFrame);
+
+                textHexDesc = new TextBlock("", 2, rowSize * (size + margin) + 40, 20);
+
+                lowerFrame.AddChild(buttonFrame);
+                lowerFrame.AddChild(textHexDesc);
+
+                ui.Add(lowerFrame);
             }
         }
 
         int levelIndex = 0;
         int worldIndex = 0;
+        bool ignoreMouse;
         byte? drawType = null;
         World world;
         Level level;
@@ -199,6 +215,7 @@ namespace KreativerName.Scenes
         TextBlock textLevel;
         TextBlock textWorld;
         TextBlock textMoves;
+        TextBlock textHexDesc;
         Frame buttonFrame;
 
         public UI.UI ui;
@@ -227,7 +244,15 @@ namespace KreativerName.Scenes
             for (int i = 0; i < buttonFrame.Children.Count; i++)
             {
                 Button item = (Button)buttonFrame.Children[i];
-                item.Color = drawType != null && (int)drawType == i ? Color.Green : Color.White;
+                if (drawType != null && (int)drawType == i)
+                {
+                    item.Color = Color.Green;
+                    HexData data = HexData.Data.First(x => x.ID == i);
+                    textHexDesc.Text = $"Solide:  {(data.Flags.HasFlag(HexFlags.Solid) ? "Ja" : "Nein")}\nTödlich: {(data.Flags.HasFlag(HexFlags.Deadly) ? "Ja" : "Nein")}\nZiel:    {(data.Flags.HasFlag(HexFlags.Goal) ? "Ja" : "Nein")}";
+                }
+                else
+                    item.Color = Color.White;
+
             }
 
             HandleInput();
@@ -239,31 +264,34 @@ namespace KreativerName.Scenes
         {
             HexPoint mouse = layout.PixelToHex(input.MousePosition);
             selectedHex = mouse;
-
+            
             float scrollSpeed = 8 * scale;
 
-            if (input.MouseDown(MouseButton.Left))
+            if (!ignoreMouse)
             {
-                if (Grid != null && Grid[mouse] != null && drawType != null)
+                if (input.MouseDown(MouseButton.Left))
                 {
-                    Hex hex = Grid[mouse].Value;
+                    if (Grid != null && Grid[mouse] != null && drawType != null)
+                    {
+                        Hex hex = Grid[mouse].Value;
 
-                    if (drawType.HasValue && (drawType == 0))
-                        hex.IDs = new List<byte> { drawType.Value };
-                    else if (drawType.HasValue && !hex.IDs.Contains(drawType.Value))
-                        hex.IDs.Add(drawType.Value);
+                        if (drawType.HasValue && (drawType == 0))
+                            hex.IDs = new List<byte> { drawType.Value };
+                        else if (drawType.HasValue && !hex.IDs.Contains(drawType.Value))
+                            hex.IDs.Add(drawType.Value);
 
-                    Grid[mouse] = hex;
+                        Grid[mouse] = hex;
+                    }
                 }
-            }
-            if (input.MousePress(MouseButton.Right))
-            {
-                if (Grid != null)
+                if (input.MousePress(MouseButton.Right))
                 {
-                    if (Grid[mouse].HasValue)
-                        Grid[mouse] = null;
-                    else
-                        Grid[mouse] = new Hex(mouse, 0);
+                    if (Grid != null)
+                    {
+                        if (Grid[mouse].HasValue)
+                            Grid[mouse] = null;
+                        else
+                            Grid[mouse] = new Hex(mouse, 0);
+                    }
                 }
             }
             if (input.KeyPress(Key.A))
@@ -342,7 +370,8 @@ namespace KreativerName.Scenes
         public override void UpdateUI(Vector2 windowSize)
         {
             ui.Update(windowSize);
-            input = ui.Input;
+
+            ignoreMouse = ui.MouseOver(windowSize);
         }
 
         public List<HexPoint> GetPlayerMoves()
@@ -385,7 +414,6 @@ namespace KreativerName.Scenes
             {
                 Scenes.LoadScene(new Transition(this, 10));
             };
-            //drawType = null;
             Scenes.LoadScene(new Transition(testGame, 10));
         }
 
@@ -505,6 +533,7 @@ namespace KreativerName.Scenes
                     textLevel?.Dispose();
                     textMoves?.Dispose();
                     textWorld?.Dispose();
+                    textHexDesc?.Dispose();
                     buttonFrame?.Dispose();
                     testGame?.Dispose();
                 }

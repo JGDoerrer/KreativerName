@@ -33,7 +33,7 @@ namespace KreativerName.UI
         public float Size { get; set; }
         public Color Color { get; set; } = Color.Black;
         public float TextWidth => s.Sum(x => !char.IsUpper(x) ? Size * 6 : Size * 7);
-        public float TextHeight => Size * 6;
+        public float TextHeight => Size * 6 + s.Count(x => x == '\n') * Size * 8;
 
         public override void Update(Vector2 windowSize)
         {
@@ -56,12 +56,21 @@ namespace KreativerName.UI
 
         public static void RenderString(string s, Vector2 position, Color color, float size = 2)
         {
+            float startX = position.X;
+
             foreach (char c in s)
             {
+                if (c == '\n')
+                {
+                    position.Y += 8 * size;
+                    position.X = startX;
+                }
+
                 if (c <= 255 && c >= 32)
                 {
                     if (!char.IsUpper(c))
                         position.X -= 1 * size;
+                                       
                     RenderChar(c, position, color, size);
                     position.X += 7 * size;
                 }
