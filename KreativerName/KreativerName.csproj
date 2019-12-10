@@ -146,9 +146,9 @@
     <Content Include="Resources\Textures\TextBox.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Worlds\000.wld">
+    <Resource Include="Resources\Worlds\000.wld">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </Resource>
     <None Include="Resources\HexData\MovingDeadlyNW.hex">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -191,12 +191,15 @@
     <None Include="Resources\HexData\Solid.hex">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\Worlds\001.wld">
+    <Resource Include="Resources\Worlds\001.wld">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\Worlds\002.wld">
+    </Resource>
+    <Resource Include="Resources\Worlds\002.wld">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Resource>
+    <Resource Include="Resources\Worlds\003.wld">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

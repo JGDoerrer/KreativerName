@@ -48,7 +48,7 @@ namespace KreativerName.Scenes
 
                 // New
                 {
-                    Button button = new Button(20, 50, 60, 40);
+                    Button button = new Button(20, 60, 60, 40);
                     button.OnClick += NewLevel;
 
                     TextBlock text = new TextBlock("Neu", 2, 10, 10);
@@ -58,7 +58,7 @@ namespace KreativerName.Scenes
                 }
                 // Test
                 {
-                    Button button = new Button(100, 50, 90, 40);
+                    Button button = new Button(100, 60, 90, 40);
                     button.OnClick += TestLevel;
                     button.Shortcut = Key.T;
 
@@ -120,12 +120,12 @@ namespace KreativerName.Scenes
                 }
                 // Min Moves
                 {
-                    textMoves = new TextBlock($"Min. Zuege: {level.minMoves:00}", 2, 20, 100);
+                    textMoves = new TextBlock($"Min. Zuege: {level.minMoves:00}", 2, 20, 110);
 
                     frame.AddChild(textMoves);
                     // +
                     {
-                        Button button = new Button(160, 120, 20, 20);
+                        Button button = new Button(160, 130, 20, 20);
                         button.OnClick += () =>
                         {
                             level.minMoves++;
@@ -139,7 +139,7 @@ namespace KreativerName.Scenes
                     }
                     // -
                     {
-                        Button button = new Button(180, 120, 20, 20);
+                        Button button = new Button(180, 130, 20, 20);
                         button.OnClick += () =>
                         {
                             if (level.minMoves > 0)
@@ -265,7 +265,7 @@ namespace KreativerName.Scenes
             HexPoint mouse = layout.PixelToHex(input.MousePosition);
             selectedHex = mouse;
             
-            float scrollSpeed = 8 * scale;
+            float scrollSpeed = 8;
 
             if (!ignoreMouse)
             {
@@ -320,6 +320,8 @@ namespace KreativerName.Scenes
                 scrolling.Y -= scrollSpeed;
             }
             scale *= (float)Math.Pow(2, input.MouseScroll());
+
+            scale = scale.Clamp(0.125f, 16);
         }
 
         public override void Render(Vector2 windowSize)

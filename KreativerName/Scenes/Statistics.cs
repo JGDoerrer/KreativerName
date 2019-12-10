@@ -82,8 +82,6 @@ namespace KreativerName.Scenes
 
         public override void Update()
         {
-            UpdateBackground();
-
             if (numsClicked > maxNums)
             {
                 clickedNums = new byte?[maxNums];
@@ -107,38 +105,10 @@ namespace KreativerName.Scenes
             }
         }
 
-        private void UpdateBackground()
-        {
-            if (random.NextDouble() < .09)
-            {
-                int length = random.Next(3, 10);
-                List<byte> values = new List<byte>();
-                for (int i = 0; i < length; i++)
-                {
-                    values.Add((byte)random.Next(0, 10));
-                }
-
-                background.Add(new Numbers()
-                {
-                    Color = Color.FromArgb(50, 50, 50),
-                    Values = values,
-                    Position = new Vector2((float)random.NextDouble(), 0)
-                });
-            }
-
-            for (int i = background.Count - 1; i >= 0; i--)
-            {
-                Numbers item = background[i];
-
-                if (item.Position.Y > 1.1)
-                {
-                    background.RemoveAt(i);
-                }
-            }
-        }
-
         public override void UpdateUI(Vector2 windowSize)
         {
+            UpdateBackground(windowSize);
+
             if (Scenes.Input.MousePress(OpenTK.Input.MouseButton.Left))
             {
                 foreach (Numbers number in background)
@@ -146,10 +116,10 @@ namespace KreativerName.Scenes
                     for (int i = 0; i < number.Values.Count; i++)
                     {
                         Vector2 mousePos = Scenes.Input.MousePosition;
-                        Vector2 position = number.Position * windowSize - new Vector2(0, 12);
+                        Vector2 position = number.Position;
 
-                        position.X = (float)Math.Round(position.X / 16) * 16;
-                        position.Y = (float)Math.Round((position.Y / 16) - i) * 16;
+                        position.Y = (float)Math.Round(position.Y - i);
+                        position *= 16;
 
                         if (mousePos.X >= position.X &&
                             mousePos.X <= position.X + 16 &&
@@ -164,34 +134,11 @@ namespace KreativerName.Scenes
                             numsClicked++;
 
                             number.Values[i] = (byte)random.Next(0, 10);
-                        }                          
+                        }
                     }
                 }
             }
 
-            for (int i = background.Count - 1; i >= 0; i--)
-            {
-                Numbers number = background[i];
-
-                Vector2 position = number.Position * windowSize - new Vector2(0, 12);
-                number.Position.Y += 0.0015f;
-                Vector2 newPosition = number.Position * windowSize - new Vector2(0, 12);
-
-                float prevY = (float)Math.Round(position.Y / 16) * 16;
-                float newY = (float)Math.Round((newPosition.Y) / 16) * 16;
-
-                if (prevY != newY)
-                {
-                    for (int j = number.Values.Count - 1; j >= 1; j--)
-                    {
-                        number.Values[j] = number.Values[j - 1];
-
-                        if (j == 1)
-                            number.Values[0] = (byte)random.Next(0, 10);
-                    }
-                }
-                background[i] = number;
-            }
 
             ui.Update(windowSize);
         }
@@ -200,9 +147,9 @@ namespace KreativerName.Scenes
         {
             foreach (Numbers number in background)
             {
-                Vector2 position = number.Position * windowSize - new Vector2(0, 12);
-                position.X = (float)Math.Round(position.X / 16) * 16;
-                position.Y = (float)Math.Round(position.Y / 16) * 16;
+                Vector2 position = number.Position;
+                position.Y = (float)Math.Round(position.Y);
+                position *= 16;
 
                 for (int i = 0; i < number.Values.Count; i++)
                 {
@@ -236,6 +183,65 @@ namespace KreativerName.Scenes
             }
 
             ui.Render(windowSize);
+        }
+
+        private void UpdateBackground(Vector2 windowSize)
+        {
+            if (random.NextDouble() < .1)
+            {
+                int length = random.Next(3, 10);
+                List<byte> values = new List<byte>();
+                for (int i = 0; i < length; i++)
+                {
+                    values.Add((byte)random.Next(0, 10));
+                }
+
+                int x = (int)(windowSize.X / 16f * (float)random.NextDouble());
+
+                if (background.Where(a => a.Position.X == x).Count() == 0)
+                {
+                    background.Add(new Numbers()
+                    {
+                        Color = Color.FromArgb(50, 50, 50),
+                        Values = values,
+                        Position = new Vector2(x, 0)
+                    });
+                }
+            }
+
+            for (int i = background.Count - 1; i >= 0; i--)
+            {
+                Numbers number = background[i];
+
+                Vector2 position = number.Position;
+                number.Position.Y += 0.15f;
+                Vector2 newPosition = number.Position;
+
+                float prevY = (float)Math.Round(position.Y) * 16;
+                float newY = (float)Math.Round(newPosition.Y) * 16;
+
+                if (prevY != newY)
+                {
+                    for (int j = number.Values.Count - 1; j >= 1; j--)
+                    {
+                        number.Values[j] = number.Values[j - 1];
+
+                        if (j == 1)
+                            number.Values[0] = (byte)random.Next(0, 10);
+                    }
+                }
+                background[i] = number;
+            }
+
+            for (int i = background.Count - 1; i >= 0; i--)
+            {
+                Numbers item = background[i];
+
+                if (item.Position.Y > windowSize.Y / 16f + item.Values.Count)
+                {
+                    background.RemoveAt(i);
+                }
+            }
         }
 
         struct Numbers

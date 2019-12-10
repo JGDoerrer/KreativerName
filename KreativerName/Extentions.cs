@@ -37,6 +37,24 @@ namespace KreativerName
 
         #endregion
 
+        public static int Clamp(this int i, int min, int max)
+        {
+            if (i < min)
+                return min;
+            if (i > max)
+                return max;
+            return i;
+        }
+
+        public static float Clamp(this float i, float min, float max)
+        {
+            if (i < min)
+                return min;
+            if (i > max)
+                return max;
+            return i;
+        }
+
         public static string ToRoman(this int i)
         {
             if (i >= 1000) return "M" + (i - 1000).ToRoman();

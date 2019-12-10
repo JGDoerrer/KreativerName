@@ -61,14 +61,14 @@ namespace KreativerName
 
             Vector2 size = new Vector2(Width, Height);
 
-            try
-            {
-                Scenes.Scenes.Update(size);
-            }
-            catch (Exception ex)
-            {
-                Scenes.Scenes.LoadScene(new Transition(new ErrorScene(ex), 10));
-            }
+            //try
+            //{
+            Scenes.Scenes.Update(size);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Scenes.Scenes.LoadScene(new Transition(new ErrorScene(ex), 10));
+            //}
 
             // Update TimePlaying
             Stats.Current.TimePlaying = Stats.Current.TimePlaying.Add(TimeSpan.FromSeconds(e.Time));

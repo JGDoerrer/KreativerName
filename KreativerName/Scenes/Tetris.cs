@@ -122,6 +122,9 @@ namespace KreativerName.Scenes
         int right = 0;
         int down = 0;
 
+        int rngSeed = 0x1234;
+        int lastPiece = 0;
+
         public override void Update()
         {
             if (gameOver)
@@ -177,6 +180,7 @@ namespace KreativerName.Scenes
                 }
             }
 
+            rngSeed = Rng(rngSeed);
             frameCount++;
         }
 
@@ -359,6 +363,8 @@ namespace KreativerName.Scenes
 
         private void NextPiece()
         {
+            lastPiece = currentPiece;
+
             currentX = Width / 2 - 2;
             currentY = 2;
             currentRot = 0;
@@ -383,7 +389,13 @@ namespace KreativerName.Scenes
                     break;
             }
 
-            nextPiece = random.Next(0, 7);
+            rngSeed = Rng(rngSeed);
+            nextPiece = rngSeed % 7;
+            if (nextPiece == lastPiece)
+            {
+                rngSeed = Rng(rngSeed);
+                nextPiece = rngSeed % 7;
+            }
         }
 
         private bool Fits(int piece, int rotation, int x, int y)
@@ -463,6 +475,8 @@ namespace KreativerName.Scenes
 
             nextPieceIn = 15;
         }
+
+        private int Rng(int value) => ((((value >> 9) & 1) ^ ((value >> 1) & 1)) << 15) | (value >> 1);
 
         #region IDisposable Support
 

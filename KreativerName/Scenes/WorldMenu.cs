@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using KreativerName.Grid;
 using KreativerName.Rendering;
 using KreativerName.UI;
@@ -89,19 +90,24 @@ namespace KreativerName.Scenes
             ui.Add(exitButton);
 
             // Worlds
+            const int starsPerWorld = 2;
+            bool[,] stars = new bool[worlds.Count, starsPerWorld];
+
+            for (int i = 0; i < worlds.Count; i++)
+            {
+                stars[i, 0] = worlds[i].AllCompleted;
+                stars[i, 1] = worlds[i].AllPerfect;
+            }
+
             for (int i = 0; i < worldcount; i++)
             {
                 Button button = new Button((ButtonSize + 20) * i + 20, 20, ButtonSize, ButtonSize);
-
-                List<bool> stars = new List<bool>();
-                stars.Add(worlds[i].AllCompleted);
-                stars.Add(worlds[i].AllPerfect);
-
-                for (int j = 0; j < stars.Count; j++)
+                
+                for (int j = 0; j < starsPerWorld; j++)
                 {
-                    UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(stars[j] ? 10 : 0, 0, 10, 10));
+                    UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(stars[i,j] ? 10 : 0, 0, 10, 10));
                     image.SetConstraints(new UIConstaints(
-                        ButtonSize * (j + 1) / (stars.Count + 1) - 10,
+                        ButtonSize * (j + 1) / (starsPerWorld + 1) - 10,
                         ButtonSize - 15, 20, 20));
 
                     button.AddChild(image);
@@ -119,7 +125,7 @@ namespace KreativerName.Scenes
                     NewGame(world);
                 };
 
-                TextBlock text = new TextBlock((i + 1).ToString(), 3);
+                TextBlock text = new TextBlock((i + 1).ToRoman().ToLower(), 3);
                 text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)text.TextWidth), new PixelConstraint((int)text.TextHeight));
                 button.AddChild(text);
                 worldFrame.AddChild(button);
