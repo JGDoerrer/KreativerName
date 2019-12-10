@@ -26,7 +26,7 @@ namespace KreativerName
                 Stats.Current.FirstStart = DateTime.Now;
 
             Scenes.Scenes.SetWindow(this);
-            Scenes.Scenes.LoadScene(new MainMenu());
+            Scenes.Scenes.LoadScene(new HexEditor(HexData.Data[0]));
 
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);

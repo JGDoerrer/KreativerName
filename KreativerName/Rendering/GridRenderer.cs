@@ -55,20 +55,25 @@ namespace KreativerName.Rendering
                     TextureRenderer.DrawHex(Textures.Get("Player"), hex.Position, Layout, Vector2.One * Layout.size, color, null);
                 else
                 {
-                    for (int i = 0; i < hex.Types.Count; i++)
-                    {
-                        int animation = 0;
-                        if (hex.Types[i].AnimationLength > 0 && hex.Types[i].AnimationSpeed > 0)
-                        {
-                            animation = ((frameCount + hex.Types[i].AnimationPhase) / hex.Types[i].AnimationSpeed) % hex.Types[i].AnimationLength;
-                        }
-                        TextureRenderer.DrawHex(Textures.Get("Hex"), hex.Position, Layout, Vector2.One * Layout.size, color, new RectangleF(32 * hex.Types[i].Texture, animation * 32, 32, 32));
-                    }
+                    RenderHex(hex, Layout, color, frameCount);
                 }
             }
 
             frameCount++;
         }
 
+
+        public static void RenderHex(Hex hex, HexLayout layout, Color color, int frameCount)
+        {
+            for (int i = 0; i < hex.Types.Count; i++)
+            {
+                int animation = 0;
+                if (hex.Types[i].AnimationLength > 0 && hex.Types[i].AnimationSpeed > 0)
+                {
+                    animation = ((frameCount + hex.Types[i].AnimationPhase) / hex.Types[i].AnimationSpeed) % hex.Types[i].AnimationLength;
+                }
+                TextureRenderer.DrawHex(Textures.Get("Hex"), hex.Position, layout, Vector2.One * layout.size, color, new RectangleF(32 * hex.Types[i].Texture, animation * 32, 32, 32));
+            }
+        }
     }
 }

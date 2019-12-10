@@ -90,6 +90,7 @@
     <Compile Include="Rendering\Texture2D.cs" />
     <Compile Include="Rendering\TextureRenderer.cs" />
     <Compile Include="Rendering\Textures.cs" />
+    <Compile Include="Scenes\HexEditor.cs" />
     <Compile Include="Scenes\SettingsScene.cs" />
     <Compile Include="Scenes\Statistics.cs" />
     <Compile Include="Scenes\Tetris.cs" />
@@ -146,9 +147,9 @@
     <Content Include="Resources\Textures\TextBox.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Resource Include="Resources\Worlds\000.wld">
+    <Content Include="Resources\Worlds\000.wld">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    </Content>
     <None Include="Resources\HexData\MovingDeadlyNW.hex">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -191,15 +192,15 @@
     <None Include="Resources\HexData\Solid.hex">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Resource Include="Resources\Worlds\001.wld">
+    <Content Include="Resources\Worlds\001.wld">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Worlds\002.wld">
+    </Content>
+    <Content Include="Resources\Worlds\002.wld">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Worlds\003.wld">
+    </Content>
+    <Content Include="Resources\Worlds\003.wld">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
