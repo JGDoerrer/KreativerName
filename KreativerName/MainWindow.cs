@@ -30,7 +30,6 @@ namespace KreativerName
         }
 
         Input input;
-        static Random random = new Random();
         public int FrameCounter;
         double fps;
 
@@ -39,14 +38,16 @@ namespace KreativerName
             BackgroundWorker worker = sender as BackgroundWorker;
 
             Stats.Current = Stats.LoadFromFile("statistics");
-            worker.ReportProgress(25);
+            worker.ReportProgress(20);
 
             Settings.Current = Settings.LoadFromFile("settings");
-            worker.ReportProgress(50);
+            worker.ReportProgress(40);
 
             HexData.LoadData(@"Resources\HexData");
-            worker.ReportProgress(75);
+            worker.ReportProgress(60);
 
+            Scenes.Scenes.ConnectClient();
+            worker.ReportProgress(80);
 
             if (Stats.Current.FirstStart.Ticks == 0)
                 Stats.Current.FirstStart = DateTime.Now;

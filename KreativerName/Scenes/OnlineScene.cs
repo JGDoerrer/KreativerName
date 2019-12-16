@@ -20,20 +20,10 @@ namespace KreativerName.Scenes
         {
             InitUI();
 
-            Scenes.ConnectClient();
             if (Scenes.Client.Connected)
             {
                 Scenes.Client.BytesRecieved += BytesRecieved;
                 new Thread(Scenes.Client.Recieve).Start();
-
-                List<byte> bytes = new List<byte>() { 0x00, 0x01 };
-
-                byte[] name = Encoding.UTF8.GetBytes("Josua");
-
-                bytes.AddRange(name.Length.ToBytes());
-                bytes.AddRange(name);
-
-                Scenes.Client.Send(bytes.ToArray());
             }
         }
 
@@ -43,7 +33,7 @@ namespace KreativerName.Scenes
         {
             ui = new UI.UI();
             ui.Input = Scenes.Input;
-
+                        
             Button exitButton = new Button(40, 40, 40, 40);
             exitButton.Shortcut = Key.Escape;
             exitButton.OnClick += () =>
@@ -56,10 +46,6 @@ namespace KreativerName.Scenes
             exitButton.AddChild(exitImage);
             ui.Add(exitButton);
 
-            TextBox textBox = new TextBox(200, 200, 200, 32);
-            textBox.TextColor = Color.Black;
-            textBox.MaxTextSize = 15;
-            ui.Add(textBox);
         }
 
         public override void Update()
@@ -125,8 +111,7 @@ namespace KreativerName.Scenes
         }
 
         #endregion
-
-
+        
         #region IDisposable Support
 
         private bool disposedValue = false; // Dient zur Erkennung redundanter Aufrufe.
@@ -137,6 +122,7 @@ namespace KreativerName.Scenes
             {
                 if (disposing)
                 {
+                    ui.Dispose();
                 }
 
 

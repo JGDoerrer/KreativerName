@@ -21,13 +21,12 @@ namespace KreativerName.UI
                 new PixelConstraint(h));
         }
 
-        bool clicked;
         bool mouseDown;
 
         public Color Color { get; set; } = Color.White;
         public Key Shortcut { get; set; }
         public bool Enabled { get; set; } = true;
-        public bool Clicked => clicked;
+        public bool Clicked { get; private set; }
         public event ClickEvent OnClick;
 
 
@@ -37,13 +36,13 @@ namespace KreativerName.UI
 
             bool down = MouseLeftDown;
             bool b = (MouseOver(windowSize) && !mouseDown && MouseLeftDown) || ui.Input.KeyDown(Shortcut);
-            if (Enabled && !clicked && b)
+            if (Enabled && !Clicked && b)
             {
                 OnClick?.Invoke();
                 //ui.Input.ReleaseMouse(MouseButton.Left);
             }
 
-            clicked = b;
+            Clicked = b;
 
             mouseDown = down;
         }

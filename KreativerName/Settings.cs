@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace KreativerName
@@ -8,6 +9,8 @@ namespace KreativerName
         public bool ShowMoves;
         public bool Fullscreen;
         public bool ShowFps;
+
+        public ushort UserID;
 
         public static Settings Current;
         public static Settings New => new Settings()
@@ -26,6 +29,10 @@ namespace KreativerName
             Fullscreen = (bytes[startIndex + count] & (1 << 1)) > 0;
             ShowFps = (bytes[startIndex + count] & (1 << 2)) > 0;
 
+            count++;
+
+            UserID = BitConverter.ToUInt16(bytes, startIndex + count);
+
             return count;
         }
 
@@ -35,6 +42,8 @@ namespace KreativerName
 
             byte b1 = (byte)((ShowMoves ? 1 : 0) << 0 | (Fullscreen ? 1 : 0) << 1 | (ShowFps ? 1 : 0) << 2);
             bytes.Add(b1);
+
+            bytes.AddRange(BitConverter.GetBytes(UserID));
 
             return bytes.ToArray();
         }

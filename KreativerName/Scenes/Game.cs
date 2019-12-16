@@ -292,7 +292,7 @@ namespace KreativerName.Scenes
         }
 
         #region Rendering
-
+        
         private void RenderTitle(int width, int height)
         {
             int alpha = (int)((1 - QuarticOut(1 - (float)worldTitle.Clamp(0, 120) / 120)) * 255);
@@ -312,6 +312,7 @@ namespace KreativerName.Scenes
             title.Color = Color.FromArgb(alpha, Color.White);
             title.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)title.TextWidth), new PixelConstraint((int)title.TextHeight));
             title.Render(new Vector2(width, height));
+            title.Dispose();
         }
 
         private float QuarticOut(float t)
@@ -331,8 +332,10 @@ namespace KreativerName.Scenes
 
         private void InitUI()
         {
-            ui = new UI.UI();
-            ui.Input = new Input(Scenes.Window);
+            ui = new UI.UI
+            {
+                Input = Scenes.Input
+            };
 
             int size = 4;
             title = new TextBlock("Level 000/000", size);

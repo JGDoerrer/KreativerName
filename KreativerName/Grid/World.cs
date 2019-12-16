@@ -120,6 +120,7 @@ namespace KreativerName.Grid
                         return false;
                 }
 
+                sha256.Dispose();
                 return true;
             }
 

@@ -123,6 +123,7 @@
     <Compile Include="UI\Events.cs" />
     <Compile Include="UI\Frame.cs" />
     <Compile Include="UI\Image.cs" />
+    <Compile Include="UI\Notification.cs" />
     <Compile Include="UI\TextBlock.cs" />
     <Compile Include="UI\TextBox.cs" />
     <Compile Include="UI\UI.cs" />

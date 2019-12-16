@@ -50,12 +50,15 @@ namespace KreativerName.Grid
                 {
                     List<List<HexPoint>> prevResults = results;
 
-                    moves--;
-                    results = Solve(level.GetPossibleMoves(level.startPos), level.Copy(), moves, new List<HexPoint>());
+                    if (moves > 1)
+                    {
+                        moves--;
+                        results = Solve(level.GetPossibleMoves(level.startPos), level.Copy(), moves, new List<HexPoint>());
 
-                    if (results.Count == 0)
-                        results = prevResults;
-                    done = true;
+                        if (results.Count == 0)
+                            results = prevResults;
+                        done = true;
+                    }
                 }
 
                 moves += 2;

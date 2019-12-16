@@ -27,13 +27,11 @@ namespace KreativerName.UI
                 new PixelConstraint((int)TextHeight));
         }
 
-        string s;
-
-        public string Text { get => s; set => s = value; }//.ToUpper(); }
+        public string Text { get; set; }//.ToUpper(); }
         public float Size { get; set; }
         public Color Color { get; set; } = Color.Black;
-        public float TextWidth => s.Sum(x => !char.IsUpper(x) ? Size * 6 : Size * 7);
-        public float TextHeight => Size * 6 + s.Count(x => x == '\n') * Size * 8;
+        public float TextWidth => Text.Sum(x => !char.IsUpper(x) ? Size * 6 : Size * 7);
+        public float TextHeight => Size * 6 + Text.Count(x => x == '\n') * Size * 8;
 
         public override void Update(Vector2 windowSize)
         {

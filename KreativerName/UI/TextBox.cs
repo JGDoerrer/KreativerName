@@ -59,19 +59,19 @@ namespace KreativerName.UI
             float w = GetWidth(windowSize);
             float h = GetHeight(windowSize);
 
-            float offset;
+            float offset = 0;
             Color color = Color.White;
-            Texture2D tex = Textures.Get("Button");
+            Texture2D tex = Textures.Get("TextBox");
 
             if (MouseOver(windowSize) || Focused)
             {
                 if (MouseLeftDown)
-                    offset = a * 3 * 2;
+                    color = Color.FromArgb(100, 100, 100);
                 else
-                    offset = a * 3;
+                    color = Color.FromArgb(150, 150, 150);
             }
             else
-                offset = 0;
+                color = Color.FromArgb(255, 255, 255);
 
             // corner top left
             TextureRenderer.Draw(tex, new Vector2(x, y), Vector2.One * scale, color, new RectangleF(offset, 0, a, a));

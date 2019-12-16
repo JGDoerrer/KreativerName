@@ -21,8 +21,10 @@ namespace KreativerName.Scenes
 
             worker.RunWorkerAsync();
 
-            text = new TextBlock("", 5);
-            text.Color = Color.Gray;
+            text = new TextBlock("", 5)
+            {
+                Color = Color.Gray
+            };
             text.SetConstraints(new CenterConstraint(),
                 new CenterConstraint(),
                 new PixelConstraint((int)text.TextWidth),
@@ -65,8 +67,8 @@ namespace KreativerName.Scenes
             text.Render(windowSize);
         }
 
-        private float QuadraticInOut(float t)
-           => t * t / (2 * t * t - 2 * t + 1);
+        //private float QuadraticInOut(float t)
+        //   => t * t / (2 * t * t - 2 * t + 1);
         private float QuarticOut(float t)
            => -((t - 1) * (t - 1) * (t - 1) * (t - 1)) + 1;
 

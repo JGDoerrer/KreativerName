@@ -22,10 +22,15 @@ namespace KreativerName.Networking
         {
             if (Connected)
             {
-                NetworkStream stream = tcp.GetStream();
-                stream.Write(BitConverter.GetBytes(bytes.Length), 0, 4);
-                stream.Write(bytes, 0, bytes.Length);
-                stream.Flush();
+                try
+                {
+                    NetworkStream stream = tcp.GetStream();
+                    stream.Write(BitConverter.GetBytes(bytes.Length), 0, 4);
+                    stream.Write(bytes, 0, bytes.Length);
+                    stream.Flush();
+                }
+                catch
+                { }
             }
         }
 

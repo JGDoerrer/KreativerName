@@ -39,7 +39,7 @@ namespace KreativerName.Scenes
         {
             ui = new UI.UI();
 
-            ui.Input = new Input(Scenes.Window);
+            ui.Input = Scenes.Input;
 
             float size = 5;
             TextBlock title = new TextBlock("KREATIVER NAME", size);

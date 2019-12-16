@@ -391,15 +391,15 @@ namespace KreativerName.Scenes
                     leftFrame.AddChild(button);
                 }
 
-                AddButton(20, 60, 60, 40, "Neu", 10, 10, NewLevel, new Key());
-                AddButton(100, 60, 90, 40, "Testen", 10, 10, TestLevel, Key.T);
-                AddButton(20, 150, 130, 40, "Speichern", 10, 10, SaveWorld, Key.S);
+                AddButton(20, 60, 60, 34, "Neu", 10, 10, NewLevel, new Key());
+                AddButton(100, 60, 90, 34, "Testen", 10, 10, TestLevel, Key.T);
+                AddButton(20, 150, 130, 34, "Speichern", 10, 10, SaveWorld, Key.S);
                 AddButton(140, 30, 20, 20, "+", 5, 3, NextLevel, new Key());
                 AddButton(160, 30, 20, 20, "-", 5, 3, PreviousLevel, new Key());
                 AddButton(140, 10, 20, 20, "+", 5, 3, NextWorld, new Key());
                 AddButton(160, 10, 20, 20, "-", 5, 3, PreviousWorld, new Key());
 
-                AddButton(20, 200, 80, 40, "Lösen", 10, 10, () =>
+                AddButton(20, 200, 80, 34, "Lösen", 10, 10, () =>
                 {
                     LevelSolver solver = new LevelSolver(level);
                     solver.Solved += () => { textHexDesc.Text = $"Min. Züge: {solver.MinMoves}"; };

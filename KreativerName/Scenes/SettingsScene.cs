@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
 using KreativerName.Rendering;
 using KreativerName.UI;
 using KreativerName.UI.Constraints;
@@ -19,7 +21,7 @@ namespace KreativerName.Scenes
         private void InitUI()
         {
             ui = new UI.UI();
-            ui.Input = new Input(Scenes.Window);
+            ui.Input = Scenes.Input;
 
             TextBlock title = new TextBlock("Einstellungen", 4);
             title.Color = Color.White;
@@ -73,6 +75,38 @@ namespace KreativerName.Scenes
             {
                 Settings.Current.ShowFps = b;
             });
+
+            TextBox textBox = new TextBox();
+            textBox.SetConstraints(new CenterConstraint(), new PixelConstraint(250), new PixelConstraint(180), new PixelConstraint(34));
+            textBox.TextColor = Color.Black;
+            textBox.MaxTextSize = 15;
+            ui.Add(textBox);
+
+            Button sendButton = new Button();
+            sendButton.SetConstraints(new CenterConstraint(), new PixelConstraint(290), new PixelConstraint(120), new PixelConstraint(34));
+            sendButton.OnClick += () =>
+            {
+                if (!Scenes.Client.Connected)
+                    return;
+
+                string s = textBox.Text.Trim();
+
+                if (s == string.Empty)
+                    return;
+
+                List<byte> bytes = new List<byte>() { 0x00, 0x01 };
+
+                byte[] name = Encoding.UTF8.GetBytes(s);
+
+                bytes.AddRange(name.Length.ToBytes());
+                bytes.AddRange(name);
+
+                Scenes.Client.Send(bytes.ToArray());
+            };
+
+            TextBlock sendText = new TextBlock("Anmelden", 2, 10, 10);
+            sendButton.AddChild(sendText);
+            ui.Add(sendButton);
         }
 
         public override void Update()
