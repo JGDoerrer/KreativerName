@@ -11,21 +11,6 @@ namespace KreativerName
         [STAThread]
         static void Main(string[] args)
         {
-            Stats.Current = Stats.LoadFromFile("statistics");
-            Settings.Current = Settings.LoadFromFile("settings");
-            HexData.LoadData(@"Resources\HexData");
-
-            for (int i = 0; i < args.Length; i++)
-            {
-                string arg = args[i];
-                switch (arg)
-                {
-                    case "-f":
-                        Settings.Current.Fullscreen = true;
-                        break;
-                }
-            }
-
             new MainWindow().Run();
 
             Stats.Current.SaveToFile("statistics");

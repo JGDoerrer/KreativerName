@@ -3,17 +3,17 @@ using OpenTK;
 
 namespace KreativerName.UI.Constraints
 {
-    public class UIConstaints : IDisposable
+    public class UIConstraints : IDisposable
     {
-        public UIConstaints() { }
-        public UIConstaints(Constraint x, Constraint y, Constraint width, Constraint height)
+        public UIConstraints() { }
+        public UIConstraints(Constraint x, Constraint y, Constraint width, Constraint height)
         {
             xCon = x;
             yCon = y;
             widthCon = width;
             heightCon = height;
         }
-        public UIConstaints(int x, int y, int width, int height)
+        public UIConstraints(int x, int y, int width, int height)
         {
             xCon = new PixelConstraint(x);
             yCon = new PixelConstraint(y);
@@ -31,8 +31,8 @@ namespace KreativerName.UI.Constraints
         public float GetWidth(Vector2 windowSize, UIElement element) => widthCon.GetWidth(windowSize, element);
         public float GetHeight(Vector2 windowSize, UIElement element) => heightCon.GetHeight(windowSize, element);
 
-        public static UIConstaints FullWindow =>
-            new UIConstaints(new PixelConstraint(0), new PixelConstraint(0), new RelativeConstraint(1, RelativeTo.Window), new RelativeConstraint(1, RelativeTo.Window));
+        public static UIConstraints FullWindow =>
+            new UIConstraints(new PixelConstraint(0), new PixelConstraint(0), new RelativeConstraint(1, RelativeTo.Window), new RelativeConstraint(1, RelativeTo.Window));
 
         #region IDisposable Support
 
@@ -56,11 +56,11 @@ namespace KreativerName.UI.Constraints
             }
         }
 
-        //~UIConstaints()
-        //{
-        //    // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
-        //    Dispose(false);
-        //}
+        ~UIConstraints()
+        {
+            // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
+            Dispose(false);
+        }
 
         // Dieser Code wird hinzugefügt, um das Dispose-Muster richtig zu implementieren.
         public void Dispose()

@@ -1,51 +1,57 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using KreativerName.Rendering;
 using KreativerName.UI.Constraints;
 using OpenTK;
-using OpenTK.Input;
 
 namespace KreativerName.UI
 {
-    public class Button : UIElement
+    public class TextBox : UIElement
     {
-        public Button()
+        public TextBox()
+        { }
+        public TextBox(int x, int y, int w, int h)
         {
-            constraints = new UIConstraints();
-        }
-        public Button(int x, int y, int w, int h)
-        {
-            constraints = new UIConstraints(
-                new PixelConstraint(x),
-                new PixelConstraint(y),
-                new PixelConstraint(w),
-                new PixelConstraint(h));
+            constraints = new UIConstraints(x,y,w,h);
         }
 
-        bool clicked;
-        bool mouseDown;
-
-        public Color Color { get; set; } = Color.White;
-        public Key Shortcut { get; set; }
-        public bool Enabled { get; set; } = true;
-        public bool Clicked => clicked;
-        public event ClickEvent OnClick;
-
+        public bool Focused { get; set; }
+        public string Text { get; set; } = "";
+        public int Cursor { get; set; } = 0;
+        public Color TextColor { get; set; }
+        public Vector2 TextOffset { get; set; } = new Vector2(8, 8);
+        public float TextSize { get; set; } = 2;
+        public int MaxTextSize { get; set; } = 5;
 
         public override void Update(Vector2 windowSize)
         {
-            UpdateChildren(windowSize);
-
-            bool down = MouseLeftDown;
-            bool b = (MouseOver(windowSize) && !mouseDown && MouseLeftDown) || ui.Input.KeyDown(Shortcut);
-            if (Enabled && !clicked && b)
+            if (MouseLeftClick)
             {
-                OnClick?.Invoke();
-                //ui.Input.ReleaseMouse(MouseButton.Left);
+                Focused = MouseOver(windowSize);
             }
 
-            clicked = b;
+            if (Focused)
+            {
+                Text = Text.Insert(Cursor, ui.Input.KeyString);
 
-            mouseDown = down;
+                Cursor += ui.Input.KeyString.Length;
+
+                if (Text.Length > MaxTextSize)
+                    Text = Text.Remove(MaxTextSize, Text.Length - MaxTextSize);
+
+                if (Cursor > MaxTextSize)
+                    Cursor = MaxTextSize;
+
+                if (ui.Input.KeyPress(OpenTK.Input.Key.BackSpace) && Cursor > 0)
+                {
+                    Cursor--;
+                    Text = Text.Remove(Cursor, 1);
+                }
+            }
         }
 
         public override void Render(Vector2 windowSize)
@@ -59,17 +65,12 @@ namespace KreativerName.UI
             float h = GetHeight(windowSize);
 
             float offset;
-            Color color = Color;
+            Color color = Color.White;
             Texture2D tex = Textures.Get("Button");
-
-            if (!Enabled)
+            
+            if (MouseOver(windowSize) ||Focused)
             {
-                color = Color.FromArgb(Color.R / 2, Color.B / 2, Color.G / 2);
-            }
-
-            if (MouseOver(windowSize))
-            {
-                if (mouseDown)
+                if (MouseLeftDown)
                     offset = a * 3 * 2;
                 else
                     offset = a * 3;
@@ -95,6 +96,8 @@ namespace KreativerName.UI
             TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + h - a * scale), new Vector2(w / (a * scale) - 2, 1) * scale, color, new RectangleF(offset + a, a * 2, a, a));
             // center
             TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + a * scale), new Vector2(w / (a * scale) - 2, h / (a * scale) - 2) * scale, color, new RectangleF(offset + a, a, a, a));
+
+            TextBlock.RenderString(Text, new Vector2(GetX(windowSize), GetY(windowSize)) + TextOffset, TextColor, TextSize);
 
             RenderChildren(windowSize);
         }

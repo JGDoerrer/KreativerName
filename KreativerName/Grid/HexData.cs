@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace KreativerName.Grid
 {
@@ -90,6 +91,8 @@ namespace KreativerName.Grid
                     HexData hexData = LoadFromFile(file);
                     Data[i] = hexData;
                 }
+
+                Data = Data.OrderBy(x => x.ID).ToArray();
             }
         }
 

@@ -72,5 +72,16 @@ namespace KreativerName
             if (i >= 1) return "I" + (i - 1).ToRoman();
             return "";
         }
+
+        public static bool IsPrime(this int i)
+        {
+            for (int j = 2; j * j < i; j++)
+            {
+                if (i % j == 0)
+                    return false;
+            }
+
+            return true;
+        }
     }
 }

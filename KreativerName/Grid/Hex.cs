@@ -55,13 +55,15 @@ namespace KreativerName.Grid
             get
             {
                 List<HexData> types = new List<HexData>();
+
                 foreach (byte id in IDs)
                 {
-                    if (HexData.Data.Where(x => x.ID == id).Count() > 0)
-                        types.Add(HexData.Data.Where(x => x.ID == id).FirstOrDefault());
+                    // Assume Hexdata.data is ordered by id
+                    if (HexData.Data.Length > id)
+                        types.Add(HexData.Data[id]);
                 }
 
-                return types.OrderBy(x => x.ID).ToList();
+                return types;
             }
         }
 

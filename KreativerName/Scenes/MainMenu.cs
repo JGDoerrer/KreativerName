@@ -75,7 +75,7 @@ namespace KreativerName.Scenes
 
                     UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(10, 10, 10, 10));
                     image.Color = Color.Black;
-                    image.SetConstraints(new UIConstaints(10, 10, 40, 40));
+                    image.SetConstraints(new UIConstraints(10, 10, 40, 40));
 
                     button.AddChild(image);
                     frame.AddChild(button);
@@ -86,7 +86,7 @@ namespace KreativerName.Scenes
 
                     UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(20, 10, 10, 10));
                     image.Color = Color.Black;
-                    image.SetConstraints(new UIConstaints(10, 10, 40, 40));
+                    image.SetConstraints(new UIConstraints(10, 10, 40, 40));
 
                     button.AddChild(image);
                     frame.AddChild(button);
@@ -98,18 +98,18 @@ namespace KreativerName.Scenes
 
                     UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(30, 10, 10, 10));
                     image.Color = Color.Black;
-                    image.SetConstraints(new UIConstaints(10, 10, 40, 40));
+                    image.SetConstraints(new UIConstraints(10, 10, 40, 40));
 
                     button.AddChild(image);
                     frame.AddChild(button);
                 }
                 {
                     Button button = new Button(240, 0, 60, 60);
-                    button.OnClick += () => { };
+                    button.OnClick += () => { Scenes.LoadScene(new Transition(new OnlineScene(), 10)); };
 
                     UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(40, 10, 10, 10));
                     image.Color = Color.Black;
-                    image.SetConstraints(new UIConstaints(10, 10, 40, 40));
+                    image.SetConstraints(new UIConstraints(10, 10, 40, 40));
 
                     button.AddChild(image);
                     frame.AddChild(button);
@@ -171,10 +171,7 @@ namespace KreativerName.Scenes
 
         private void NewEditor()
         {
-            Editor editor = new Editor
-            {
-                input = new Input(Scenes.Window)
-            };
+            Editor editor = new Editor();
             editor.Exit += () =>
             {
                 Scenes.LoadScene(new Transition(this, 10));

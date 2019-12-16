@@ -335,7 +335,7 @@ namespace KreativerName.Scenes
                 {
                     if (Fits(currentPiece, currentRot, currentX + 1, currentY))
                         currentX += 1;
-                    right = 4;
+                    right = 5;
                 }
                 right--;
             }
@@ -352,7 +352,7 @@ namespace KreativerName.Scenes
                 {
                     if (Fits(currentPiece, currentRot, currentX - 1, currentY))
                         currentX -= 1;
-                    left = 4;
+                    left = 6;
                 }
                 left--;
             }

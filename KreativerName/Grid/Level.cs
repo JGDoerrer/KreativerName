@@ -53,11 +53,11 @@ namespace KreativerName.Grid
                                 conditionMet = position == lastPlayer;
                                 break;
                             case HexCondition.NextSolid:
-                                conditionMet = grid[nextPos] == null || grid[nextPos]?.Flags.HasFlag(HexFlags.Solid) == true;
+                                conditionMet = grid[nextPos] == null || (grid[nextPos]?.Flags & HexFlags.Solid) != 0;
                                 move = false;
                                 break;
                             case HexCondition.NextNotSolid:
-                                conditionMet = grid[nextPos] != null && grid[nextPos]?.Flags.HasFlag(HexFlags.Solid) != true;
+                                conditionMet = grid[nextPos] != null && (grid[nextPos]?.Flags & HexFlags.Solid) == 0;
                                 break;
                         }
 
@@ -90,6 +90,49 @@ namespace KreativerName.Grid
             grid = nextGrid;
 
             lastPlayer = player;
+        }
+
+        public List<HexPoint> GetPossibleMoves(HexPoint player)
+        {
+            HexPoint[] directions = {
+                new HexPoint( 1,  0),
+                new HexPoint( 1, -1),
+                new HexPoint( 0, -1),
+                new HexPoint(-1,  0),
+                new HexPoint(-1,  1),
+                new HexPoint( 0,  1),
+            };
+
+            if (grid == null)
+                return new List<HexPoint>();
+
+            List<HexPoint> moves = new List<HexPoint>();
+
+            for (int i = 0; i < 6; i++)
+            {
+                int j = 1;
+
+                while (grid[(directions[i] * j) + player].HasValue && !grid[(directions[i] * j) + player].Value.Flags.HasFlag(HexFlags.Solid))
+                {
+                    moves.Add(directions[i] * j + player);
+                    j++;
+                }
+            }
+            
+            return moves;
+        }
+
+        public List<Hex> GetGoals()
+        {
+            List<Hex> goals = new List<Hex>();
+
+            foreach (Hex hex in grid)
+            {
+                if (hex.Flags.HasFlag(HexFlags.Goal))
+                    goals.Add(hex);
+            }
+
+            return goals;
         }
 
         #region Load & Save

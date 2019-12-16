@@ -48,7 +48,7 @@ namespace KreativerName.Scenes
                 Scenes.LoadScene(new Transition(new MainMenu(), 10));
             };
             UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black);
-            exitImage.SetConstraints(new UIConstaints(10, 10, 20, 20));
+            exitImage.SetConstraints(new UIConstraints(10, 10, 20, 20));
 
             button.AddChild(exitImage);
             ui.Add(button);
@@ -88,10 +88,26 @@ namespace KreativerName.Scenes
                 numsClicked = 0;
             }
 
-            if (numsClicked == maxNums && correctAnimation < 0 && clickedNums.All(x => x == clickedNums[0]))
+            if (numsClicked == maxNums && correctAnimation < 0)
             {
-                correctAnimation = 60;
-                scene = new Tetris((int)clickedNums[0]);
+                int number = 0;
+
+                for (int i = maxNums - 1; i >= 0; i--)
+                {
+                    number *= 10;
+                    number += clickedNums[i].Value;
+                }
+
+                if (clickedNums.All(x => x == clickedNums[0]))
+                {
+                    correctAnimation = 60;
+                    scene = new Tetris((int)clickedNums[0]);
+                }
+                else if (number.IsPrime())
+                {
+                    correctAnimation = 60;
+                    scene = new ClickGame();
+                }
             }
 
             if (correctAnimation > 0)

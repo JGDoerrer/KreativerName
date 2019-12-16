@@ -20,7 +20,7 @@ namespace KreativerName.UI
         {
             Text = text;
             Size = size;
-            constaints = new UIConstaints(
+            constraints = new UIConstraints(
                 new PixelConstraint(x),
                 new PixelConstraint(y),
                 new PixelConstraint((int)TextWidth),
@@ -56,6 +56,9 @@ namespace KreativerName.UI
 
         public static void RenderString(string s, Vector2 position, Color color, float size = 2)
         {
+            if (s == null)
+                return;
+
             float startX = position.X;
 
             foreach (char c in s)

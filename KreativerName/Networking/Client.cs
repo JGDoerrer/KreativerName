@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Net.Sockets;
 
-namespace Server
+namespace KreativerName.Networking
 {
-    public delegate void ByteEvent(byte[] bytes);
+    public delegate void ByteEvent(Client client, byte[] bytes);
 
     public class Client
     {
@@ -33,14 +33,21 @@ namespace Server
         {
             while (true)
             {
-                NetworkStream stream = tcp.GetStream();
-                byte[] length = new byte[4];
-                stream.Read(length, 0, 4);
-                int size = BitConverter.ToInt32(length, 0);
-                byte[] data = new byte[size];
-                stream.Read(data, 0, size);
+                try
+                {
+                    NetworkStream stream = tcp.GetStream();
+                    byte[] length = new byte[4];
+                    stream.Read(length, 0, 4);
+                    int size = BitConverter.ToInt32(length, 0);
+                    byte[] data = new byte[size];
+                    stream.Read(data, 0, size);
 
-                BytesRecieved?.Invoke(data);
+                    BytesRecieved?.Invoke(this, data);
+                }
+                catch (Exception)
+                {
+                    break;
+                }
             }
         }
     }

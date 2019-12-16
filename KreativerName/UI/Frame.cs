@@ -9,11 +9,11 @@ namespace KreativerName.UI
     {
         public Frame()
         {
-            constaints = new UIConstaints();
+            constraints = new UIConstraints();
         }
         public Frame(int x, int y, int w, int h)
         {
-            constaints = new UIConstaints(
+            constraints = new UIConstraints(
                 new PixelConstraint(x),
                 new PixelConstraint(y),
                 new PixelConstraint(w),

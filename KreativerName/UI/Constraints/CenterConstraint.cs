@@ -29,8 +29,14 @@ namespace KreativerName.UI.Constraints
             return height / 2 + y - element.GetHeight(windowSize) / 2 + offset;
         }
 
-        public override float GetWidth(Vector2 windowSize, UIElement element) => windowSize.X / 2;
+        public override float GetWidth(Vector2 windowSize, UIElement element)
+        {
+            return windowSize.X + offset;
+        }
 
-        public override float GetHeight(Vector2 windowSize, UIElement element) => windowSize.Y / 2;
+        public override float GetHeight(Vector2 windowSize, UIElement element)
+        {
+            return windowSize.Y+offset;
+        }
     }
 }

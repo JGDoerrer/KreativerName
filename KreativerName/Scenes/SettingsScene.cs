@@ -34,7 +34,7 @@ namespace KreativerName.Scenes
                     Scenes.LoadScene(new Transition(new MainMenu(), 10));
                 };
                 UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black);
-                exitImage.SetConstraints(new UIConstaints(10, 10, 20, 20));
+                exitImage.SetConstraints(new UIConstraints(10, 10, 20, 20));
 
                 button.AddChild(exitImage);
                 ui.Add(button);
@@ -51,7 +51,7 @@ namespace KreativerName.Scenes
                 frame.AddChild(box);
 
                 TextBlock text = new TextBlock(s, 3, 45, 0);
-                text.Constaints.yCon = new CenterConstraint();
+                text.Constraints.yCon = new CenterConstraint();
                 text.Color = Color.White;
                 frame.AddChild(text);
 

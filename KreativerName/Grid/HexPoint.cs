@@ -30,6 +30,8 @@ namespace KreativerName.Grid
             set => y = value;
         }
 
+        public int LengthSquared => x * x + y * y;
+
         public override string ToString()
         {
             return $"({x}, {y})";

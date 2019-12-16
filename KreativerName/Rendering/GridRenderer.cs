@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using KreativerName.Grid;
 using OpenTK;
 
@@ -55,7 +56,7 @@ namespace KreativerName.Rendering
                     TextureRenderer.DrawHex(Textures.Get("Player"), hex.Position, Layout, Vector2.One * Layout.size, color, null);
                 else
                 {
-                    RenderHex(hex, Layout, color, frameCount);
+                    RenderHex(hex.Position,hex.Types, Layout, color, frameCount);
                 }
             }
 
@@ -63,16 +64,18 @@ namespace KreativerName.Rendering
         }
 
 
-        public static void RenderHex(Hex hex, HexLayout layout, Color color, int frameCount)
+        public static void RenderHex(HexPoint pos, List<HexData> types, HexLayout layout, Color color, int frameCount)
         {
-            for (int i = 0; i < hex.Types.Count; i++)
+            types = types.OrderBy(x => x.ID).ToList();
+
+            for (int i = 0; i < types.Count; i++)
             {
                 int animation = 0;
-                if (hex.Types[i].AnimationLength > 0 && hex.Types[i].AnimationSpeed > 0)
+                if (types[i].AnimationLength > 0 && types[i].AnimationSpeed > 0)
                 {
-                    animation = ((frameCount + hex.Types[i].AnimationPhase) / hex.Types[i].AnimationSpeed) % hex.Types[i].AnimationLength;
+                    animation = ((frameCount + types[i].AnimationPhase) / types[i].AnimationSpeed) % types[i].AnimationLength;
                 }
-                TextureRenderer.DrawHex(Textures.Get("Hex"), hex.Position, layout, Vector2.One * layout.size, color, new RectangleF(32 * hex.Types[i].Texture, animation * 32, 32, 32));
+                TextureRenderer.DrawHex(Textures.Get("Hex"), pos, layout, Vector2.One * layout.size, color, new RectangleF(32 * types[i].Texture, animation * 32, 32, 32));
             }
         }
     }

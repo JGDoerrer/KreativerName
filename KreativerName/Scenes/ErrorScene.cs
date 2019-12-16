@@ -28,17 +28,17 @@ namespace KreativerName.Scenes
                 ui.Add(text);
             }
 
-            AddText("Fehler!", 4, 50);
-            AddText($"{e.Message}", 3, 100);
+            AddText("Fehler!", 3, 50);
+            AddText($"{e.Message}", 2, 100);
 
             string[] stack = e.StackTrace.Split('\n');
             for (int i = 0; i < stack.Length; i++)
             {
                 stack[i] = stack[i].Trim().Replace(@"D:\Programmieren\Source\KreativerName\KreativerName\", "");
-                AddText($"{stack[i]}", 2, 150 + i * 20);
+                AddText($"{stack[i]}", 1, 150 + i * 10);
             }
 
-            AddText($"Bitte an den Entwickler weiterleiten!", 3, 180 + stack.Length * 20);
+            AddText($"Bitte an den Entwickler weiterleiten!", 3, 180 + stack.Length * 10);
         }
 
         public override void Update()
@@ -61,7 +61,7 @@ namespace KreativerName.Scenes
 
             ui.Render(windowSize);
         }
-
+               
         #region IDisposable Support
 
         private bool disposedValue = false; // Dient zur Erkennung redundanter Aufrufe.

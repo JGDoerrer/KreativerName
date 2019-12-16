@@ -10,11 +10,11 @@ namespace KreativerName.UI
     {
         public CheckBox()
         {
-            constaints = new UIConstaints();
+            constraints = new UIConstraints();
         }
         public CheckBox(int x, int y, int w, int h)
         {
-            constaints = new UIConstaints(
+            constraints = new UIConstraints(
                 new PixelConstraint(x),
                 new PixelConstraint(y),
                 new PixelConstraint(w),

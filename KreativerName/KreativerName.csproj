@@ -12,6 +12,7 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -24,7 +25,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -52,6 +52,12 @@
   <PropertyGroup>
     <StartupObject>KreativerName.Program</StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <NoWin32Manifest>true</NoWin32Manifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ServerTest|AnyCPU'">
+    <OutputPath>bin\ServerTest\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="OpenTK, Version=3.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.3.1.0\lib\net20\OpenTK.dll</HintPath>
@@ -72,7 +78,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Grid\HexData.cs" />
+    <Compile Include="Grid\LevelSolver.cs" />
+    <Compile Include="Networking\Client.cs" />
+    <Compile Include="Networking\User.cs" />
     <Compile Include="Rendering\GridRenderer.cs" />
+    <Compile Include="Scenes\ClickGame.cs" />
     <Compile Include="Scenes\Editor.cs" />
     <Compile Include="Extentions.cs" />
     <Compile Include="Scenes\ErrorScene.cs" />
@@ -91,6 +101,8 @@
     <Compile Include="Rendering\TextureRenderer.cs" />
     <Compile Include="Rendering\Textures.cs" />
     <Compile Include="Scenes\HexEditor.cs" />
+    <Compile Include="Scenes\LoadingScene.cs" />
+    <Compile Include="Scenes\OnlineScene.cs" />
     <Compile Include="Scenes\SettingsScene.cs" />
     <Compile Include="Scenes\Statistics.cs" />
     <Compile Include="Scenes\Tetris.cs" />
@@ -107,34 +119,17 @@
     <Compile Include="UI\Constraints\Constraint.cs" />
     <Compile Include="UI\Constraints\PixelConstraint.cs" />
     <Compile Include="UI\Constraints\RelativeConstraint.cs" />
-    <Compile Include="UI\Constraints\UIConstaints.cs" />
+    <Compile Include="UI\Constraints\UIConstraints.cs" />
     <Compile Include="UI\Events.cs" />
     <Compile Include="UI\Frame.cs" />
     <Compile Include="UI\Image.cs" />
     <Compile Include="UI\TextBlock.cs" />
+    <Compile Include="UI\TextBox.cs" />
     <Compile Include="UI\UI.cs" />
     <Compile Include="UI\UIElement.cs" />
     <Compile Include="Grid\World.cs" />
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
     <Content Include="Resources\Textures\CheckBox.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

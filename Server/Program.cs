@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
+using KreativerName.Networking;
 
 namespace Server
 {
-    class Program
+    partial class Program
     {
         static List<Client> clients = new List<Client>();
         static TcpListener listener;
@@ -16,24 +16,18 @@ namespace Server
         {
             listener = new TcpListener(IPAddress.Any, 8875);
 
+            DataBase.Init();
+
             new Thread(AcceptClients).Start();
+            new Thread(RemoveClients).Start();
 
             while (true)
             {
-                if (clients.Count > 0)
-                {
-                    Console.Write("> ");
-                    string msg = Console.ReadLine();
-                    clients.ForEach(x => x.Send(Encoding.UTF8.GetBytes(msg)));
-                }
+                Console.Write("> ");
+                string command = Console.ReadLine();
 
-                for (int i = clients.Count - 1; i >= 0; i--)
-                {
-                    if (!clients[i].Connected)
-                    {
-                        clients.RemoveAt(i);
-                    }
-                }
+                if (command.ToLower() == "saveusers")
+                    DataBase.SaveUsers();
             }
         }
 
@@ -44,9 +38,33 @@ namespace Server
             {
                 TcpClient tcpClient = listener.AcceptTcpClient();
                 Client client = new Client(tcpClient);
-                
+                client.BytesRecieved += ClientBytesRecieved;
+                new Thread(client.Recieve).Start();
+
                 clients.Add(client);
             }
+        }
+
+        static void RemoveClients()
+        {
+            while (true)
+            {
+                for (int i = clients.Count - 1; i >= 0; i--)
+                {
+                    if (!clients[i].Connected)
+                    {
+                        clients.RemoveAt(i);
+                    }
+                }
+                Thread.Sleep(1000);
+            }
+        }
+
+        private static void ClientBytesRecieved(Client client, byte[] bytes)
+        {
+            Console.WriteLine(BitConverter.ToString(bytes));
+
+            RequestHandler.HandleRequest(client, bytes);
         }
     }
 }

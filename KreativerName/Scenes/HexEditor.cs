@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using KreativerName.Grid;
 using KreativerName.Rendering;
 using KreativerName.UI;
@@ -21,7 +18,6 @@ namespace KreativerName.Scenes
         }
 
         UI.UI ui;
-        TextBlock text;
 
         HexData data;
 
@@ -39,19 +35,39 @@ namespace KreativerName.Scenes
             ui = new UI.UI();
             ui.Input = Scenes.Input;
 
-            text = new TextBlock("", 2, 20, 20);
-            text.Color = Color.White;
+            {
+                TextBlock text = new TextBlock($"ID: {data.ID}", 2, 20, 20);
+                text.Color = Color.White;
+                ui.Add(text);
+            }
 
-            NumberInput input = new NumberInput("{0}", 200, 200);
-            input.AddTo(ui);
+            void AddLine(string desc, int value, int y, ValueEvent e)
+            {
+                TextBlock text = new TextBlock(desc, 2, 20, y);
+                text.Color = Color.White;
 
-            ui.Add(text);
+                NumberInput input = new NumberInput(20 + (int)text.TextWidth, y - 3, value)
+                {
+                    MinValue = byte.MinValue,
+                    MaxValue = byte.MaxValue,
+                };
+                input.ValueChanged += e;
+
+                input.AddTo(ui);
+
+                ui.Add(text);
+            }
+
+            AddLine("Textur:       ", data.Texture, 40, a => data.Texture = (byte)a);
+            AddLine("Anim.länge:   ", data.AnimationLength, 60, a => data.AnimationLength = (byte)a);
+            AddLine("Anim.phase:   ", data.AnimationPhase, 80, a => data.AnimationPhase = (byte)a);
+            AddLine("Anim.geschw.: ", data.AnimationSpeed, 100, a => data.AnimationSpeed = (byte)a);
+
         }
 
         public override void Update()
         {
-            text.Text = $"ID: {data.ID}";
-            
+
         }
 
         public override void UpdateUI(Vector2 windowSize)
@@ -63,33 +79,69 @@ namespace KreativerName.Scenes
         {
             ui.Render(windowSize);
 
-            layout.origin = new Vector2(400, 100);
-            GridRenderer.RenderHex(new Hex(0, 0, data.ID), layout, Color.White, frameCount);
+            layout.origin = new Vector2(400, 400);
+            GridRenderer.RenderHex(new HexPoint(0, 0), new List<HexData> { data }, layout, Color.White, frameCount);
 
             frameCount++;
         }
 
-        struct NumberInput
+        class NumberInput
         {
-            public NumberInput(string format, int x, int y)
+            public NumberInput(int x, int y, int value = 0)
             {
-                this.format = format;
-                value = 0;
+                Value = value;
 
-                text = new TextBlock(string.Format(format, value), 2, x, y);
-                add = new Button(x + 30,y, 20, 20);
-                sub = new Button(x + 60,y, 20, 20);
+                text = new TextBlock(Value.ToString(), 2, x + 22, y + 3);
+                add = new Button(x, y, 20, 20);
+                sub = new Button(x + 72, y, 20, 20);
 
                 text.Color = Color.White;
                 add.AddChild(new TextBlock("+", 2f, 5, 3));
                 sub.AddChild(new TextBlock("-", 2f, 5, 3));
 
-                add.OnClick += Add;
-                sub.OnClick += Subtract;
+                MaxValue = 9999;
+                MinValue = -999;
+
+                add.OnClick += () =>
+                {
+                    if (add.ui.Input.KeyDown(OpenTK.Input.Key.LControl) ||
+                        add.ui.Input.KeyDown(OpenTK.Input.Key.RControl))
+                        Value += 10;
+                    else if (add.ui.Input.KeyDown(OpenTK.Input.Key.LShift) ||
+                        add.ui.Input.KeyDown(OpenTK.Input.Key.RShift))
+                        Value += 5;
+                    else
+                        Value += 1;
+
+                    Value = Value.Clamp(MinValue, MaxValue);
+
+                    text.Text = Value.ToString();
+                    ValueChanged?.Invoke(Value);
+                };
+                sub.OnClick += () =>
+                {
+                    if (add.ui.Input.KeyDown(OpenTK.Input.Key.LControl) ||
+                        add.ui.Input.KeyDown(OpenTK.Input.Key.RControl))
+                        Value -= 10;
+                    else if (add.ui.Input.KeyDown(OpenTK.Input.Key.LShift) ||
+                        add.ui.Input.KeyDown(OpenTK.Input.Key.RShift))
+                        Value -= 5;
+                    else
+                        Value -= 1;
+
+                    Value = Value.Clamp(MinValue, MaxValue);
+
+                    text.Text = Value.ToString();
+                    ValueChanged?.Invoke(Value);
+                };
             }
 
-            int value;
-            string format;
+            public int MaxValue;
+            public int MinValue;
+
+            public int Value;
+
+            public event ValueEvent ValueChanged;
 
             TextBlock text;
             Button add;
@@ -100,18 +152,6 @@ namespace KreativerName.Scenes
                 ui.Add(text);
                 ui.Add(add);
                 ui.Add(sub);
-            }
-
-            private void Add()
-            {
-                value++;
-                text.Text = string.Format(format, value);
-            }
-
-            private void Subtract()
-            {
-                value--;
-                text.Text = string.Format(format, value);
             }
         }
 

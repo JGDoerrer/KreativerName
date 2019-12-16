@@ -1,5 +1,7 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
+using System.Threading;
 using KreativerName.Grid;
 using KreativerName.Rendering;
 using KreativerName.Scenes;
@@ -20,13 +22,8 @@ namespace KreativerName
 
             Textures.LoadTextures(@"Resources\Textures");
 
-            WindowState = Settings.Current.Fullscreen ? WindowState.Fullscreen : WindowState.Normal;
-
-            if (Stats.Current.FirstStart.Ticks == 0)
-                Stats.Current.FirstStart = DateTime.Now;
-
             Scenes.Scenes.SetWindow(this);
-            Scenes.Scenes.LoadScene(new HexEditor(HexData.Data[0]));
+            Scenes.Scenes.LoadScene(new LoadingScene(LoadStuff, new Transition(new MainMenu(), 30)));
 
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
@@ -37,6 +34,28 @@ namespace KreativerName
         static Random random = new Random();
         public int FrameCounter;
         double fps;
+
+        private void LoadStuff(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+
+            Stats.Current = Stats.LoadFromFile("statistics");
+            worker.ReportProgress(25);
+
+            Settings.Current = Settings.LoadFromFile("settings");
+            worker.ReportProgress(50);
+            
+            HexData.LoadData(@"Resources\HexData");
+            worker.ReportProgress(75);
+
+
+            if (Stats.Current.FirstStart.Ticks == 0)
+                Stats.Current.FirstStart = DateTime.Now;
+
+            WindowState = Settings.Current.Fullscreen ? WindowState.Fullscreen : WindowState.Normal;
+
+            worker.ReportProgress(100);
+        }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
@@ -61,14 +80,14 @@ namespace KreativerName
 
             Vector2 size = new Vector2(Width, Height);
 
-            //try
-            //{
-            Scenes.Scenes.Update(size);
-            //}
-            //catch (Exception ex)
-            //{
-            //    Scenes.Scenes.LoadScene(new Transition(new ErrorScene(ex), 10));
-            //}
+            try
+            {
+                Scenes.Scenes.Update(size);
+            }
+            catch (Exception ex)
+            {
+                Scenes.Scenes.LoadScene(new Transition(new ErrorScene(ex), 10));
+            }
 
             // Update TimePlaying
             Stats.Current.TimePlaying = Stats.Current.TimePlaying.Add(TimeSpan.FromSeconds(e.Time));
