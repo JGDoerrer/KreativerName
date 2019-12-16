@@ -118,7 +118,7 @@ namespace KreativerName.Grid
                     j++;
                 }
             }
-            
+
             return moves;
         }
 

@@ -399,10 +399,10 @@ namespace KreativerName.Scenes
                 AddButton(140, 10, 20, 20, "+", 5, 3, NextWorld, new Key());
                 AddButton(160, 10, 20, 20, "-", 5, 3, PreviousWorld, new Key());
 
-                AddButton(20, 200, 80, 40, "Lösen", 10, 10, () => 
+                AddButton(20, 200, 80, 40, "Lösen", 10, 10, () =>
                 {
                     LevelSolver solver = new LevelSolver(level);
-                    solver.Solved += () => { textHexDesc.Text = $"Min. Züge: {solver.MinMoves}"; };                    
+                    solver.Solved += () => { textHexDesc.Text = $"Min. Züge: {solver.MinMoves}"; };
                     Scenes.LoadScene(new LoadingScene(solver.SolveAsync, new Transition(this, 10)));
                 }, new Key());
 

@@ -56,7 +56,7 @@ namespace KreativerName.Scenes
             exitButton.AddChild(exitImage);
             ui.Add(exitButton);
 
-            TextBox textBox = new TextBox(200,200,200,32);
+            TextBox textBox = new TextBox(200, 200, 200, 32);
             textBox.TextColor = Color.Black;
             textBox.MaxTextSize = 15;
             ui.Add(textBox);

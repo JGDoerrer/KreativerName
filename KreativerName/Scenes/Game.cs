@@ -120,7 +120,7 @@ namespace KreativerName.Scenes
         }
 
         public override void UpdateUI(Vector2 windowSize)
-        {            
+        {
             ui.Update(windowSize);
         }
 
@@ -177,7 +177,7 @@ namespace KreativerName.Scenes
                 RenderTitle(width, height);
             }
         }
-        
+
         private void UpdatePlayer()
         {
             moves++;
@@ -290,7 +290,7 @@ namespace KreativerName.Scenes
                 LoadLevel();
             }
         }
-        
+
         #region Rendering
 
         private void RenderTitle(int width, int height)
@@ -344,7 +344,7 @@ namespace KreativerName.Scenes
         }
 
         private void UpdateTitle() => title.Text = $"Level {levelIndex + 1:000}/{world.Levels?.Count:000}";
-        
+
         #endregion
 
         #region Loading
@@ -418,7 +418,7 @@ namespace KreativerName.Scenes
         }
 
         #endregion
-        
+
         #region IDisposable Support
 
         private bool disposedValue = false; // Dient zur Erkennung redundanter Aufrufe.

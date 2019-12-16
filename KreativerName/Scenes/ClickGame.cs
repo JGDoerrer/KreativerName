@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OpenTK;
 
 namespace KreativerName.Scenes
@@ -33,7 +29,7 @@ namespace KreativerName.Scenes
         public override void Render(Vector2 windowSize)
         {
         }
-        
+
         #region IDisposable Support
 
         private bool disposedValue = false; // Dient zur Erkennung redundanter Aufrufe.

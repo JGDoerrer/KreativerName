@@ -36,7 +36,7 @@ namespace KreativerName.Scenes
         float percent;
         int animation = 0;
 
-        float AnimatedPercent => (QuarticOut(1-(float)animation / 60)) * (percent - prevPercent) / 100f + prevPercent / 100f;
+        float AnimatedPercent => (QuarticOut(1 - (float)animation / 60)) * (percent - prevPercent) / 100f + prevPercent / 100f;
 
         public event EmptyEvent Done;
 

@@ -61,7 +61,7 @@ namespace KreativerName.Scenes
 
             ui.Render(windowSize);
         }
-               
+
         #region IDisposable Support
 
         private bool disposedValue = false; // Dient zur Erkennung redundanter Aufrufe.

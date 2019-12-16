@@ -55,13 +55,13 @@ namespace KreativerName.Grid
 
                     if (results.Count == 0)
                         results = prevResults;
-                        done = true;
+                    done = true;
                 }
 
-                moves +=2;
+                moves += 2;
                 worker.ReportProgress(moves);
             }
-            
+
             MinMoves = results.Min(x => x.Count);
             Solution = results.Where(x => x.Count == MinMoves).First();
             worker.ReportProgress(100);
@@ -87,7 +87,7 @@ namespace KreativerName.Grid
 
                 if (flags.HasFlag(HexFlags.Goal))
                     results.Add(prevMoves.Append(move).ToList());
-                
+
                 List<List<HexPoint>> result = Solve(copy.GetPossibleMoves(move), copy, movesLeft - 1, prevMoves.Append(move).ToList());
                 if (result != null)
                     results.AddRange(result);

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 using KreativerName.Rendering;
 using KreativerName.UI.Constraints;
 using OpenTK;
@@ -16,7 +11,7 @@ namespace KreativerName.UI
         { }
         public TextBox(int x, int y, int w, int h)
         {
-            constraints = new UIConstraints(x,y,w,h);
+            constraints = new UIConstraints(x, y, w, h);
         }
 
         public bool Focused { get; set; }
@@ -67,8 +62,8 @@ namespace KreativerName.UI
             float offset;
             Color color = Color.White;
             Texture2D tex = Textures.Get("Button");
-            
-            if (MouseOver(windowSize) ||Focused)
+
+            if (MouseOver(windowSize) || Focused)
             {
                 if (MouseLeftDown)
                     offset = a * 3 * 2;

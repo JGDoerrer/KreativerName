@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using KreativerName.Networking;
-using Server;
 
 namespace TestClient
 {
@@ -61,7 +59,7 @@ namespace TestClient
 
         public static int GetHexVal(char hex)
         {
-            int val = (int)hex;
+            int val = hex;
             //For uppercase A-F letters:
             return val - (val < 58 ? 48 : 55);
             //For lowercase a-f letters:

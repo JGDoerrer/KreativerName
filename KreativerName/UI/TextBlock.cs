@@ -73,7 +73,7 @@ namespace KreativerName.UI
                 {
                     if (!char.IsUpper(c))
                         position.X -= 1 * size;
-                                       
+
                     RenderChar(c, position, color, size);
                     position.X += 7 * size;
                 }

@@ -53,7 +53,7 @@ namespace KreativerName.UI
             element.SetUI(this);
             Elements.Add(element);
         }
-        
+
         public bool MouseOver(Vector2 windowSize)
         {
             foreach (UIElement element in Elements)

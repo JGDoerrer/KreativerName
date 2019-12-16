@@ -56,7 +56,7 @@ namespace KreativerName.Rendering
                     TextureRenderer.DrawHex(Textures.Get("Player"), hex.Position, Layout, Vector2.One * Layout.size, color, null);
                 else
                 {
-                    RenderHex(hex.Position,hex.Types, Layout, color, frameCount);
+                    RenderHex(hex.Position, hex.Types, Layout, color, frameCount);
                 }
             }
 

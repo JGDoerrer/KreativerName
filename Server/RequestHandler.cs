@@ -86,7 +86,7 @@ namespace Server
                     id = (uint)random.Next(int.MinValue, int.MaxValue);
                 }
                 while (DataBase.ExistsWorld(id));
-                                
+
                 World world = World.LoadFromBytes(msg.Skip(2).ToArray());
 
                 DataBase.AddWorld(id, world);

@@ -61,7 +61,7 @@ namespace KreativerName.UI
             return false;
         }
 
-        public void SetConstraints(UIConstraints constaints) => this.constraints = constaints;
+        public void SetConstraints(UIConstraints constaints) => constraints = constaints;
         public void SetConstraints(Constraint x, Constraint y, Constraint width, Constraint height) => constraints = new UIConstraints(x, y, width, height);
 
         public void AddChild(UIElement element)

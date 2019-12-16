@@ -97,7 +97,7 @@ namespace KreativerName.Grid
             world.FromBytes(Decompress(bytes), 0);
             return world;
         }
-        
+
         public byte[] ToCompressed()
         {
             return Compress(ToBytes());

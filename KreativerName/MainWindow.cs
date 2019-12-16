@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
-using System.Threading;
 using KreativerName.Grid;
 using KreativerName.Rendering;
 using KreativerName.Scenes;
@@ -44,7 +43,7 @@ namespace KreativerName
 
             Settings.Current = Settings.LoadFromFile("settings");
             worker.ReportProgress(50);
-            
+
             HexData.LoadData(@"Resources\HexData");
             worker.ReportProgress(75);
 
