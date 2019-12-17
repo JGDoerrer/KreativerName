@@ -46,7 +46,7 @@ namespace KreativerName.Scenes
             try
             {
                 TcpClient tcp = new TcpClient();
-                tcp.Connect("Josuas-Pc", 8875);
+                tcp.Connect("Josuas-Laptop", 8875);
 
                 Client = new Client(tcp);
                 return true;

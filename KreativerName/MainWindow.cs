@@ -47,6 +47,7 @@ namespace KreativerName
             worker.ReportProgress(60);
 
             Scenes.Scenes.ConnectClient();
+            Login();
             worker.ReportProgress(80);
 
             if (Stats.Current.FirstStart.Ticks == 0)
@@ -55,6 +56,17 @@ namespace KreativerName
             WindowState = Settings.Current.Fullscreen ? WindowState.Fullscreen : WindowState.Normal;
 
             worker.ReportProgress(100);
+        }
+
+        private void Login()
+        {
+            if (Settings.Current.LoggedIn)
+            {
+                byte[] msg =  new byte[4] { 0x00, 0x01, 0 ,0  };
+                BitConverter.GetBytes(Settings.Current.UserID).CopyTo(msg, 2);
+
+                Scenes.Scenes.Client.Send(msg);
+            }
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)

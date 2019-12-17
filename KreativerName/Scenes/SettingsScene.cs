@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using System.Threading;
 using KreativerName.Rendering;
 using KreativerName.UI;
 using KreativerName.UI.Constraints;
@@ -60,8 +61,14 @@ namespace KreativerName.Scenes
                 frame.SetConstraints(new CenterConstraint(), new PixelConstraint(y), new PixelConstraint(45 + (int)text.TextWidth), new PixelConstraint(36));
                 ui.Add(frame);
             }
-
-
+            void AddText(string s, int y)
+            {
+                TextBlock text = new TextBlock(s, 3);
+                text.Color = Color.White;
+                text.SetConstraints(new CenterConstraint(), new PixelConstraint(y), new PixelConstraint((int)text.TextWidth), new PixelConstraint((int)text.TextHeight));
+                ui.Add(text);
+            }
+            
             AddCheckBox("Vollbild", 100, Settings.Current.Fullscreen, (b) =>
             {
                 Settings.Current.Fullscreen = b;
@@ -75,15 +82,17 @@ namespace KreativerName.Scenes
             {
                 Settings.Current.ShowFps = b;
             });
+            AddText($"ID: {Settings.Current.UserID}", 250);
+
 
             TextBox textBox = new TextBox();
-            textBox.SetConstraints(new CenterConstraint(), new PixelConstraint(250), new PixelConstraint(180), new PixelConstraint(34));
+            textBox.SetConstraints(new CenterConstraint(), new PixelConstraint(300), new PixelConstraint(180), new PixelConstraint(34));
             textBox.TextColor = Color.Black;
             textBox.MaxTextSize = 15;
             ui.Add(textBox);
 
             Button sendButton = new Button();
-            sendButton.SetConstraints(new CenterConstraint(), new PixelConstraint(290), new PixelConstraint(120), new PixelConstraint(34));
+            sendButton.SetConstraints(new CenterConstraint(), new PixelConstraint(340), new PixelConstraint(120), new PixelConstraint(34));
             sendButton.OnClick += () =>
             {
                 if (!Scenes.Client.Connected)
@@ -101,6 +110,25 @@ namespace KreativerName.Scenes
                 bytes.AddRange(name.Length.ToBytes());
                 bytes.AddRange(name);
 
+                Thread thread = new Thread(Scenes.Client.Recieve);
+                thread.Start();
+
+                Scenes.Client.BytesRecieved += (c, b) =>
+                {
+                    ushort code = BitConverter.ToUInt16(b, 0);
+                    if (code == 0x0140)
+                    {
+                        ushort id = BitConverter.ToUInt16(b, 2);
+                        Settings.Current.UserID = id;
+                        Settings.Current.LoggedIn = true;
+                        thread.Abort();
+                    }
+                    else if (code == 0x01FF)
+                    {
+                        Settings.Current.LoggedIn = false;
+                        thread.Abort();
+                    }
+                };
                 Scenes.Client.Send(bytes.ToArray());
             };
 

@@ -22,7 +22,7 @@ namespace KreativerName.Scenes
 
             if (Scenes.Client.Connected)
             {
-                Scenes.Client.BytesRecieved += BytesRecieved;
+                Scenes.Client.BytesRecieved += HandleRequest;
                 new Thread(Scenes.Client.Recieve).Start();
             }
         }
@@ -62,12 +62,7 @@ namespace KreativerName.Scenes
         {
             ui.Render(windowSize);
         }
-
-        private void BytesRecieved(Client client, byte[] bytes)
-        {
-            HandleRequest(client, bytes);
-        }
-
+        
         #region Handle Request
 
         public const byte ErrorCode = 0xFF;
@@ -91,7 +86,7 @@ namespace KreativerName.Scenes
         private static void SignUpSuccess(Client client, byte[] msg)
         {
             ushort id = BitConverter.ToUInt16(msg, 2);
-            Console.WriteLine($"Success; ID: {id}");
+            Settings.Current.UserID = id;
         }
 
         private static void SignUpError(Client client, byte[] msg)
