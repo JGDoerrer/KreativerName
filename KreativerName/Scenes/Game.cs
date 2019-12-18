@@ -59,7 +59,7 @@ namespace KreativerName.Scenes
 
         private void Init()
         {
-            input = new Input(Scenes.Window);
+            input = new Input(SceneManager.Window);
             InitUI();
         }
 
@@ -334,7 +334,7 @@ namespace KreativerName.Scenes
         {
             ui = new UI.UI
             {
-                Input = Scenes.Input
+                Input = SceneManager.Input
             };
 
             int size = 4;

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Net.Sockets;
 using KreativerName.Networking;
+using KreativerName.UI;
 using OpenTK;
 
 namespace KreativerName.Scenes
 {
-    public static class Scenes
+    public static class SceneManager
     {
         public static Scene Scene;
         public static GameWindow Window;
@@ -22,12 +23,15 @@ namespace KreativerName.Scenes
             Scene?.UpdateUI(windowSize);
             Scene?.Update();
 
+            Notification.Update();
             Input.Update();
         }
 
         public static void Render(Vector2 windowSize)
         {
             Scene?.Render(windowSize);
+
+            Notification.Render(windowSize);
         }
 
         public static void SetWindow(GameWindow window)
@@ -46,13 +50,16 @@ namespace KreativerName.Scenes
             try
             {
                 TcpClient tcp = new TcpClient();
-                tcp.Connect("Josuas-Laptop", 8875);
+                tcp.Connect("Josuas-Pc", 8875);
 
                 Client = new Client(tcp);
+
+                Notification.Show("Zum Server verbunden");
                 return true;
             }
             catch (Exception)
             {
+                Notification.Show("Konnte nicht zum Server verbinden");
                 return false;
             }
         }

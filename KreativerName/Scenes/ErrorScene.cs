@@ -43,11 +43,11 @@ namespace KreativerName.Scenes
 
         public override void Update()
         {
-            if (Scenes.Input.KeyPress(OpenTK.Input.Key.Escape) ||
-                Scenes.Input.KeyPress(OpenTK.Input.Key.Space) ||
-                Scenes.Input.KeyPress(OpenTK.Input.Key.Enter))
+            if (SceneManager.Input.KeyPress(OpenTK.Input.Key.Escape) ||
+                SceneManager.Input.KeyPress(OpenTK.Input.Key.Space) ||
+                SceneManager.Input.KeyPress(OpenTK.Input.Key.Enter))
             {
-                Scenes.CloseWindow();
+                SceneManager.CloseWindow();
             }
         }
 

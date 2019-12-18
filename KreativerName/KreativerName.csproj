@@ -82,6 +82,7 @@
     <Compile Include="Networking\Client.cs" />
     <Compile Include="Networking\User.cs" />
     <Compile Include="Rendering\GridRenderer.cs" />
+    <Compile Include="Rendering\TextRenderer.cs" />
     <Compile Include="Scenes\ClickGame.cs" />
     <Compile Include="Scenes\Editor.cs" />
     <Compile Include="Extentions.cs" />
@@ -109,7 +110,7 @@
     <Compile Include="Scenes\Transition.cs" />
     <Compile Include="Scenes\MainMenu.cs" />
     <Compile Include="Scenes\Scene.cs" />
-    <Compile Include="Scenes\Scenes.cs" />
+    <Compile Include="Scenes\SceneManager.cs" />
     <Compile Include="Scenes\WorldMenu.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Stats.cs" />

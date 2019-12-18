@@ -16,7 +16,7 @@ namespace KreativerName.Scenes
 
             worker.DoWork += action;
             worker.ProgressChanged += ProgressChanged;
-            worker.RunWorkerCompleted += (o, e) => { Done?.Invoke(); Scenes.LoadScene(next); };
+            worker.RunWorkerCompleted += (o, e) => { Done?.Invoke(); SceneManager.LoadScene(next); };
             worker.WorkerReportsProgress = true;
 
             worker.RunWorkerAsync();

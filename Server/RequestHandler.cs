@@ -19,6 +19,7 @@ namespace Server
             switch (code)
             {
                 case 0x0100: SignUp(client, msg); break;
+                case 0x0110: LogIn(client, msg); break;
                 case 0x0200: GetWorldByID(client, msg); break;
                 case 0x0210: UploadWorld(client, msg); break;
             }
@@ -45,6 +46,9 @@ namespace Server
                 User user = new User(name, id);
                 DataBase.Users.Add(id, user);
 
+                client.LoggedIn = true;
+                client.UserID = id;
+
                 Console.WriteLine($"New User: {user}");
 
                 byte[] bytes = new byte[] { SuccessCode, 0x01 };
@@ -54,6 +58,18 @@ namespace Server
             catch (Exception)
             {
                 client.Send(new byte[] { ErrorCode, 0x01 });
+            }
+        }
+
+        private static void LogIn(Client client, byte[] msg)
+        {
+            try
+            {
+                // TODO
+            }
+            catch (Exception)
+            {
+                client.Send(new byte[] { ErrorCode - 1, 0x01 });
             }
         }
 

@@ -129,8 +129,8 @@ namespace KreativerName.Scenes
         {
             if (gameOver)
             {
-                if (Scenes.Input.KeyPress(Key.Escape))
-                    Scenes.LoadScene(new Transition(new MainMenu(), 10));
+                if (SceneManager.Input.KeyPress(Key.Escape))
+                    SceneManager.LoadScene(new Transition(new MainMenu(), 10));
                 return;
             }
 
@@ -298,7 +298,7 @@ namespace KreativerName.Scenes
 
         private void HandleInput()
         {
-            if (Scenes.Input.KeyDown(Key.Down))
+            if (SceneManager.Input.KeyDown(Key.Down))
             {
                 if (down == 0)
                 {
@@ -323,13 +323,13 @@ namespace KreativerName.Scenes
                 down--;
             }
 
-            if (Scenes.Input.KeyPress(Key.Right))
+            if (SceneManager.Input.KeyPress(Key.Right))
             {
                 if (Fits(currentPiece, currentRot, currentX + 1, currentY))
                     currentX += 1;
                 right = 16;
             }
-            if (Scenes.Input.KeyDown(Key.Right))
+            if (SceneManager.Input.KeyDown(Key.Right))
             {
                 if (right == 0)
                 {
@@ -340,13 +340,13 @@ namespace KreativerName.Scenes
                 right--;
             }
 
-            if (Scenes.Input.KeyPress(Key.Left))
+            if (SceneManager.Input.KeyPress(Key.Left))
             {
                 if (Fits(currentPiece, currentRot, currentX - 1, currentY))
                     currentX -= 1;
                 left = 16;
             }
-            if (Scenes.Input.KeyDown(Key.Left))
+            if (SceneManager.Input.KeyDown(Key.Left))
             {
                 if (left == 0)
                 {
@@ -357,8 +357,8 @@ namespace KreativerName.Scenes
                 left--;
             }
 
-            currentRot += Scenes.Input.KeyPress(Key.X) && Fits(currentPiece, currentRot + 1, currentX, currentY) ? 1 : 0;
-            currentRot += Scenes.Input.KeyPress(Key.Z) && Fits(currentPiece, currentRot + 3, currentX, currentY) ? 3 : 0;
+            currentRot += SceneManager.Input.KeyPress(Key.X) && Fits(currentPiece, currentRot + 1, currentX, currentY) ? 1 : 0;
+            currentRot += SceneManager.Input.KeyPress(Key.Z) && Fits(currentPiece, currentRot + 3, currentX, currentY) ? 3 : 0;
         }
 
         private void NextPiece()

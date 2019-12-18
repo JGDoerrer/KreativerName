@@ -53,7 +53,7 @@ namespace KreativerName.Scenes
             //next?.Update();
 
             if (duration == 0)
-                Scenes.LoadScene(next);
+                SceneManager.LoadScene(next);
         }
 
         public override void UpdateUI(Vector2 windowSize)

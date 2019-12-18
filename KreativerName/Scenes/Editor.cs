@@ -16,7 +16,7 @@ namespace KreativerName.Scenes
     {
         public Editor()
         {
-            input = new Input(Scenes.Window);
+            input = new Input(SceneManager.Window);
             renderer = new GridRenderer(null, layout);
 
             InitUI();
@@ -192,9 +192,9 @@ namespace KreativerName.Scenes
             testGame.LoadLevel(level);
             testGame.Exit += () =>
             {
-                Scenes.LoadScene(new Transition(this, 10));
+                SceneManager.LoadScene(new Transition(this, 10));
             };
-            Scenes.LoadScene(new Transition(testGame, 10));
+            SceneManager.LoadScene(new Transition(testGame, 10));
         }
 
         private void NextLevel()
@@ -279,6 +279,8 @@ namespace KreativerName.Scenes
             world.AllCompleted = false;
             world.AllPerfect = false;
             world.SaveToFile($"{worldIndex:000}");
+
+            Notification.Show("Welt gespeichert!", 2);
         }
 
         private void NewLevel()
@@ -403,7 +405,7 @@ namespace KreativerName.Scenes
                 {
                     LevelSolver solver = new LevelSolver(level);
                     solver.Solved += () => { textHexDesc.Text = $"Min. Züge: {solver.MinMoves}"; };
-                    Scenes.LoadScene(new LoadingScene(solver.SolveAsync, new Transition(this, 10)));
+                    SceneManager.LoadScene(new LoadingScene(solver.SolveAsync, new Transition(this, 10)));
                 }, new Key());
 
                 // Min Moves

@@ -92,7 +92,7 @@ namespace KreativerName.UI
             // center
             TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + a * scale), new Vector2(w / (a * scale) - 2, h / (a * scale) - 2) * scale, color, new RectangleF(offset + a, a, a, a));
 
-            TextBlock.RenderString(Text, new Vector2(GetX(windowSize), GetY(windowSize)) + TextOffset, TextColor, TextSize);
+            TextRenderer.RenderString(Text, new Vector2(GetX(windowSize), GetY(windowSize)) + TextOffset, TextColor, TextSize);
 
             RenderChildren(windowSize);
         }

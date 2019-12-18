@@ -33,7 +33,7 @@ namespace KreativerName.Scenes
         private void InitUI()
         {
             ui = new UI.UI();
-            ui.Input = Scenes.Input;
+            ui.Input = SceneManager.Input;
 
             {
                 TextBlock text = new TextBlock($"ID: {data.ID}", 2, 20, 20);

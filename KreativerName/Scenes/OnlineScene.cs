@@ -20,10 +20,10 @@ namespace KreativerName.Scenes
         {
             InitUI();
 
-            if (Scenes.Client.Connected)
+            if (SceneManager.Client?.Connected == true)
             {
-                Scenes.Client.BytesRecieved += HandleRequest;
-                new Thread(Scenes.Client.Recieve).Start();
+                SceneManager.Client.BytesRecieved += HandleRequest;
+                new Thread(SceneManager.Client.Recieve).Start();
             }
         }
 
@@ -32,13 +32,13 @@ namespace KreativerName.Scenes
         private void InitUI()
         {
             ui = new UI.UI();
-            ui.Input = Scenes.Input;
+            ui.Input = SceneManager.Input;
                         
             Button exitButton = new Button(40, 40, 40, 40);
             exitButton.Shortcut = Key.Escape;
             exitButton.OnClick += () =>
             {
-                Scenes.LoadScene(new Transition(new MainMenu(), 10));
+                SceneManager.LoadScene(new Transition(new MainMenu(), 10));
             };
             UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black);
             exitImage.SetConstraints(new UIConstraints(10, 10, 20, 20));

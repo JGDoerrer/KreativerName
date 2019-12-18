@@ -22,7 +22,7 @@ namespace KreativerName.Scenes
         private void InitUI()
         {
             ui = new UI.UI();
-            ui.Input = Scenes.Input;
+            ui.Input = SceneManager.Input;
 
             TextBlock title = new TextBlock("Einstellungen", 4);
             title.Color = Color.White;
@@ -34,7 +34,7 @@ namespace KreativerName.Scenes
                 button.Shortcut = OpenTK.Input.Key.Escape;
                 button.OnClick += () =>
                 {
-                    Scenes.LoadScene(new Transition(new MainMenu(), 10));
+                    SceneManager.LoadScene(new Transition(new MainMenu(), 10));
                 };
                 UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black);
                 exitImage.SetConstraints(new UIConstraints(10, 10, 20, 20));
@@ -72,7 +72,7 @@ namespace KreativerName.Scenes
             AddCheckBox("Vollbild", 100, Settings.Current.Fullscreen, (b) =>
             {
                 Settings.Current.Fullscreen = b;
-                Scenes.Window.WindowState = b ? WindowState.Fullscreen : WindowState.Normal;
+                SceneManager.Window.WindowState = b ? WindowState.Fullscreen : WindowState.Normal;
             });
             AddCheckBox("Züge anzeigen", 150, Settings.Current.ShowMoves, (b) =>
             {
@@ -82,20 +82,18 @@ namespace KreativerName.Scenes
             {
                 Settings.Current.ShowFps = b;
             });
-            AddText($"ID: {Settings.Current.UserID}", 250);
-
 
             TextBox textBox = new TextBox();
-            textBox.SetConstraints(new CenterConstraint(), new PixelConstraint(300), new PixelConstraint(180), new PixelConstraint(34));
+            textBox.SetConstraints(new CenterConstraint(), new PixelConstraint(260), new PixelConstraint(180), new PixelConstraint(34));
             textBox.TextColor = Color.Black;
             textBox.MaxTextSize = 15;
             ui.Add(textBox);
 
             Button sendButton = new Button();
-            sendButton.SetConstraints(new CenterConstraint(), new PixelConstraint(340), new PixelConstraint(120), new PixelConstraint(34));
-            sendButton.OnClick += () =>
+            sendButton.SetConstraints(new CenterConstraint(), new PixelConstraint(300), new PixelConstraint(120), new PixelConstraint(34));
+            void SignUp()
             {
-                if (!Scenes.Client.Connected)
+                if (SceneManager.Client?.Connected != true)
                     return;
 
                 string s = textBox.Text.Trim();
@@ -110,10 +108,9 @@ namespace KreativerName.Scenes
                 bytes.AddRange(name.Length.ToBytes());
                 bytes.AddRange(name);
 
-                Thread thread = new Thread(Scenes.Client.Recieve);
-                thread.Start();
+                Thread thread;
 
-                Scenes.Client.BytesRecieved += (c, b) =>
+                void handle(Networking.Client c, byte[] b)
                 {
                     ushort code = BitConverter.ToUInt16(b, 0);
                     if (code == 0x0140)
@@ -121,20 +118,26 @@ namespace KreativerName.Scenes
                         ushort id = BitConverter.ToUInt16(b, 2);
                         Settings.Current.UserID = id;
                         Settings.Current.LoggedIn = true;
-                        thread.Abort();
                     }
                     else if (code == 0x01FF)
                     {
                         Settings.Current.LoggedIn = false;
-                        thread.Abort();
                     }
-                };
-                Scenes.Client.Send(bytes.ToArray());
-            };
+                }
+                SceneManager.Client.BytesRecieved += handle;
+
+                thread = new Thread(SceneManager.Client.Recieve);
+                thread.Start();
+
+                SceneManager.Client.Send(bytes.ToArray());
+            }
+            sendButton.OnClick += SignUp;
 
             TextBlock sendText = new TextBlock("Anmelden", 2, 10, 10);
             sendButton.AddChild(sendText);
             ui.Add(sendButton);
+
+            AddText($"ID: {Settings.Current.UserID}", 350);
         }
 
         public override void Update()

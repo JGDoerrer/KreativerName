@@ -39,7 +39,7 @@ namespace KreativerName.Scenes
         {
             ui = new UI.UI();
 
-            ui.Input = Scenes.Input;
+            ui.Input = SceneManager.Input;
 
             float size = 5;
             TextBlock title = new TextBlock("KREATIVER NAME", size);
@@ -56,7 +56,7 @@ namespace KreativerName.Scenes
                 button.Color = Color.FromArgb(100, 255, 100);
                 button.Shortcut = OpenTK.Input.Key.S;
                 button.SetConstraints(new CenterConstraint(), new PixelConstraint(0), new PixelConstraint(300), new PixelConstraint(60));
-                button.OnClick += () => { Scenes.LoadScene(new Transition(new WorldMenu(), 10)); };
+                button.OnClick += () => { SceneManager.LoadScene(new Transition(new WorldMenu(), 10)); };
 
                 TextBlock startText = new TextBlock("Spiel starten", 3);
                 startText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)startText.TextWidth), new PixelConstraint((int)startText.TextHeight));
@@ -71,7 +71,7 @@ namespace KreativerName.Scenes
 
                 {
                     Button button = new Button(0, 0, 60, 60);
-                    button.OnClick += () => { Scenes.LoadScene(new Transition(new Statistics(), 10)); };
+                    button.OnClick += () => { SceneManager.LoadScene(new Transition(new Statistics(), 10)); };
 
                     UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(10, 10, 10, 10));
                     image.Color = Color.Black;
@@ -82,7 +82,7 @@ namespace KreativerName.Scenes
                 }
                 {
                     Button button = new Button(80, 0, 60, 60);
-                    button.OnClick += () => { Scenes.LoadScene(new Transition(new SettingsScene(), 10)); };
+                    button.OnClick += () => { SceneManager.LoadScene(new Transition(new SettingsScene(), 10)); };
 
                     UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(20, 10, 10, 10));
                     image.Color = Color.Black;
@@ -105,7 +105,7 @@ namespace KreativerName.Scenes
                 }
                 {
                     Button button = new Button(240, 0, 60, 60);
-                    button.OnClick += () => { Scenes.LoadScene(new Transition(new OnlineScene(), 10)); };
+                    button.OnClick += () => { SceneManager.LoadScene(new Transition(new OnlineScene(), 10)); };
 
                     UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(40, 10, 10, 10));
                     image.Color = Color.Black;
@@ -118,10 +118,9 @@ namespace KreativerName.Scenes
             }
             {
                 Button button = new Button();
-                button.Shortcut = OpenTK.Input.Key.Escape;
                 button.Color = Color.FromArgb(255, 100, 100);
                 button.SetConstraints(new CenterConstraint(), new PixelConstraint(200), new PixelConstraint(300), new PixelConstraint(60));
-                button.OnClick += () => { Scenes.CloseWindow(); };
+                button.OnClick += () => { SceneManager.CloseWindow(); };
 
                 TextBlock exitText = new TextBlock("Schliessen", 3);
                 exitText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)exitText.TextWidth), new PixelConstraint((int)exitText.TextHeight));
@@ -174,11 +173,11 @@ namespace KreativerName.Scenes
             Editor editor = new Editor();
             editor.Exit += () =>
             {
-                Scenes.LoadScene(new Transition(this, 10));
+                SceneManager.LoadScene(new Transition(this, 10));
                 editor.Dispose();
             };
 
-            Scenes.LoadScene(new Transition(editor, 10));
+            SceneManager.LoadScene(new Transition(editor, 10));
         }
 
         #region IDisposable Support

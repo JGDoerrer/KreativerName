@@ -26,7 +26,7 @@ namespace KreativerName.Scenes
         private void InitUI()
         {
             ui = new UI.UI();
-            ui.Input = new Input(Scenes.Window);
+            ui.Input = new Input(SceneManager.Window);
 
             TextBlock title = new TextBlock("Welten", 4);
             title.Color = Color.White;
@@ -63,7 +63,7 @@ namespace KreativerName.Scenes
             exitButton.Shortcut = Key.Escape;
             exitButton.OnClick += () =>
             {
-                Scenes.LoadScene(new Transition(new MainMenu(), 10));
+                SceneManager.LoadScene(new Transition(new MainMenu(), 10));
             };
             UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black);
             exitImage.SetConstraints(new UIConstraints(10, 10, 20, 20));
@@ -189,10 +189,10 @@ namespace KreativerName.Scenes
             game.Exit += () =>
             {
                 game.World.SaveToFile($"{world:000}");
-                Scenes.LoadScene(new Transition(new WorldMenu(), 10));
+                SceneManager.LoadScene(new Transition(new WorldMenu(), 10));
             };
 
-            Scenes.LoadScene(new Transition(game, 10));
+            SceneManager.LoadScene(new Transition(game, 10));
         }
 
         #region IDisposable Support

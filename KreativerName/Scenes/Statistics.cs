@@ -21,7 +21,7 @@ namespace KreativerName.Scenes
         private void InitUI()
         {
             ui = new UI.UI();
-            ui.Input = new Input(Scenes.Window);
+            ui.Input = new Input(SceneManager.Window);
 
             void AddText(string s, string value, int y)
             {
@@ -45,7 +45,7 @@ namespace KreativerName.Scenes
             button.Shortcut = OpenTK.Input.Key.Escape;
             button.OnClick += () =>
             {
-                Scenes.LoadScene(new Transition(new MainMenu(), 10));
+                SceneManager.LoadScene(new Transition(new MainMenu(), 10));
             };
             UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black);
             exitImage.SetConstraints(new UIConstraints(10, 10, 20, 20));
@@ -59,7 +59,7 @@ namespace KreativerName.Scenes
             AddText("Level geschafft: ", Stats.Current.LevelsCompleted.ToString(), y += 30);
             AddText("Level perfekt geschafft: ", Stats.Current.LevelsCompletedPerfect.ToString(), y += 30);
             AddText("Erstes Spiel: ", Stats.Current.FirstStart.ToString("dd.MM.yy"), y += 30);
-            AddText("Spielzeit: ", Stats.Current.TimePlaying.ToString("hh\\:mm\\:ss"), y += 30);
+            AddText("Spielzeit: ", $"{(int)Stats.Current.TimePlaying.TotalHours}:{Stats.Current.TimePlaying.Minutes:00}:{Stats.Current.TimePlaying.Seconds:00}", y += 30);
             AddText("Tode: ", Stats.Current.Deaths.ToString(), y += 30);
             if (Stats.Current.TetrisHighScore > 0)
             {
@@ -116,7 +116,7 @@ namespace KreativerName.Scenes
             }
             else if (correctAnimation == 0)
             {
-                Scenes.LoadScene(new Transition(scene, 10));
+                SceneManager.LoadScene(new Transition(scene, 10));
                 correctAnimation--;
             }
         }
@@ -125,13 +125,13 @@ namespace KreativerName.Scenes
         {
             UpdateBackground(windowSize);
 
-            if (Scenes.Input.MousePress(OpenTK.Input.MouseButton.Left))
+            if (SceneManager.Input.MousePress(OpenTK.Input.MouseButton.Left))
             {
                 foreach (Numbers number in background)
                 {
                     for (int i = 0; i < number.Values.Count; i++)
                     {
-                        Vector2 mousePos = Scenes.Input.MousePosition;
+                        Vector2 mousePos = SceneManager.Input.MousePosition;
                         Vector2 position = number.Position;
 
                         position.Y = (float)Math.Round(position.Y - i);
@@ -170,7 +170,7 @@ namespace KreativerName.Scenes
                 for (int i = 0; i < number.Values.Count; i++)
                 {
                     int value = number.Values[i];
-                    TextureRenderer.Draw(Textures.Get("Font"), position + new Vector2(0, -i * 16), Vector2.One * 2, number.Color, new RectangleF(((value + 16) % 16) * 6, ((value + 16) / 16) * 6, 6, 6));
+                    TextureRenderer.Draw(Textures.Get("Font"), position - new Vector2(0, i * 16), Vector2.One * 2, number.Color, new RectangleF(((value + 16) % 16) * 6, ((value + 16) / 16) * 6, 6, 6));
                 }
             }
 
@@ -203,7 +203,7 @@ namespace KreativerName.Scenes
 
         private void UpdateBackground(Vector2 windowSize)
         {
-            if (random.NextDouble() < .1)
+            if (random.NextDouble() < .15)
             {
                 int length = random.Next(3, 10);
                 List<byte> values = new List<byte>();
@@ -214,7 +214,7 @@ namespace KreativerName.Scenes
 
                 int x = (int)(windowSize.X / 16f * (float)random.NextDouble());
 
-                if (background.Where(a => a.Position.X == x).Count() == 0)
+                if (background.Where(a => a.Position.X == x && a.Position.Y - a.Values.Count < 0).Count() == 0)
                 {
                     background.Add(new Numbers()
                     {

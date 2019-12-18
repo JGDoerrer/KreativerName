@@ -21,8 +21,8 @@ namespace KreativerName
 
             Textures.LoadTextures(@"Resources\Textures");
 
-            Scenes.Scenes.SetWindow(this);
-            Scenes.Scenes.LoadScene(new LoadingScene(LoadStuff, new Transition(new MainMenu(), 30)));
+            SceneManager.SetWindow(this);
+            SceneManager.LoadScene(new LoadingScene(LoadStuff, new Transition(new MainMenu(), 30)));
 
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
@@ -46,7 +46,7 @@ namespace KreativerName
             HexData.LoadData(@"Resources\HexData");
             worker.ReportProgress(60);
 
-            Scenes.Scenes.ConnectClient();
+            SceneManager.ConnectClient();
             Login();
             worker.ReportProgress(80);
 
@@ -60,12 +60,12 @@ namespace KreativerName
 
         private void Login()
         {
-            if (Settings.Current.LoggedIn)
+            if (Settings.Current.LoggedIn && SceneManager.Client != null)
             {
-                byte[] msg =  new byte[4] { 0x00, 0x01, 0 ,0  };
+                byte[] msg = new byte[4] { 0x00, 0x01, 0, 0 };
                 BitConverter.GetBytes(Settings.Current.UserID).CopyTo(msg, 2);
 
-                Scenes.Scenes.Client.Send(msg);
+                SceneManager.Client.Send(msg);
             }
         }
 
@@ -94,16 +94,16 @@ namespace KreativerName
 
             try
             {
-                Scenes.Scenes.Update(size);
+                SceneManager.Update(size);
             }
             catch (Exception ex)
             {
-                Scenes.Scenes.LoadScene(new Transition(new ErrorScene(ex), 10));
+                SceneManager.LoadScene(new Transition(new ErrorScene(ex), 10));
             }
 
             // Update TimePlaying
             Stats.Current.TimePlaying = Stats.Current.TimePlaying.Add(TimeSpan.FromSeconds(e.Time));
-
+            
             input.Update();
 
             FrameCounter++;
@@ -126,18 +126,17 @@ namespace KreativerName
 
             try
             {
-                Scenes.Scenes.Render(size);
+                SceneManager.Render(size);
             }
             catch (Exception ex)
             {
-                Scenes.Scenes.LoadScene(new Transition(new ErrorScene(ex), 10));
+                SceneManager.LoadScene(new Transition(new ErrorScene(ex), 10));
             }
 
             // Render Fps
             if (Settings.Current.ShowFps)
-                TextBlock.RenderString($"{fps:00} fps", new Vector2(Width - 80, Height - 20), Color.White);
-
-
+                TextRenderer.RenderString($"{fps:00} fps", new Vector2(Width - 80, Height - 20), Color.White);
+            
             SwapBuffers();
         }
 
@@ -149,9 +148,9 @@ namespace KreativerName
                 game.Exit += () =>
                 {
                     game.World.SaveToFile(e.FileName, false);
-                    Scenes.Scenes.LoadScene(new Transition(new MainMenu(), 10));
+                    Scenes.SceneManager.LoadScene(new Transition(new MainMenu(), 10));
                 };
-                Scenes.Scenes.LoadScene(new Transition(game, 10));
+                Scenes.SceneManager.LoadScene(new Transition(game, 10));
             }
         }
     }
