@@ -53,13 +53,12 @@ namespace KreativerName.Scenes
                 tcp.Connect("Josuas-Pc", 8875);
 
                 Client = new Client(tcp);
+                Client.StartRecieve();
 
-                Notification.Show("Zum Server verbunden");
                 return true;
             }
             catch (Exception)
             {
-                Notification.Show("Konnte nicht zum Server verbinden");
                 return false;
             }
         }

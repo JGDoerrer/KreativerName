@@ -21,15 +21,16 @@ namespace KreativerName.UI
         public Vector2 TextOffset { get; set; } = new Vector2(8, 8);
         public float TextSize { get; set; } = 2;
         public int MaxTextSize { get; set; } = 5;
+        public bool Enabled { get; set; } = true;
 
         public override void Update(Vector2 windowSize)
         {
-            if (MouseLeftClick)
+            if (MouseLeftClick && Enabled)
             {
                 Focused = MouseOver(windowSize);
             }
 
-            if (Focused)
+            if (Focused && Enabled)
             {
                 Text = Text.Insert(Cursor, ui.Input.KeyString);
 
@@ -72,6 +73,11 @@ namespace KreativerName.UI
             }
             else
                 color = Color.FromArgb(255, 255, 255);
+
+            if (!Enabled)
+            {
+                color = Color.FromArgb(color.R / 2, color.B / 2, color.G / 2);
+            }
 
             // corner top left
             TextureRenderer.Draw(tex, new Vector2(x, y), Vector2.One * scale, color, new RectangleF(offset, 0, a, a));

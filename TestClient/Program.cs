@@ -16,7 +16,7 @@ namespace TestClient
 
             client = new Client(tcp);
             client.BytesRecieved += BytesRecieved;
-            new Thread(client.Recieve).Start();
+            new Thread(client.StartRecieve).Start();
 
             while (true)
             {

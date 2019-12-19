@@ -12,6 +12,7 @@ namespace KreativerName
         public bool LoggedIn;
 
         public ushort UserID;
+        public uint LoginInfo;
 
         public static Settings Current;
         public static Settings New => new Settings()
@@ -20,7 +21,8 @@ namespace KreativerName
             Fullscreen = false,
             ShowFps = false,
             LoggedIn = false,
-            UserID = 0
+            UserID = 0,
+            LoginInfo = 0,
         };
 
 
@@ -38,6 +40,9 @@ namespace KreativerName
             UserID = BitConverter.ToUInt16(bytes, startIndex + count);
             count += 2;
 
+            LoginInfo = BitConverter.ToUInt32(bytes, startIndex + count);
+            count += 4;
+
             return count;
         }
 
@@ -49,6 +54,7 @@ namespace KreativerName
             bytes.Add(b1);
 
             bytes.AddRange(BitConverter.GetBytes(UserID));
+            bytes.AddRange(BitConverter.GetBytes(LoginInfo));
 
             return bytes.ToArray();
         }

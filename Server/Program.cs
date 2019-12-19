@@ -9,7 +9,7 @@ namespace Server
 {
     partial class Program
     {
-        static List<Client> clients = new List<Client>();
+        public static List<Client> clients = new List<Client>();
         static TcpListener listener;
 
         static void Main(string[] args)
@@ -26,8 +26,7 @@ namespace Server
                 Console.Write("> ");
                 string command = Console.ReadLine();
 
-                if (command.ToLower() == "saveusers")
-                    DataBase.SaveUsers();
+                CommandHandler.HandleCommand(command);
             }
         }
 
@@ -39,7 +38,7 @@ namespace Server
                 TcpClient tcpClient = listener.AcceptTcpClient();
                 Client client = new Client(tcpClient);
                 client.BytesRecieved += ClientBytesRecieved;
-                new Thread(client.Recieve).Start();
+                new Thread(client.StartRecieve).Start();
 
                 clients.Add(client);
             }
@@ -62,8 +61,6 @@ namespace Server
 
         private static void ClientBytesRecieved(Client client, byte[] bytes)
         {
-            Console.WriteLine(BitConverter.ToString(bytes));
-
             RequestHandler.HandleRequest(client, bytes);
         }
     }

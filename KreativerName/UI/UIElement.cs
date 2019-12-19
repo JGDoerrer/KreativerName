@@ -32,6 +32,8 @@ namespace KreativerName.UI
 
         public abstract void Render(Vector2 windowSize);
 
+        public void ClearChildren() => children.Clear();
+
         protected void UpdateChildren(Vector2 windowSize)
         {
             foreach (UIElement element in children)

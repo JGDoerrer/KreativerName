@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace KreativerName.Networking
 {
@@ -13,6 +14,7 @@ namespace KreativerName.Networking
         }
 
         TcpClient tcp;
+        Thread threadRecieve;
 
         public event ByteEvent BytesRecieved;
         public bool Connected => tcp.Connected;
@@ -35,7 +37,18 @@ namespace KreativerName.Networking
             }
         }
 
-        public void Recieve()
+        public void StartRecieve()
+        {
+            threadRecieve = new Thread(Recieve);
+            threadRecieve.Start();
+        }
+
+        public void StopRecieve()
+        {
+            threadRecieve.Abort();
+        }
+
+        private void Recieve()
         {
             while (true)
             {

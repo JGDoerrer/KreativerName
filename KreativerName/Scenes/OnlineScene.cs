@@ -22,31 +22,14 @@ namespace KreativerName.Scenes
 
             if (SceneManager.Client?.Connected == true)
             {
+                SceneManager.Client.BytesRecieved -= HandleRequest;
                 SceneManager.Client.BytesRecieved += HandleRequest;
-                new Thread(SceneManager.Client.Recieve).Start();
+
+                SceneManager.Client.Send(new byte[] { 0x00,0x02,0,0,0,0 });
             }
         }
 
-        UI.UI ui;
-
-        private void InitUI()
-        {
-            ui = new UI.UI();
-            ui.Input = SceneManager.Input;
-                        
-            Button exitButton = new Button(40, 40, 40, 40);
-            exitButton.Shortcut = Key.Escape;
-            exitButton.OnClick += () =>
-            {
-                SceneManager.LoadScene(new Transition(new MainMenu(), 10));
-            };
-            UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black);
-            exitImage.SetConstraints(new UIConstraints(10, 10, 20, 20));
-
-            exitButton.AddChild(exitImage);
-            ui.Add(exitButton);
-
-        }
+        List<World> worlds = new List<World>();
 
         public override void Update()
         {
@@ -62,45 +45,95 @@ namespace KreativerName.Scenes
         {
             ui.Render(windowSize);
         }
-        
-        #region Handle Request
 
-        public const byte ErrorCode = 0xFF;
-        public const byte SuccessCode = 0x40;
+        #region UI
 
-        public static void HandleRequest(Client client, byte[] msg)
+        UI.UI ui;
+        Frame worldFrame;
+
+        private void InitUI()
         {
-            ushort code = BitConverter.ToUInt16(msg, 0);
-            switch (code)
-            {
-                case 0x0100 | SuccessCode: SignUpSuccess(client, msg); break;
-                case 0x0100 | ErrorCode: SignUpError(client, msg); break;
+            ui = new UI.UI();
+            ui.Input = SceneManager.Input;
 
-                case 0x0200 | SuccessCode: GetWorldSuccess(client, msg); break;
-                case 0x0200 | ErrorCode: Console.WriteLine("Could not get world"); break;
-                case 0x0200 | SuccessCode + 1: UploadWorldSuccess(client, msg); break;
-                case 0x0200 | ErrorCode - 1: Console.WriteLine("Could not upload world"); break;
+            Button exitButton = new Button(40, 40, 40, 40);
+            exitButton.Shortcut = Key.Escape;
+            exitButton.OnClick += () =>
+            {
+                SceneManager.LoadScene(new Transition(new MainMenu(), 10));
+            };
+            UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black);
+            exitImage.SetConstraints(new UIConstraints(10, 10, 20, 20));
+
+            exitButton.AddChild(exitImage);
+            ui.Add(exitButton);
+
+            worldFrame = new Frame();
+            worldFrame.SetConstraints( new CenterConstraint(),
+                new PixelConstraint(100),
+                new PixelConstraint(200),
+                new PixelConstraint(200));
+
+            ui.Add(worldFrame);
+        }
+
+        private void UpdateWorlds()
+        {
+            worldFrame.ClearChildren();
+            const int ButtonSize = 60;
+            const int RowSize = 5;
+
+            int i = 0;
+            foreach (var world in worlds)
+            {
+                Button button = new Button(ButtonSize * (i % RowSize), ButtonSize * (i / RowSize), ButtonSize, ButtonSize);
+                button.OnClick += () => 
+                {
+                    Game game = new Game(world);
+                    game.Exit += () =>
+                    {
+                        SceneManager.LoadScene(new Transition(this, 10));
+                    };
+                    SceneManager.LoadScene(new Transition(game, 10));
+                };
+                
+
+                worldFrame.AddChild(button);
             }
         }
 
-        private static void SignUpSuccess(Client client, byte[] msg)
+        #endregion
+
+        #region Handle Request
+
+        public const byte ErrorCode = 0xFF;
+        public const byte SuccessCode = 0x80;
+
+        public void HandleRequest(Client client, byte[] msg)
         {
-            ushort id = BitConverter.ToUInt16(msg, 2);
-            Settings.Current.UserID = id;
+            uint code = (uint)(BitConverter.ToUInt16(msg, 0) << 8);
+            code |= msg[2];
+            switch (code)
+            {
+                case 0x020000 | SuccessCode: GetWorldSuccess(client, msg); break;
+                case 0x020000 | ErrorCode: Console.WriteLine("Could not get world"); break;
+                case 0x022000 | SuccessCode: UploadWorldSuccess(client, msg); break;
+                case 0x022000 | ErrorCode: Console.WriteLine("Could not upload world"); break;
+            }
         }
 
-        private static void SignUpError(Client client, byte[] msg)
+        private void GetWorldSuccess(Client client, byte[] msg)
         {
-            Console.WriteLine("Error");
+            World world = World.LoadFromBytes(msg.Skip(3).ToArray());
+
+            if (!worlds.Contains(world))
+            {
+                worlds.Add(world);
+                UpdateWorlds();
+            }
         }
 
-        private static void GetWorldSuccess(Client client, byte[] msg)
-        {
-            World world = World.LoadFromBytes(msg.Skip(2).ToArray());
-            Console.WriteLine(world.Title);
-        }
-
-        private static void UploadWorldSuccess(Client client, byte[] msg)
+        private void UploadWorldSuccess(Client client, byte[] msg)
         {
             Console.WriteLine($"World uploaded; ID: {BitConverter.ToUInt32(msg, 2)}");
         }
@@ -118,8 +151,8 @@ namespace KreativerName.Scenes
                 if (disposing)
                 {
                     ui.Dispose();
+                    worldFrame.Dispose();
                 }
-
 
                 disposedValue = true;
             }

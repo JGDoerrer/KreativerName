@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Threading;
 using KreativerName.Grid;
 using KreativerName.Rendering;
 using KreativerName.Scenes;
@@ -62,10 +63,24 @@ namespace KreativerName
         {
             if (Settings.Current.LoggedIn && SceneManager.Client != null)
             {
-                byte[] msg = new byte[4] { 0x00, 0x01, 0, 0 };
+                byte[] msg = new byte[8];
+                new byte[] { 0x10, 0x01 }.CopyTo(msg, 0);
                 BitConverter.GetBytes(Settings.Current.UserID).CopyTo(msg, 2);
+                BitConverter.GetBytes(Settings.Current.LoginInfo).CopyTo(msg, 4);
+
+                void handle(Networking.Client c, byte[] b)
+                {
+                    ushort code = BitConverter.ToUInt16(b, 0);
+                    if (code == 0x0110 && b[2] == 0x80)
+                    {
+                        Notification.Show("Eingeloggt");
+                        SceneManager.Client.BytesRecieved -= handle;
+                    }
+                }
+                SceneManager.Client.BytesRecieved += handle;
 
                 SceneManager.Client.Send(msg);
+
             }
         }
 

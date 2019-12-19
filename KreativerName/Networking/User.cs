@@ -10,10 +10,18 @@ namespace KreativerName.Networking
         {
             Name = name;
             ID = id;
+            LoginInfo = 0;
+        }
+        public User(string name, ushort id, uint loginInfo)
+        {
+            Name = name;
+            ID = id;
+            LoginInfo = loginInfo;
         }
 
         public string Name;
         public ushort ID;
+        public uint LoginInfo;
 
         public byte[] ToBytes()
         {
@@ -24,6 +32,7 @@ namespace KreativerName.Networking
             bytes.AddRange(name);
 
             bytes.AddRange(BitConverter.GetBytes(ID));
+            bytes.AddRange(BitConverter.GetBytes(LoginInfo));
 
             return bytes.ToArray();
         }
@@ -39,6 +48,9 @@ namespace KreativerName.Networking
 
             ID = BitConverter.ToUInt16(bytes, startIndex + count);
             count += 2;
+
+            LoginInfo = BitConverter.ToUInt32(bytes, startIndex + count);
+            count += 4;
 
             return count;
         }

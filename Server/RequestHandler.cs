@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KreativerName.Grid;
@@ -9,7 +10,7 @@ namespace Server
     static class RequestHandler
     {
         public const byte ErrorCode = 0xFF;
-        public const byte SuccessCode = 0x40;
+        public const byte SuccessCode = 0x80;
 
         static Random random = new Random();
 
@@ -21,7 +22,8 @@ namespace Server
                 case 0x0100: SignUp(client, msg); break;
                 case 0x0110: LogIn(client, msg); break;
                 case 0x0200: GetWorldByID(client, msg); break;
-                case 0x0210: UploadWorld(client, msg); break;
+                case 0x0210: GetWorldByID(client, msg); break;
+                case 0x0220: UploadWorld(client, msg); break;
             }
         }
 
@@ -43,21 +45,23 @@ namespace Server
                 }
                 while (DataBase.Users.ContainsKey(id));
 
-                User user = new User(name, id);
+                uint loginInfo = (uint)random.Next(int.MinValue, int.MaxValue);
+
+                User user = new User(name, id, loginInfo);
                 DataBase.Users.Add(id, user);
 
                 client.LoggedIn = true;
                 client.UserID = id;
 
-                Console.WriteLine($"New User: {user}");
+                List<byte> bytes = new List<byte>() { 0x00, 0x01, SuccessCode };
+                bytes.AddRange(BitConverter.GetBytes(id));
+                bytes.AddRange(BitConverter.GetBytes(loginInfo));
 
-                byte[] bytes = new byte[] { SuccessCode, 0x01 };
-                bytes = bytes.Concat(BitConverter.GetBytes(id)).ToArray();
-                client.Send(bytes);
+                client.Send(bytes.ToArray());
             }
             catch (Exception)
             {
-                client.Send(new byte[] { ErrorCode, 0x01 });
+                client.Send(new byte[] { 0x00, 0x01, ErrorCode });
             }
         }
 
@@ -65,11 +69,20 @@ namespace Server
         {
             try
             {
-                // TODO
+                ushort id = BitConverter.ToUInt16(msg, 2);
+                uint loginInfo = BitConverter.ToUInt32(msg, 4);
+
+                if (DataBase.Users[id].LoginInfo == loginInfo)
+                {
+                    client.LoggedIn = true;
+                    client.UserID = id;
+                }
+
+                client.Send(new byte[] { 0x10, 0x01, SuccessCode });
             }
             catch (Exception)
             {
-                client.Send(new byte[] { ErrorCode - 1, 0x01 });
+                client.Send(new byte[] { 0x10, 0x01, ErrorCode });
             }
         }
 
@@ -81,14 +94,14 @@ namespace Server
 
                 World world = DataBase.GetWorld(id).Value;
 
-                byte[] bytes = new byte[] { SuccessCode, 0x02 };
+                byte[] bytes = new byte[] { 0x00, 0x02, SuccessCode };
                 bytes = bytes.Concat(world.ToCompressed()).ToArray();
 
                 client.Send(bytes);
             }
             catch (Exception)
             {
-                client.Send(new byte[] { ErrorCode, 0x02 });
+                client.Send(new byte[] { 0x00, 0x02, ErrorCode });
             }
         }
 
@@ -107,13 +120,13 @@ namespace Server
 
                 DataBase.AddWorld(id, world);
 
-                byte[] bytes = new byte[] { SuccessCode + 1, 0x02 };
+                byte[] bytes = new byte[] { 0x10, 0x02, SuccessCode };
                 bytes = bytes.Concat(BitConverter.GetBytes(id)).ToArray();
                 client.Send(bytes);
             }
             catch (Exception)
             {
-                client.Send(new byte[] { ErrorCode - 1, 0x02 });
+                client.Send(new byte[] { 0x10, 0x02, ErrorCode });
             }
         }
     }
