@@ -11,7 +11,7 @@ namespace KreativerName
         public bool ShowFps;
         public bool LoggedIn;
 
-        public ushort UserID;
+        public uint UserID;
         public uint LoginInfo;
 
         public static Settings Current;
@@ -37,8 +37,8 @@ namespace KreativerName
 
             count++;
 
-            UserID = BitConverter.ToUInt16(bytes, startIndex + count);
-            count += 2;
+            UserID = BitConverter.ToUInt32(bytes, startIndex + count);
+            count += 4;
 
             LoginInfo = BitConverter.ToUInt32(bytes, startIndex + count);
             count += 4;

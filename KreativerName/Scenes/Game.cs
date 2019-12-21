@@ -308,9 +308,11 @@ namespace KreativerName.Scenes
             GL.End();
             GL.Enable(EnableCap.Texture2D);
 
-            TextBlock title = new TextBlock(world.Title, 6);
-            title.Color = Color.FromArgb(alpha, Color.White);
-            title.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)title.TextWidth), new PixelConstraint((int)title.TextHeight));
+            TextBlock title = new TextBlock(world.Title, 6)
+            {
+                Color = Color.FromArgb(alpha, Color.White)
+            };
+            title.Constraints = new UIConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)title.TextWidth), new PixelConstraint((int)title.TextHeight));
             title.Render(new Vector2(width, height));
             title.Dispose();
         }

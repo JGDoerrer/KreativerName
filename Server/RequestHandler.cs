@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KreativerName;
 using KreativerName.Grid;
 using KreativerName.Networking;
 
@@ -22,12 +23,13 @@ namespace Server
                 case 0x0100: SignUp(client, msg); break;
                 case 0x0110: LogIn(client, msg); break;
                 case 0x0200: GetWorldByID(client, msg); break;
-                case 0x0210: GetWorldByID(client, msg); break;
+                case 0x0210: GetIDs(client, msg); break;
                 case 0x0220: UploadWorld(client, msg); break;
+                case 0x0300: UploadStats(client, msg); break;
             }
         }
 
-        private static void SignUp(Client client, byte[] msg)
+        static void SignUp(Client client, byte[] msg)
         {
             try
             {
@@ -38,17 +40,17 @@ namespace Server
                 string name = Encoding.UTF8.GetString(msg, index, nameLength);
                 index += nameLength;
 
-                ushort id;
+                uint id;
                 do
                 {
-                    id = (ushort)random.Next(ushort.MinValue, ushort.MaxValue + 1);
+                    id = (uint)random.Next(int.MinValue, int.MaxValue);
                 }
-                while (DataBase.Users.ContainsKey(id));
+                while (DataBase.ExistsUser(id));
 
                 uint loginInfo = (uint)random.Next(int.MinValue, int.MaxValue);
 
                 User user = new User(name, id, loginInfo);
-                DataBase.Users.Add(id, user);
+                DataBase.SaveUser(user);
 
                 client.LoggedIn = true;
                 client.UserID = id;
@@ -65,14 +67,14 @@ namespace Server
             }
         }
 
-        private static void LogIn(Client client, byte[] msg)
+        static void LogIn(Client client, byte[] msg)
         {
             try
             {
-                ushort id = BitConverter.ToUInt16(msg, 2);
-                uint loginInfo = BitConverter.ToUInt32(msg, 4);
+                uint id = BitConverter.ToUInt32(msg, 2);
+                uint loginInfo = BitConverter.ToUInt32(msg, 6);
 
-                if (DataBase.Users[id].LoginInfo == loginInfo)
+                if (DataBase.GetUser(id)?.LoginInfo == loginInfo)
                 {
                     client.LoggedIn = true;
                     client.UserID = id;
@@ -86,7 +88,7 @@ namespace Server
             }
         }
 
-        private static void GetWorldByID(Client client, byte[] msg)
+        static void GetWorldByID(Client client, byte[] msg)
         {
             try
             {
@@ -105,10 +107,39 @@ namespace Server
             }
         }
 
-        private static void UploadWorld(Client client, byte[] msg)
+        static void GetIDs(Client client, byte[] msg)
         {
             try
             {
+                int count = BitConverter.ToInt32(msg, 2);
+
+                // Get random IDs
+                List<uint> ids = DataBase.GetWorldIDs().OrderBy(x => random.Next()).Take(count).ToList();
+
+                List<byte> bytes = new List<byte>();
+                bytes.AddRange(new byte[] { 0x10, 0x02, SuccessCode });
+                bytes.AddRange(BitConverter.GetBytes(ids.Count));
+
+                foreach (uint id in ids)
+                {
+                    bytes.AddRange(BitConverter.GetBytes(id));
+                }
+
+                client.Send(bytes.ToArray());
+            }
+            catch (Exception)
+            {
+                client.Send(new byte[] { 0x10, 0x02, ErrorCode });
+            }
+        }
+
+        static void UploadWorld(Client client, byte[] msg)
+        {
+            try
+            {
+                if (!client.LoggedIn)
+                    throw new Exception();
+
                 uint id;
                 do
                 {
@@ -117,16 +148,42 @@ namespace Server
                 while (DataBase.ExistsWorld(id));
 
                 World world = World.LoadFromBytes(msg.Skip(2).ToArray());
+                world.AllCompleted = false;
+                world.AllPerfect = false;
+                world.ID = id;
+                world.Uploader = client.UserID;
+                world.UploadTime = DateTime.Now;
 
                 DataBase.AddWorld(id, world);
 
-                byte[] bytes = new byte[] { 0x10, 0x02, SuccessCode };
-                bytes = bytes.Concat(BitConverter.GetBytes(id)).ToArray();
-                client.Send(bytes);
+                List<byte> bytes = new List<byte>() { 0x20, 0x02, SuccessCode };
+                bytes.AddRange(BitConverter.GetBytes(id));
+
+                client.Send(bytes.ToArray());
             }
             catch (Exception)
             {
-                client.Send(new byte[] { 0x10, 0x02, ErrorCode });
+                client.Send(new byte[] { 0x20, 0x02, ErrorCode });
+            }
+        }
+
+        static void UploadStats(Client client, byte[] msg)
+        {
+            try
+            {
+                if (!client.Connected)
+                    throw new Exception();
+
+                Stats stats = new Stats();
+                stats.FromBytes(msg, 2);
+
+                User user = DataBase.GetUser(client.UserID).Value;
+                user.Statistics = stats;
+                DataBase.SaveUser(user);
+            }
+            catch (Exception)
+            {
+                client.Send(new byte[] { 0x00, 0x03, ErrorCode });
             }
         }
     }

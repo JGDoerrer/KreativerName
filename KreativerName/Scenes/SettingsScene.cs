@@ -127,8 +127,8 @@ namespace KreativerName.Scenes
                 ushort code = BitConverter.ToUInt16(b, 0);
                 if (code == 0x0100 && b[2] == 0x80)
                 {
-                    Settings.Current.UserID = BitConverter.ToUInt16(b, 3);
-                    Settings.Current.LoginInfo = BitConverter.ToUInt32(b, 5);
+                    Settings.Current.UserID = BitConverter.ToUInt32(b, 3);
+                    Settings.Current.LoginInfo = BitConverter.ToUInt32(b, 7);
                     Settings.Current.LoggedIn = true;
                     SceneManager.Client.BytesRecieved -= Handle;
                     thread.Abort();

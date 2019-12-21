@@ -15,6 +15,7 @@ namespace KreativerName.Scenes
 
         public static void LoadScene(Scene scene)
         {
+            Scene?.Exit();
             Scene = scene;
         }
 

@@ -18,7 +18,7 @@ namespace KreativerName.Networking
 
         public event ByteEvent BytesRecieved;
         public bool Connected => tcp.Connected;
-        public ushort UserID;
+        public uint UserID;
         public bool LoggedIn;
 
         public void Send(byte[] bytes)

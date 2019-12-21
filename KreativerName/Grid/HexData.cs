@@ -73,8 +73,7 @@ namespace KreativerName.Grid
         }
 
         public override string ToString() => $"ID: {ID}, Flags: {Flags}, Texture: {Texture}, Changes: {Changes.Count}";
-
-
+        
         public static HexData[] Data;
 
         public static void LoadData(string directory)

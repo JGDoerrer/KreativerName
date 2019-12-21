@@ -19,9 +19,12 @@ namespace KreativerName.UI
 
         public void Update(Vector2 windowSize)
         {
-            foreach (UIElement element in Elements)
+            lock (Elements)
             {
-                element.Update(windowSize);
+                foreach (UIElement element in Elements)
+                {
+                    element.Update(windowSize);
+                }
             }
 
             //Input.Update();
@@ -41,10 +44,13 @@ namespace KreativerName.UI
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
 
-            foreach (var element in Elements)
+            lock (Elements)
             {
-                if (element.Visible)
-                    element.Render(windowSize);
+                foreach (var element in Elements)
+                {
+                    if (element.Visible)
+                        element.Render(windowSize);
+                }
             }
         }
 

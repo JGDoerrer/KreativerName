@@ -11,8 +11,10 @@ namespace KreativerName.Grid
     public struct World : IBytes
     {
         public List<Level> Levels;
-
         public string Title;
+        public uint ID;
+        public uint Uploader;
+        public DateTime UploadTime;
 
         public bool AllCompleted
         {
@@ -157,6 +159,10 @@ namespace KreativerName.Grid
             bytes.AddRange(title.Length.ToBytes());
             bytes.AddRange(title);
 
+            bytes.AddRange(BitConverter.GetBytes(ID));
+            bytes.AddRange(BitConverter.GetBytes(Uploader));
+            bytes.AddRange(BitConverter.GetBytes(UploadTime.ToBinary()));
+
             // Write levels
             bytes.AddRange(Levels.Count.ToBytes());
 
@@ -179,6 +185,13 @@ namespace KreativerName.Grid
             total += titleCount.FromBytes(bytes, startIndex + total);
             Title = Encoding.UTF8.GetString(bytes, startIndex + total, titleCount);
             total += titleCount;
+
+            ID = BitConverter.ToUInt32(bytes, startIndex + total);
+            total += 4;
+            Uploader = BitConverter.ToUInt32(bytes, startIndex + total);
+            total += 4;
+            UploadTime = DateTime.FromBinary(BitConverter.ToInt64(bytes, startIndex + total));
+            total += 8;
 
             // Read levels
             int count = BitConverter.ToInt32(bytes, startIndex + total);

@@ -26,7 +26,7 @@ namespace KreativerName.UI
         internal bool HasParent => parent != null;
         public List<UIElement> Children => children;
         public bool Visible { get; set; } = true;
-        public UIConstraints Constraints => constraints;
+        public UIConstraints Constraints { get => constraints; set => constraints = value; }
 
         public abstract void Update(Vector2 windowSize);
 

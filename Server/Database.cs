@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using KreativerName;
+using System.Linq;
 using KreativerName.Grid;
 using KreativerName.Networking;
 
@@ -9,21 +8,14 @@ namespace Server
 {
     public static class DataBase
     {
-        public static void Init()
-        {
-            Users = new Dictionary<ushort, User>();
-
-            LoadUsers();
-        }
-
-        private const string userPath = "DataBase/users.dat";
-        public static Dictionary<ushort, User> Users;
+        const string userPath = "DataBase/Users";
+        const string worldPath = "DataBase/Worlds";
 
         #region Worlds
 
         public static World? GetWorld(uint id)
         {
-            string path = $"DataBase/Worlds/{id}.wld";
+            string path = $"{worldPath}/{id.ToString("X")}.wld";
 
             if (File.Exists(path))
             {
@@ -35,7 +27,7 @@ namespace Server
 
         public static bool AddWorld(uint id, World world)
         {
-            string path = $"DataBase/Worlds/{id}.wld";
+            string path = $"{worldPath}/{id.ToString("X")}.wld";
 
             if (File.Exists(path))
                 return false;
@@ -44,43 +36,62 @@ namespace Server
             return true;
         }
 
+        public static List<uint> GetWorldIDs()
+        {
+            string[] files = Directory.GetFiles(worldPath);
+
+            return files.Select(x => uint.Parse(Path.GetFileNameWithoutExtension(x), System.Globalization.NumberStyles.HexNumber)).ToList();
+        }
+
+        public static List<World> GetWorlds()
+        {
+            string[] files = Directory.GetFiles(worldPath);
+
+            return files.Select(x => World.LoadFromFile(x)).ToList();
+        }
+
         public static bool ExistsWorld(uint id)
-            => File.Exists($"DataBase/Worlds/{id}.wld");
+            => File.Exists($"{worldPath}/{id.ToString("X")}.wld");
 
         #endregion
 
         #region Users
 
-        public static void SaveUsers()
+        public static void SaveUser(User user)
         {
-            List<byte> bytes = new List<byte>();
+            string path = $"{userPath}/{user.ID.ToString("X")}.user";
 
-            bytes.AddRange(Users.Count.ToBytes());
-
-            foreach (KeyValuePair<ushort, User> user in Users)
-            {
-                bytes.AddRange(user.Value.ToBytes());
-            }
-
-            File.WriteAllBytes(userPath, bytes.ToArray());
+            File.WriteAllBytes(path, user.ToBytes());
         }
 
-        public static void LoadUsers()
+        public static User? GetUser(uint id)
         {
-            byte[] bytes = File.ReadAllBytes(userPath);
-            int index = 0;
+            string path = $"{userPath}/{id.ToString("X")}.user";
 
-            int count = BitConverter.ToInt32(bytes, index);
-            index += 4;
-
-            for (int i = 0; i < count; i++)
+            if (File.Exists(path))
             {
                 User user = new User();
-                index += user.FromBytes(bytes, index);
-
-                Users.Add(user.ID, user);
+                user.FromBytes(File.ReadAllBytes(path), 0);
+                return user;
             }
+
+            return null;
         }
+
+        public static List<User> GetUsers()
+        {
+            string[] files = Directory.GetFiles(userPath);
+
+            return files.Select(x =>
+            {
+                User user = new User(); 
+                user.FromBytes(File.ReadAllBytes(x), 0);
+                return user;
+            }).ToList();
+        }
+
+        public static bool ExistsUser(uint id)
+            => File.Exists($"{userPath}/{id.ToString("X")}.user");
 
         #endregion
     }

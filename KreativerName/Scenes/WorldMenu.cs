@@ -85,34 +85,32 @@ namespace KreativerName.Scenes
                 worldcount++;
             }
 
-            const int starsPerWorld = 2;
+            const int starsPerWorld = 2;            
             bool[,] stars = new bool[worldcount, starsPerWorld];
+            int totalStars = 0;
             bool[] showWorld = new bool[worldcount];
 
             for (int i = 0; i < worldcount; i++)
             {
                 stars[i, 0] = worlds[i].AllCompleted;
+                totalStars += worlds[i].AllCompleted ? 1 : 0;
                 stars[i, 1] = worlds[i].AllPerfect;
+                totalStars += worlds[i].AllPerfect ? 1 : 0;
             }
-
+            
             for (int i = 0; i < worldcount; i++)
             {
-                if (i > 0)
+                if (i > 1)
                 {
-                    for (int j = 0; j < starsPerWorld; j++)
+                    for (int j = 0; j < 3; j++)
                     {
-                        if (stars[i - 1, j])
+                        for (int k = 0; k < starsPerWorld; k++)
                         {
-                            showWorld[i] = true;
-                            break;
-                        }
-                    }
-                    for (int j = 0; j < starsPerWorld; j++)
-                    {
-                        if (stars[i, j])
-                        {
-                            showWorld[i] = true;
-                            break;
+                            if (stars[i - j, k])
+                            {
+                                showWorld[i] = true;
+                                break;
+                            }
                         }
                     }
                 }
@@ -120,13 +118,15 @@ namespace KreativerName.Scenes
                     showWorld[i] = true;
             }
 
-            Frame worldFrame = new Frame();
-            worldFrame.Color = Color.Transparent;
-            worldFrame.SetConstraints(
-                new CenterConstraint(),
-                new PixelConstraint(180),
-                new PixelConstraint(showWorld.Count(x => x) * (ButtonSize + 20) + 20),
-                new PixelConstraint(ButtonSize + 40));
+            Frame worldFrame = new Frame
+            {
+                Color = Color.Transparent,
+                Constraints = new UIConstraints(
+                    new CenterConstraint(),
+                    new PixelConstraint(180),
+                    new PixelConstraint(showWorld.Count(x => x) * (ButtonSize + 20) + 20),
+                    new PixelConstraint(ButtonSize + 40))
+            };
 
             int count = 0;
             for (int i = 0; i < worldcount; i++)

@@ -15,9 +15,7 @@ namespace Server
         static void Main(string[] args)
         {
             listener = new TcpListener(IPAddress.Any, 8875);
-
-            DataBase.Init();
-
+            
             new Thread(AcceptClients).Start();
             new Thread(RemoveClients).Start();
 

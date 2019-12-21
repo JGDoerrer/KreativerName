@@ -6,22 +6,25 @@ namespace KreativerName.Networking
 {
     public struct User : IBytes
     {
-        public User(string name, ushort id)
+        public User(string name, uint id)
         {
             Name = name;
             ID = id;
             LoginInfo = 0;
+            Statistics = new Stats();
         }
-        public User(string name, ushort id, uint loginInfo)
+        public User(string name, uint id, uint loginInfo)
         {
             Name = name;
             ID = id;
             LoginInfo = loginInfo;
+            Statistics = new Stats();
         }
 
-        public string Name;
-        public ushort ID;
-        public uint LoginInfo;
+        public string Name { get; set; }
+        public uint ID { get; set; }
+        public uint LoginInfo { get; set; }
+        public Stats Statistics { get; set; }
 
         public byte[] ToBytes()
         {
@@ -33,6 +36,7 @@ namespace KreativerName.Networking
 
             bytes.AddRange(BitConverter.GetBytes(ID));
             bytes.AddRange(BitConverter.GetBytes(LoginInfo));
+            bytes.AddRange(Statistics.ToBytes());
 
             return bytes.ToArray();
         }
@@ -46,11 +50,14 @@ namespace KreativerName.Networking
             Name = Encoding.UTF8.GetString(bytes, startIndex + count, nameLength);
             count += nameLength;
 
-            ID = BitConverter.ToUInt16(bytes, startIndex + count);
-            count += 2;
-
+            ID = BitConverter.ToUInt32(bytes, startIndex + count);
+            count += 4;
             LoginInfo = BitConverter.ToUInt32(bytes, startIndex + count);
             count += 4;
+
+            Stats stats = new Stats();
+            count += stats.FromBytes(bytes, startIndex + count);
+            Statistics = stats;
 
             return count;
         }

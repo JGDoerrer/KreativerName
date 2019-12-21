@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using KreativerName.Rendering;
 using OpenTK;
 
@@ -7,56 +8,84 @@ namespace KreativerName.UI
 {
     public static class Notification
     {
-        static Queue<Note> notifications = new Queue<Note>();
-        static Note? current;
-        static int animationIn;
-        static int animationStay;
-        static int animationOut;
+        static List<Note> notifications = new List<Note>();
         const int maxAnimation = 120;
 
         public static void Update()
         {
-            if (animationIn >= 0)
-                animationIn--;
-            if (animationOut >= 0)
-                animationOut--;
-            if (animationStay >= 0)
-                animationStay--;
-
-            if (animationIn == 0)
-                animationStay = maxAnimation;
-            if (animationStay == 0)
-                animationOut = maxAnimation;
-            if (animationOut < 0 && animationStay < 0 && animationIn < 0)
+            for (int i = 0; i < notifications.Count; i++)
             {
-                if (notifications.Count > 0)
-                {
-                    current = notifications.Dequeue();
-                    animationIn = maxAnimation;
-                }
-                else
-                    current = null;
+                notifications[i] = notifications[i].Update();
             }
         }
 
         public static void Render(Vector2 windowSize)
         {
-            if (current.HasValue)
+            float y = notifications.Sum(x => x.Y);
+
+            foreach (var note in notifications.Reverse<Note>())
+            {
+                note.Render(windowSize, y);
+                y += note.Height;
+            }
+        }
+
+        public static void Show(string text, float textSize = 2)
+        {
+            notifications.Add(new Note()
+            {
+                Text = text,
+                TextSize = textSize,
+                AnimationIn = maxAnimation,
+            });
+        }
+
+        private static float QuadraticInOut(float t)
+           => t * t / (2 * t * t - 2 * t + 1);
+
+        struct Note
+        {
+            public string Text;
+            public float TextSize;
+            public int AnimationIn;
+            public int AnimationStay;
+            public int AnimationOut;
+
+            public float Width => TextRenderer.GetWidth(Text) + 16;
+            public float Height => TextRenderer.GetHeight(Text) + 16;
+            public float Y => Height * -QuadraticInOut((float)AnimationIn / maxAnimation);
+
+            public Note Update()
+            {
+                if (AnimationIn >= 0)
+                    AnimationIn--;
+                if (AnimationOut >= 0)
+                    AnimationOut--;
+                if (AnimationStay >= 0)
+                    AnimationStay--;
+
+                if (AnimationIn == 0)
+                    AnimationStay = maxAnimation;
+                if (AnimationStay == 0)
+                    AnimationOut = maxAnimation;
+
+                return this;
+            }
+
+            public void Render(Vector2 windowSize, float y)
             {
                 const int a = 8;
                 const float scale = 2;
 
-                float animIn = QuadraticInOut((float)animationIn / maxAnimation);
-                float animOut = QuadraticInOut((float)animationOut / maxAnimation);
+                float animOut = QuadraticInOut((float)AnimationOut / maxAnimation);
 
-                if (animationIn > 0 || animationStay > 0)
+                if (AnimationIn > 0 || AnimationStay > 0)
                     animOut = 1;
 
-                float w = TextRenderer.GetWidth(current?.Text) + 16;
-                float h = TextRenderer.GetHeight(current?.Text) + 16;
+                float w = Width;
+                float h = Height;
                 float x = windowSize.X - w * animOut;
-                float y = -h * animIn + 1;
-                
+
                 Color color = Color.White;
                 Texture2D tex = Textures.Get("TextBox");
 
@@ -79,26 +108,8 @@ namespace KreativerName.UI
                 // center
                 TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + a * scale), new Vector2(w / (a * scale) - 2, h / (a * scale) - 2) * scale, color, new RectangleF(a, a, a, a));
 
-                TextRenderer.RenderString(current?.Text, new Vector2(x + 8, y + 8), Color.Black, current.Value.TextSize);
+                TextRenderer.RenderString(Text, new Vector2(x + 8, y + 8), Color.Black, TextSize);
             }
-        }
-
-        public static void Show(string text, float textSize = 2)
-        {
-            notifications.Enqueue(new Note()
-            {
-                Text = text,
-                TextSize = textSize,
-            });
-        }
-
-        private static float QuadraticInOut(float t)
-           => t * t / (2 * t * t - 2 * t + 1);
-
-        struct Note
-        {
-            public string Text;
-            public float TextSize;
         }
     }
 }

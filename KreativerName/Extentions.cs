@@ -36,7 +36,7 @@ namespace KreativerName
         }
 
         #endregion
-
+        
         public static int Clamp(this int i, int min, int max)
         {
             if (i < min)
@@ -82,6 +82,11 @@ namespace KreativerName
             }
 
             return true;
+        }
+
+        public static string ToID(this uint i)
+        {
+            return i.ToString("x").PadLeft(8, '0').Insert(4, "-");
         }
     }
 }

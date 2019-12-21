@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Threading;
@@ -63,17 +64,16 @@ namespace KreativerName
         {
             if (Settings.Current.LoggedIn && SceneManager.Client != null)
             {
-                byte[] msg = new byte[8];
+                byte[] msg = new byte[10];
                 new byte[] { 0x10, 0x01 }.CopyTo(msg, 0);
                 BitConverter.GetBytes(Settings.Current.UserID).CopyTo(msg, 2);
-                BitConverter.GetBytes(Settings.Current.LoginInfo).CopyTo(msg, 4);
+                BitConverter.GetBytes(Settings.Current.LoginInfo).CopyTo(msg, 6);
 
                 void handle(Networking.Client c, byte[] b)
                 {
                     ushort code = BitConverter.ToUInt16(b, 0);
                     if (code == 0x0110 && b[2] == 0x80)
                     {
-                        Notification.Show("Eingeloggt");
                         SceneManager.Client.BytesRecieved -= handle;
                     }
                 }
@@ -82,6 +82,8 @@ namespace KreativerName
                 SceneManager.Client.Send(msg);
 
             }
+            else
+                Notification.Show("Konnte nicht mit Server verbinden");
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -119,6 +121,14 @@ namespace KreativerName
             // Update TimePlaying
             Stats.Current.TimePlaying = Stats.Current.TimePlaying.Add(TimeSpan.FromSeconds(e.Time));
             
+            if (FrameCounter % 600 == 0 && SceneManager.Client?.Connected == true)
+            {
+                List<byte> bytes = new List<byte>() { 0x00, 0x03 };
+                bytes.AddRange(Stats.Current.ToBytes());
+
+                SceneManager.Client.Send(bytes.ToArray());
+            }
+
             input.Update();
 
             FrameCounter++;
@@ -163,9 +173,9 @@ namespace KreativerName
                 game.Exit += () =>
                 {
                     game.World.SaveToFile(e.FileName, false);
-                    Scenes.SceneManager.LoadScene(new Transition(new MainMenu(), 10));
+                    SceneManager.LoadScene(new Transition(new MainMenu(), 10));
                 };
-                Scenes.SceneManager.LoadScene(new Transition(game, 10));
+                SceneManager.LoadScene(new Transition(game, 10));
             }
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using KreativerName.Grid;
+using KreativerName.Networking;
 using KreativerName.Rendering;
 using KreativerName.UI;
 using KreativerName.UI.Constraints;
@@ -16,7 +17,7 @@ namespace KreativerName.Scenes
     {
         public Editor()
         {
-            input = new Input(SceneManager.Window);
+            input = SceneManager.Input;
             renderer = new GridRenderer(null, layout);
 
             InitUI();
@@ -247,7 +248,7 @@ namespace KreativerName.Scenes
             scrolling = new Vector2(0, 0);
 
             textLevel.Text = $"Level {levelIndex + 1:000}";
-            textMoves.Text = $"Min. Zuege: {level.minMoves:00}";
+            textMoves.Text = $"Min. Züge: {level.minMoves:00}";
         }
 
         public void LoadWorld()
@@ -407,23 +408,57 @@ namespace KreativerName.Scenes
                     solver.Solved += () => { textHexDesc.Text = $"Min. Züge: {solver.MinMoves}"; };
                     SceneManager.LoadScene(new LoadingScene(solver.SolveAsync, new Transition(this, 10)));
                 }, new Key());
+                AddButton(110, 200, 90, 34, "Upload", 10, 10, () =>
+                 {
+                     if (SceneManager.Client?.Connected != true)
+                     {
+                         Notification.Show("Nicht mit Server verbunden");
+                         return;
+                     }
+
+                     List<byte> bytes = new List<byte>() { 0x20, 0x02 };
+
+                     bytes.AddRange(world.ToCompressed());
+
+                     void uploaded(Client client, byte[] bytes)
+                     {
+                         ushort code = BitConverter.ToUInt16(bytes, 0);
+                         if (code == 0x0220 && bytes[2] == 0x80)
+                         {
+                             uint id = BitConverter.ToUInt32(bytes, 3);
+
+                             Notification.Show($"Hochgeladen unter {id.ToString("x")}");
+
+                             SceneManager.Client.BytesRecieved -= uploaded;
+                         }
+                         else if (code == 0x0220 && bytes[2] == 0xFF)
+                         {
+                             Notification.Show($"Fehler beim Hochladen");
+                             SceneManager.Client.BytesRecieved -= uploaded;
+                         }
+                     }
+
+                     SceneManager.Client.BytesRecieved += uploaded;
+                     SceneManager.Client.Send(bytes.ToArray());
+
+                 }, new Key());
 
                 // Min Moves
-                textMoves = new TextBlock($"Min. Zuege: {level.minMoves:00}", 2, 20, 110);
+                textMoves = new TextBlock($"Min. Züge: {level.minMoves:00}", 2, 20, 110);
 
                 leftFrame.AddChild(textMoves);
 
                 void add()
                 {
                     level.minMoves++;
-                    textMoves.Text = $"Min. Zuege: {level.minMoves:00}";
+                    textMoves.Text = $"Min. Züge: {level.minMoves:00}";
                 }
                 AddButton(160, 130, 20, 20, "+", 5, 3, add, new Key());
                 void sub()
                 {
                     if (level.minMoves > 0)
                         level.minMoves--;
-                    textMoves.Text = $"Min. Zuege: {level.minMoves:00}";
+                    textMoves.Text = $"Min. Züge: {level.minMoves:00}";
                 }
                 AddButton(180, 130, 20, 20, "-", 5, 3, sub, new Key());
 
