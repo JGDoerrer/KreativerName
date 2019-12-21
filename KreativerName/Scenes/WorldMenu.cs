@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using KreativerName.Grid;
 using KreativerName.Rendering;
 using KreativerName.UI;
@@ -23,18 +25,8 @@ namespace KreativerName.Scenes
 
         private void InitUI()
         {
-            List<World> worlds = new List<World>();
-            int worldcount = 0;
-            while (File.Exists($@"Resources\Worlds\{worldcount:000}.wld"))
-            {
-                worlds.Add(World.LoadFromFile($"{worldcount:000}"));
-                worldcount++;
-            }
-
-            const int ButtonSize = 60;
-
             ui = new UI.UI();
-            ui.Input = new Input(Scenes.Window);
+            ui.Input = new Input(SceneManager.Window);
 
             TextBlock title = new TextBlock("Welten", 4);
             title.Color = Color.White;
@@ -44,14 +36,6 @@ namespace KreativerName.Scenes
                 new PixelConstraint((int)title.TextWidth),
                 new PixelConstraint((int)title.TextHeight));
             ui.Add(title);
-
-            Frame worldFrame = new Frame();
-            worldFrame.Color = Color.Transparent;
-            worldFrame.SetConstraints(
-                new CenterConstraint(),
-                new PixelConstraint(180),
-                new PixelConstraint(worldcount * (ButtonSize + 20) + 20),
-                new PixelConstraint(ButtonSize + 40));
 
             Button modeButton = new Button();
             modeButton.Shortcut = Key.Tab;
@@ -79,56 +63,115 @@ namespace KreativerName.Scenes
             exitButton.Shortcut = Key.Escape;
             exitButton.OnClick += () =>
             {
-                Scenes.LoadScene(new Transition(new MainMenu(), 10));
+                SceneManager.LoadScene(new Transition(new MainMenu(), 10));
             };
             UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black);
-            exitImage.SetConstraints(new UIConstaints(10, 10, 20, 20));
+            exitImage.SetConstraints(new UIConstraints(10, 10, 20, 20));
 
             exitButton.AddChild(exitImage);
             ui.Add(exitButton);
 
-            // Worlds
+            InitWorlds();
+        }
+
+        private void InitWorlds()
+        {
+            const int ButtonSize = 60;
+            List<World> worlds = new List<World>();
+            int worldcount = 0;
+            while (File.Exists($@"Resources\Worlds\{worldcount:000}.wld"))
+            {
+                worlds.Add(World.LoadFromFile($"{worldcount:000}"));
+                worldcount++;
+            }
+
+            const int starsPerWorld = 2;            
+            bool[,] stars = new bool[worldcount, starsPerWorld];
+            int totalStars = 0;
+            bool[] showWorld = new bool[worldcount];
+
             for (int i = 0; i < worldcount; i++)
             {
-                Button button = new Button((ButtonSize + 20) * i + 20, 20, ButtonSize, ButtonSize);
-
-                List<bool> stars = new List<bool>();
-                stars.Add(worlds[i].AllCompleted);
-                stars.Add(worlds[i].AllPerfect);
-
-                for (int j = 0; j < stars.Count; j++)
+                stars[i, 0] = worlds[i].AllCompleted;
+                totalStars += worlds[i].AllCompleted ? 1 : 0;
+                stars[i, 1] = worlds[i].AllPerfect;
+                totalStars += worlds[i].AllPerfect ? 1 : 0;
+            }
+            
+            for (int i = 0; i < worldcount; i++)
+            {
+                if (i > 1)
                 {
-                    UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(stars[j] ? 10 : 0, 0, 10, 10));
-                    image.SetConstraints(new UIConstaints(
-                        ButtonSize * (j + 1) / (stars.Count + 1) - 10,
-                        ButtonSize - 15, 20, 20));
-
-                    button.AddChild(image);
+                    for (int j = 0; j < 3; j++)
+                    {
+                        for (int k = 0; k < starsPerWorld; k++)
+                        {
+                            if (stars[i - j, k])
+                            {
+                                showWorld[i] = true;
+                                break;
+                            }
+                        }
+                    }
                 }
+                else
+                    showWorld[i] = true;
+            }
 
-                if (i < 10)
-                    button.Shortcut = (Key)(110 + i);
+            Frame worldFrame = new Frame
+            {
+                Color = Color.Transparent,
+                Constraints = new UIConstraints(
+                    new CenterConstraint(),
+                    new PixelConstraint(180),
+                    new PixelConstraint(showWorld.Count(x => x) * (ButtonSize + 20) + 20),
+                    new PixelConstraint(ButtonSize + 40))
+            };
 
-                if (i > 0)
-                    button.Enabled = worlds[i - 1].AllCompleted || worlds[i - 1].AllPerfect;
-
-                int world = i;
-                button.OnClick += () =>
+            int count = 0;
+            for (int i = 0; i < worldcount; i++)
+            {
+                if (showWorld[i])
                 {
-                    NewGame(world);
-                };
+                    Button button = new Button((ButtonSize + 20) * count + 20, 20, ButtonSize, ButtonSize);
 
-                TextBlock text = new TextBlock((i + 1).ToString(), 3);
-                text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)text.TextWidth), new PixelConstraint((int)text.TextHeight));
-                button.AddChild(text);
-                worldFrame.AddChild(button);
+                    for (int j = 0; j < starsPerWorld; j++)
+                    {
+                        UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(stars[i, j] ? 10 : 0, 0, 10, 10));
+                        image.SetConstraints(new UIConstraints(
+                            ButtonSize * (j + 1) / (starsPerWorld + 1) - 10,
+                            ButtonSize - 15, 20, 20));
+
+                        button.AddChild(image);
+                    }
+
+                    if (i < 10)
+                        button.Shortcut = (Key)(110 + i);
+
+                    if (i > 0)
+                        button.Enabled = worlds[i - 1].AllCompleted || worlds[i - 1].AllPerfect;
+
+                    int world = i;
+                    button.OnClick += () =>
+                    {
+                        NewGame(world);
+                    };
+
+                    TextBlock text = new TextBlock((i + 1).ToRoman().ToLower(), 3);
+                    text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)text.TextWidth), new PixelConstraint((int)text.TextHeight));
+                    button.AddChild(text);
+                    worldFrame.AddChild(button);
+
+                    count++;
+                }
             }
 
             ui.Add(worldFrame);
         }
 
         public override void Update()
-        { }
+        {
+        }
 
         public override void UpdateUI(Vector2 windowSize)
         {
@@ -146,11 +189,44 @@ namespace KreativerName.Scenes
             game.Exit += () =>
             {
                 game.World.SaveToFile($"{world:000}");
-                Scenes.LoadScene(new Transition(new WorldMenu(), 10));
+                SceneManager.LoadScene(new Transition(new WorldMenu(), 10));
             };
 
-            Scenes.LoadScene(new Transition(game, 10));
+            SceneManager.LoadScene(new Transition(game, 10));
         }
+
+        #region IDisposable Support
+
+        private bool disposedValue = false; // Dient zur Erkennung redundanter Aufrufe.
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    ui.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        ~WorldMenu()
+        {
+            // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
+            Dispose(false);
+        }
+
+        // Dieser Code wird hinzugefügt, um das Dispose-Muster richtig zu implementieren.
+        public override void Dispose()
+        {
+            // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
 
     }
 }

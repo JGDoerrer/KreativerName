@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace KreativerName.Grid
 {
@@ -9,29 +7,29 @@ namespace KreativerName.Grid
         public Hex(int x, int y)
         {
             Position = new HexPoint(x, y);
-            Type = 0;
+            IDs = new List<byte>();
         }
 
         public Hex(HexPoint pos)
         {
             Position = pos;
-            Type = 0;
+            IDs = new List<byte>();
         }
 
-        public Hex(int x, int y, HexType type)
+        public Hex(int x, int y, byte type)
         {
             Position = new HexPoint(x, y);
-            Type = type;
+            IDs = new List<byte>() { type };
         }
 
-        public Hex(HexPoint pos, HexType type)
+        public Hex(HexPoint pos, byte type)
         {
             Position = pos;
-            Type = type;
+            IDs = new List<byte>() { type };
         }
 
         public HexPoint Position;
-        public HexType Type;
+        public List<byte> IDs;
 
         public int X => Position.X;
         public int Y => Position.Y;
@@ -42,93 +40,65 @@ namespace KreativerName.Grid
             {
                 HexFlags flags = 0;
 
-                foreach (HexType value in HexTypes)
+                foreach (HexData hexData in Types)
                 {
-                    if (Type.HasFlag(value))
-                        switch (value)
-                        {
-                            case HexType.Normal: break;
-                            case HexType.Solid: flags |= HexFlags.Solid; break;
-                            case HexType.Deadly: flags |= HexFlags.Deadly; break;
-                            case HexType.Goal: flags |= HexFlags.Goal; break;
-                            case HexType.DeadlyTwoStateOn: flags |= HexFlags.Deadly; break;
-                            case HexType.DeadlyTwoStateOff: break;
-                            case HexType.DeadlyOneUseOn: flags |= HexFlags.Deadly; break;
-                            case HexType.DeadlyOneUseOff: break;
-
-                            default: break;
-                        };
+                    flags |= hexData.Flags;
                 }
 
                 return flags;
             }
         }
 
-        public List<HexType> Types
+        public List<HexData> Types
         {
             get
             {
-                List<HexType> types = new List<HexType>();
-                foreach (HexType type in HexTypes)
+                List<HexData> types = new List<HexData>();
+
+                foreach (byte id in IDs)
                 {
-                    if (Type.HasFlag(type))
-                        types.Add(type);
+                    // Assume Hexdata.data is ordered by id
+                    if (HexData.Data.Length > id)
+                        types.Add(HexData.Data[id]);
                 }
+
                 return types;
             }
         }
 
-        static List<HexType> hexTypes;
-        public static List<HexType> HexTypes
-        {
-            get
-            {
-                if (hexTypes == null)
-                    hexTypes = ((HexType[])Enum.GetValues(typeof(HexType))).ToList();
-                return hexTypes;
-            }
-        }
-
-
         public byte[] ToBytes()
         {
-            byte[] bytes = new byte[12];
-            Position.ToBytes().CopyTo(bytes, 0);
-            ((int)Type).ToBytes().CopyTo(bytes, 8);
-            return bytes;
+            List<byte> bytes = new List<byte>();
+
+            bytes.AddRange(Position.ToBytes());
+
+            bytes.Add((byte)IDs.Count);
+            bytes.AddRange(IDs);
+
+            return bytes.ToArray();
         }
 
         public int FromBytes(byte[] bytes, int startIndex)
         {
-            Position.FromBytes(bytes, startIndex);
-            Type = (HexType)BitConverter.ToInt32(bytes, startIndex + 8);
-            return 12;
+            int count = 0;
+
+            count += Position.FromBytes(bytes, startIndex + count);
+            byte idCount = bytes[startIndex + count];
+            count += 1;
+
+            IDs = new List<byte>();
+            for (byte i = 0; i < idCount; i++)
+            {
+                IDs.Add(bytes[startIndex + count]);
+                count += 1;
+            }
+
+            return count;
         }
 
         public override string ToString()
         {
-            return $"{Position}; {Type}";
+            return $"{Position}; {IDs}";
         }
-    }
-
-    [Flags]
-    public enum HexType : int // 32 bits
-    {
-        Normal = 1 << 0,
-        Solid = 1 << 1,
-        Deadly = 1 << 2,
-        Goal = 1 << 3,
-        DeadlyTwoStateOn = 1 << 4,
-        DeadlyTwoStateOff = 1 << 5,
-        DeadlyOneUseOn = 1 << 6,
-        DeadlyOneUseOff = 1 << 7,
-    }
-
-    [Flags]
-    public enum HexFlags
-    {
-        Solid = 1 << 0,
-        Deadly = 1 << 1,
-        Goal = 1 << 2,
     }
 }

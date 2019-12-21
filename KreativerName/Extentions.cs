@@ -36,6 +36,24 @@ namespace KreativerName
         }
 
         #endregion
+        
+        public static int Clamp(this int i, int min, int max)
+        {
+            if (i < min)
+                return min;
+            if (i > max)
+                return max;
+            return i;
+        }
+
+        public static float Clamp(this float i, float min, float max)
+        {
+            if (i < min)
+                return min;
+            if (i > max)
+                return max;
+            return i;
+        }
 
         public static string ToRoman(this int i)
         {
@@ -53,6 +71,22 @@ namespace KreativerName
             if (i >= 4) return "IV" + (i - 4).ToRoman();
             if (i >= 1) return "I" + (i - 1).ToRoman();
             return "";
+        }
+
+        public static bool IsPrime(this int i)
+        {
+            for (int j = 2; j * j < i; j++)
+            {
+                if (i % j == 0)
+                    return false;
+            }
+
+            return true;
+        }
+
+        public static string ToID(this uint i)
+        {
+            return i.ToString("x").PadLeft(8, '0').Insert(4, "-");
         }
     }
 }

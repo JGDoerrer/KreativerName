@@ -20,7 +20,7 @@ namespace KreativerName.Scenes
                 backScroll = new Vector2(-.5f, .5f);
         }
 
-        UI.UI mainMenu;
+        UI.UI ui;
 
         const float sqrt3 = 1.732050807568877293527446341505872366942805253810380628055f;
         const float size = 16 * 2;
@@ -37,15 +37,15 @@ namespace KreativerName.Scenes
 
         private void InitUI()
         {
-            mainMenu = new UI.UI();
+            ui = new UI.UI();
 
-            mainMenu.Input = new Input(Scenes.Window);
+            ui.Input = SceneManager.Input;
 
             float size = 5;
             TextBlock title = new TextBlock("KREATIVER NAME", size);
             title.SetConstraints(new CenterConstraint(), new PixelConstraint(50), new PixelConstraint((int)title.TextWidth), new PixelConstraint((int)title.TextHeight));
             title.Color = Color.White;
-            mainMenu.Add(title);
+            ui.Add(title);
 
             Frame mainFrame = new Frame();
             mainFrame.Color = Color.Transparent;
@@ -56,7 +56,7 @@ namespace KreativerName.Scenes
                 button.Color = Color.FromArgb(100, 255, 100);
                 button.Shortcut = OpenTK.Input.Key.S;
                 button.SetConstraints(new CenterConstraint(), new PixelConstraint(0), new PixelConstraint(300), new PixelConstraint(60));
-                button.OnClick += () => { Scenes.LoadScene(new Transition(new WorldMenu(), 10)); };
+                button.OnClick += () => { SceneManager.LoadScene(new Transition(new WorldMenu(), 10)); };
 
                 TextBlock startText = new TextBlock("Spiel starten", 3);
                 startText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)startText.TextWidth), new PixelConstraint((int)startText.TextHeight));
@@ -71,22 +71,22 @@ namespace KreativerName.Scenes
 
                 {
                     Button button = new Button(0, 0, 60, 60);
-                    button.OnClick += () => { Scenes.LoadScene(new Transition(new Statistics(), 10)); };
+                    button.OnClick += () => { SceneManager.LoadScene(new Transition(new Statistics(), 10)); };
 
                     UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(10, 10, 10, 10));
                     image.Color = Color.Black;
-                    image.SetConstraints(new UIConstaints(10, 10, 40, 40));
+                    image.SetConstraints(new UIConstraints(10, 10, 40, 40));
 
                     button.AddChild(image);
                     frame.AddChild(button);
                 }
                 {
                     Button button = new Button(80, 0, 60, 60);
-                    button.OnClick += () => { Scenes.LoadScene(new Transition(new SettingsScene(), 10)); };
+                    button.OnClick += () => { SceneManager.LoadScene(new Transition(new SettingsScene(), 10)); };
 
                     UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(20, 10, 10, 10));
                     image.Color = Color.Black;
-                    image.SetConstraints(new UIConstaints(10, 10, 40, 40));
+                    image.SetConstraints(new UIConstraints(10, 10, 40, 40));
 
                     button.AddChild(image);
                     frame.AddChild(button);
@@ -98,18 +98,18 @@ namespace KreativerName.Scenes
 
                     UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(30, 10, 10, 10));
                     image.Color = Color.Black;
-                    image.SetConstraints(new UIConstaints(10, 10, 40, 40));
+                    image.SetConstraints(new UIConstraints(10, 10, 40, 40));
 
                     button.AddChild(image);
                     frame.AddChild(button);
                 }
                 {
                     Button button = new Button(240, 0, 60, 60);
-                    button.OnClick += () => { };
+                    button.OnClick += () => { SceneManager.LoadScene(new Transition(new OnlineScene(), 10)); };
 
                     UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(40, 10, 10, 10));
                     image.Color = Color.Black;
-                    image.SetConstraints(new UIConstaints(10, 10, 40, 40));
+                    image.SetConstraints(new UIConstraints(10, 10, 40, 40));
 
                     button.AddChild(image);
                     frame.AddChild(button);
@@ -118,10 +118,9 @@ namespace KreativerName.Scenes
             }
             {
                 Button button = new Button();
-                button.Shortcut = OpenTK.Input.Key.Escape;
                 button.Color = Color.FromArgb(255, 100, 100);
                 button.SetConstraints(new CenterConstraint(), new PixelConstraint(200), new PixelConstraint(300), new PixelConstraint(60));
-                button.OnClick += () => { Scenes.CloseWindow(); };
+                button.OnClick += () => { SceneManager.CloseWindow(); };
 
                 TextBlock exitText = new TextBlock("Schliessen", 3);
                 exitText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)exitText.TextWidth), new PixelConstraint((int)exitText.TextHeight));
@@ -130,7 +129,7 @@ namespace KreativerName.Scenes
                 mainFrame.AddChild(button);
             }
 
-            mainMenu.Add(mainFrame);
+            ui.Add(mainFrame);
         }
 
         public override void Update()
@@ -139,7 +138,7 @@ namespace KreativerName.Scenes
 
         public override void UpdateUI(Vector2 windowSize)
         {
-            mainMenu.Update(windowSize);
+            ui.Update(windowSize);
 
             layout.origin += backScroll;
 
@@ -166,21 +165,52 @@ namespace KreativerName.Scenes
                 }
             }
 
-            mainMenu.Render(windowSize);
+            ui.Render(windowSize);
         }
 
         private void NewEditor()
         {
-            Editor editor = new Editor
-            {
-                input = new Input(Scenes.Window)
-            };
+            Editor editor = new Editor();
             editor.Exit += () =>
             {
-                Scenes.LoadScene(new Transition(this, 10));
+                SceneManager.LoadScene(new Transition(this, 10));
+                editor.Dispose();
             };
 
-            Scenes.LoadScene(new Transition(editor, 10));
+            SceneManager.LoadScene(new Transition(editor, 10));
         }
+
+        #region IDisposable Support
+
+        private bool disposedValue = false; // Dient zur Erkennung redundanter Aufrufe.
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    ui.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        ~MainMenu()
+        {
+            // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
+            Dispose(false);
+        }
+
+        // Dieser Code wird hinzugefügt, um das Dispose-Muster richtig zu implementieren.
+        public override void Dispose()
+        {
+            // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
     }
 }

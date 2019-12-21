@@ -8,7 +8,7 @@ namespace KreativerName.Grid
 #nullable enable
 
     /// <summary>
-    /// Eine Klasse zum Speichen einer Hexagonalen Fläche.
+    /// Eine Klasse zum Speichern einer hexagonalen Fläche.
     /// Es werden axiale Koordinaten verwendet.
     /// x: + => rechts  - => links
     /// y: + => unten rechts  - => oben links
@@ -101,6 +101,13 @@ namespace KreativerName.Grid
             }
 
             return byteCount;
+        }
+
+        public HexGrid<T> Copy()
+        {
+            HexGrid<T> copy = new HexGrid<T>();
+            copy.FromBytes(ToBytes(), 0);
+            return copy;
         }
 
         public IEnumerator<T> GetEnumerator()

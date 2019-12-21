@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using KreativerName.Grid;
 using OpenTK;
 
@@ -20,6 +21,8 @@ namespace KreativerName.Rendering
 
         public HexGrid<Hex> Grid { get; set; }
         public HexLayout Layout { get; set; }
+
+        int frameCount = 0;
 
         public void Render(HexPoint player, HexPoint selectedHex, List<HexPoint> moves)
         {
@@ -53,21 +56,27 @@ namespace KreativerName.Rendering
                     TextureRenderer.DrawHex(Textures.Get("Player"), hex.Position, Layout, Vector2.One * Layout.size, color, null);
                 else
                 {
-                    for (int i = 0; i < hex.Types.Count; i++)
-                    {
-                        int type = (int)hex.Types[i];
-                        int count = 0;
-                        while ((type & 1) == 0)
-                        {
-                            type >>= 1;
-                            count++;
-                        }
-
-                        TextureRenderer.DrawHex(Textures.Get("Hex"), hex.Position, Layout, Vector2.One * Layout.size, color, new RectangleF(32 * count, 0, 32, 32));
-                    }
+                    RenderHex(hex.Position, hex.Types, Layout, color, frameCount);
                 }
             }
+
+            frameCount++;
         }
 
+
+        public static void RenderHex(HexPoint pos, List<HexData> types, HexLayout layout, Color color, int frameCount)
+        {
+            types = types.OrderBy(x => x.ID).ToList();
+
+            for (int i = 0; i < types.Count; i++)
+            {
+                int animation = 0;
+                if (types[i].AnimationLength > 0 && types[i].AnimationSpeed > 0)
+                {
+                    animation = ((frameCount + types[i].AnimationPhase) / types[i].AnimationSpeed) % types[i].AnimationLength;
+                }
+                TextureRenderer.DrawHex(Textures.Get("Hex"), pos, layout, Vector2.One * layout.size, color, new RectangleF(32 * types[i].Texture, animation * 32, 32, 32));
+            }
+        }
     }
 }

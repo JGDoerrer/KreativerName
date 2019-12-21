@@ -10,24 +10,23 @@ namespace KreativerName.UI
     {
         public Button()
         {
-            constaints = new UIConstaints();
+            constraints = new UIConstraints();
         }
         public Button(int x, int y, int w, int h)
         {
-            constaints = new UIConstaints(
+            constraints = new UIConstraints(
                 new PixelConstraint(x),
                 new PixelConstraint(y),
                 new PixelConstraint(w),
                 new PixelConstraint(h));
         }
 
-        bool clicked;
         bool mouseDown;
 
         public Color Color { get; set; } = Color.White;
         public Key Shortcut { get; set; }
         public bool Enabled { get; set; } = true;
-        public bool Clicked => clicked;
+        public bool Clicked { get; private set; }
         public event ClickEvent OnClick;
 
 
@@ -35,15 +34,17 @@ namespace KreativerName.UI
         {
             UpdateChildren(windowSize);
 
+            bool down = MouseLeftDown;
             bool b = (MouseOver(windowSize) && !mouseDown && MouseLeftDown) || ui.Input.KeyDown(Shortcut);
-            if (Enabled && !clicked && b)
+            if (Enabled && !Clicked && b)
             {
                 OnClick?.Invoke();
+                //ui.Input.ReleaseMouse(MouseButton.Left);
             }
 
-            clicked = b;
+            Clicked = b;
 
-            mouseDown = MouseLeftDown;
+            mouseDown = down;
         }
 
         public override void Render(Vector2 windowSize)
@@ -67,7 +68,7 @@ namespace KreativerName.UI
 
             if (MouseOver(windowSize))
             {
-                if (MouseLeftDown)
+                if (mouseDown)
                     offset = a * 3 * 2;
                 else
                     offset = a * 3;

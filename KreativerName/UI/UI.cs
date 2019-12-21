@@ -13,15 +13,18 @@ namespace KreativerName.UI
         }
 
         List<UIElement> Elements { get; set; } = new List<UIElement>();
-        internal Input Input; //{ get; set; }
+        internal Input Input;// { get; set; }
 
         internal Vector2 MousePosition => Input?.MousePosition ?? new Vector2();
 
         public void Update(Vector2 windowSize)
         {
-            foreach (UIElement element in Elements)
+            lock (Elements)
             {
-                element.Update(windowSize);
+                foreach (UIElement element in Elements)
+                {
+                    element.Update(windowSize);
+                }
             }
 
             //Input.Update();
@@ -41,10 +44,13 @@ namespace KreativerName.UI
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
 
-            foreach (var element in Elements)
+            lock (Elements)
             {
-                if (element.Visible)
-                    element.Render(windowSize);
+                foreach (var element in Elements)
+                {
+                    if (element.Visible)
+                        element.Render(windowSize);
+                }
             }
         }
 
@@ -52,6 +58,19 @@ namespace KreativerName.UI
         {
             element.SetUI(this);
             Elements.Add(element);
+        }
+
+        public bool MouseOver(Vector2 windowSize)
+        {
+            foreach (UIElement element in Elements)
+            {
+                if (element.MouseOver(windowSize))
+                    return true;
+                if (element.MouseOverChildren(windowSize))
+                    return true;
+            }
+
+            return false;
         }
 
         #region IDisposable Support

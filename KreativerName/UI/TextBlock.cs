@@ -20,20 +20,18 @@ namespace KreativerName.UI
         {
             Text = text;
             Size = size;
-            constaints = new UIConstaints(
+            constraints = new UIConstraints(
                 new PixelConstraint(x),
                 new PixelConstraint(y),
                 new PixelConstraint((int)TextWidth),
                 new PixelConstraint((int)TextHeight));
         }
 
-        string s;
-
-        public string Text { get => s; set => s = value; }//.ToUpper(); }
+        public string Text { get; set; }//.ToUpper(); }
         public float Size { get; set; }
         public Color Color { get; set; } = Color.Black;
-        public float TextWidth => s.Sum(x => !char.IsUpper(x) ? Size * 6 : Size * 7);
-        public float TextHeight => Size * 6;
+        public float TextWidth => Text.Sum(x => !char.IsUpper(x) ? Size * 6 : Size * 7);
+        public float TextHeight => Size * 6 + Text.Count(x => x == '\n') * Size * 8;
 
         public override void Update(Vector2 windowSize)
         {
@@ -42,20 +40,10 @@ namespace KreativerName.UI
 
         public override void Render(Vector2 windowSize)
         {
-            Texture2D tex = Textures.Get("Font");
             Vector2 pos = new Vector2(GetX(windowSize), GetY(windowSize));
 
-            foreach (char c in Text)
-            {
-                if (c <= 255 && c >= 32 && pos.X < GetX(windowSize) + GetWidth(windowSize))
-                {
-                    if (!char.IsUpper(c))
-                        pos.X -= 1 * Size;
-                    RectangleF sourceRect = new RectangleF(((c - 32) % 16) * 6, ((c - 32) / 16) * 6, 6, 6);
-                    TextureRenderer.Draw(tex, pos, Vector2.One * Size, Color, sourceRect);
-                    pos.X += 7 * Size;
-                }
-            }
+            TextRenderer.RenderString(Text, pos, Color, Size);
         }
+
     }
 }

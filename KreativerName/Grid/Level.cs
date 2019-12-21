@@ -25,32 +25,114 @@ namespace KreativerName.Grid
                 updated = true;
             }
 
+            HexGrid<Hex> nextGrid = grid.Copy();
+
             for (int i = 0; i < grid.Count; i++)
             {
                 Hex hex = grid.Values.ElementAt(i);
 
-                // Two states
-                if (hex.Type.HasFlag(HexType.DeadlyTwoStateOn))
+                foreach (HexData type in hex.Types)
                 {
-                    hex.Type &= ~HexType.DeadlyTwoStateOn; // delete state
-                    hex.Type |= HexType.DeadlyTwoStateOff;
-                }
-                else if (hex.Type.HasFlag(HexType.DeadlyTwoStateOff))
-                {
-                    hex.Type &= ~HexType.DeadlyTwoStateOff;
-                    hex.Type |= HexType.DeadlyTwoStateOn;
-                }
+                    HexPoint position = hex.Position;
 
-                if (hex.Type.HasFlag(HexType.DeadlyOneUseOff) && hex.Position == lastPlayer)
-                {
-                    hex.Type &= ~HexType.DeadlyOneUseOff;
-                    hex.Type |= HexType.DeadlyOneUseOn;
-                }
+                    foreach (HexAction action in type.Changes)
+                    {
+                        bool conditionMet = false;
+                        bool move = true;
+                        HexPoint nextPos = position + new HexPoint(action.MoveX, action.MoveY);
 
-                grid[hex.Position] = hex;
+                        switch (action.Condition)
+                        {
+                            case HexCondition.Move:
+                                conditionMet = true;
+                                break;
+                            case HexCondition.PlayerEnter:
+                                conditionMet = position == player;
+                                break;
+                            case HexCondition.PlayerLeave:
+                                conditionMet = position == lastPlayer;
+                                break;
+                            case HexCondition.NextSolid:
+                                conditionMet = grid[nextPos] == null || (grid[nextPos]?.Flags & HexFlags.Solid) != 0;
+                                move = false;
+                                break;
+                            case HexCondition.NextNotSolid:
+                                conditionMet = grid[nextPos] != null && (grid[nextPos]?.Flags & HexFlags.Solid) == 0;
+                                break;
+                        }
+
+                        if (conditionMet && nextGrid[position].Value.IDs.Contains(type.ID))
+                        {
+                            if (nextPos == position || !move)
+                            {
+                                Hex temp = nextGrid[position].Value;
+                                temp.IDs.Remove(type.ID);
+                                temp.IDs.Add(action.ChangeTo);
+                                nextGrid[position] = temp;
+                            }
+                            else if (nextGrid[nextPos].HasValue && move)
+                            {
+                                Hex temp = nextGrid[position].Value;
+                                temp.IDs.Remove(type.ID);
+                                nextGrid[position] = temp;
+
+                                Hex next = nextGrid[nextPos].Value;
+                                next.IDs.Add(action.ChangeTo);
+                                nextGrid[nextPos] = next;
+
+                                position = nextPos;
+                            }
+                        }
+                    }
+                }
             }
 
+            grid = nextGrid;
+
             lastPlayer = player;
+        }
+
+        public List<HexPoint> GetPossibleMoves(HexPoint player)
+        {
+            HexPoint[] directions = {
+                new HexPoint( 1,  0),
+                new HexPoint( 1, -1),
+                new HexPoint( 0, -1),
+                new HexPoint(-1,  0),
+                new HexPoint(-1,  1),
+                new HexPoint( 0,  1),
+            };
+
+            if (grid == null)
+                return new List<HexPoint>();
+
+            List<HexPoint> moves = new List<HexPoint>();
+
+            for (int i = 0; i < 6; i++)
+            {
+                int j = 1;
+
+                while (grid[(directions[i] * j) + player].HasValue && !grid[(directions[i] * j) + player].Value.Flags.HasFlag(HexFlags.Solid))
+                {
+                    moves.Add(directions[i] * j + player);
+                    j++;
+                }
+            }
+
+            return moves;
+        }
+
+        public List<Hex> GetGoals()
+        {
+            List<Hex> goals = new List<Hex>();
+
+            foreach (Hex hex in grid)
+            {
+                if (hex.Flags.HasFlag(HexFlags.Goal))
+                    goals.Add(hex);
+            }
+
+            return goals;
         }
 
         #region Load & Save

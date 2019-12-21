@@ -24,7 +24,7 @@ namespace KreativerName.Scenes
 
         static Random random = new Random();
 
-        readonly int[,] pieces =
+        static readonly int[,] pieces =
         {
             { // T
                 
@@ -66,14 +66,37 @@ namespace KreativerName.Scenes
                 0b0000010001000110,
             },
             { // I
-                0b0000111100000000,
+                0b0000000011110000,
                 0b0010001000100010,
-                0b0000111100000000,
+                0b0000000011110000,
                 0b0010001000100010,
             },
         };
+        static readonly uint[] colorValues =
+        {
+            0xFF2038EC,
+            0xFF3CBCFC,
+            0xFF00A800,
+            0xFF80D010,
+            0xFFBC00BC,
+            0xFFF478FC,
+            0xFF2038EC,
+            0xFF4CDC48,
+            0xFFE40058,
+            0xFF58F898,
+            0xFF58F898,
+            0xFF5C94FC,
+            0xFFD82800,
+            0xFF747474,
+            0xFF6844FC,
+            0xFFA80010,
+            0xFF2038EC,
+            0xFFD82800,
+            0xFFD82800,
+            0xFFFC9838,
+        };
 
-        byte[,] field = new byte[Width, Height];
+        byte[,] field = new byte[Width, Height + 2];
 
         bool gameOver = false;
 
@@ -99,12 +122,15 @@ namespace KreativerName.Scenes
         int right = 0;
         int down = 0;
 
+        int rngSeed = 0x1234;
+        int lastPiece = 0;
+
         public override void Update()
         {
             if (gameOver)
             {
-                if (Scenes.Input.KeyPress(Key.Escape))
-                    Scenes.LoadScene(new Transition(new MainMenu(), 10));
+                if (SceneManager.Input.KeyPress(Key.Escape))
+                    SceneManager.LoadScene(new Transition(new MainMenu(), 10));
                 return;
             }
 
@@ -133,7 +159,7 @@ namespace KreativerName.Scenes
 
             HandleInput();
 
-            if (frameCount % speed == 0)
+            if (frameCount % speed == 0 && nextPieceIn == 0)
             {
                 if (Fits(currentPiece, currentRot, currentX, currentY + 1))
                 {
@@ -154,6 +180,7 @@ namespace KreativerName.Scenes
                 }
             }
 
+            rngSeed = Rng(rngSeed);
             frameCount++;
         }
 
@@ -163,27 +190,28 @@ namespace KreativerName.Scenes
 
         public override void Render(Vector2 windowSize)
         {
-            for (int x = 0; x < Width; x++)
-                for (int y = 0; y < Height; y++)
-                    if (field[x, y] > 0)
+            for (int x = -1; x < Width + 1; x++)
+                for (int y = 2; y < Height + 1; y++)
+                {
+                    if (x >= 0 && y >= 0 && x < Width && y < Height)
                     {
-                        RenderTile(windowSize, field[x, y] - 1, x, y);
+                        if (field[x, y] > 0)
+                        {
+                            RenderTile(windowSize, field[x, y] - 1, x, y);
+                        }
                     }
+                    else
+                    {
+                        RenderTile(windowSize, 0, x, y);
+                    }
+                }
 
             // current piece
             if (nextPieceIn == 0)
                 RenderPiece(windowSize, currentPiece, currentRot, currentX, currentY);
 
             // next piece
-            for (int x = 0; x < 4; x++)
-                for (int y = 0; y < 4; y++)
-                    if ((pieces[nextPiece, 0] & (1 << (y * 4 + x))) > 0)
-                    {
-                        Vector2 position = new Vector2(x, y) * 8 * Scale + new Vector2(50, 50);
-
-                        TextureRenderer.Draw(Textures.Get("Tetris"), position, Vector2.One * Scale, Color.White, new RectangleF((nextPiece % 3 == 0 ? 0 : 1) * 8, 0, 8, 8));
-                        TextureRenderer.Draw(Textures.Get("Tetris"), position, Vector2.One * Scale, nextPiece % 3 != 2 ? c1 : c2, new RectangleF((nextPiece % 3 == 0 ? 0 : 1) * 8, 8, 8, 8));
-                    }
+            RenderPiece(windowSize, nextPiece, 0, Width + 3, 5);
 
             {
                 TextBlock textBlock = new TextBlock($"Punkte: {score}", 2, 200, 50)
@@ -262,57 +290,15 @@ namespace KreativerName.Scenes
                     break;
             }
 
-            // Todo: optimize
-            switch (level % 10)
-            {
-                case 0:
-                    c1 = Color.FromArgb(0x00, 0x58, 0xF8);
-                    c2 = Color.FromArgb(0x3C, 0xBC, 0xFC);
-                    break;
-                case 1:
-                    c1 = Color.FromArgb(0x00, 0xA8, 0x00);
-                    c2 = Color.FromArgb(0xB8, 0xF8, 0x18);
-                    break;
-                case 2:
-                    c1 = Color.FromArgb(0xD8, 0x00, 0xCC);
-                    c2 = Color.FromArgb(0xF8, 0x78, 0xF8);
-                    break;
-                case 3:
-                    c1 = Color.FromArgb(0x00, 0x58, 0xF8);
-                    c2 = Color.FromArgb(0x58, 0xD8, 0x54);
-                    break;
-                case 4:
-                    c1 = Color.FromArgb(0xE4, 0x00, 0x58);
-                    c2 = Color.FromArgb(0x58, 0xF8, 0x98);
-                    break;
-                case 5:
-                    c2 = Color.FromArgb(0x58, 0xF8, 0x98);
-                    c2 = Color.FromArgb(0x68, 0x88, 0xFC);
-                    break;
-                case 6:
-                    c2 = Color.FromArgb(0xF8, 0x38, 0x00);
-                    c2 = Color.FromArgb(0x7C, 0x7C, 0x7C);
-                    break;
-                case 7:
-                    c2 = Color.FromArgb(0x68, 0x44, 0xFC);
-                    c2 = Color.FromArgb(0xA8, 0x00, 0x20);
-                    break;
-                case 8:
-                    c1 = Color.FromArgb(0x00, 0x58, 0xF8);
-                    c2 = Color.FromArgb(0xF8, 0x38, 0x00);
-                    break;
-                case 9:
-                    c1 = Color.FromArgb(0xF8, 0x38, 0x00);
-                    c2 = Color.FromArgb(0xFC, 0xA0, 0x44);
-                    break;
-            }
+            c1 = Color.FromArgb((int)colorValues[(level % 10) * 2]);
+            c2 = Color.FromArgb((int)colorValues[(level % 10) * 2 + 1]);
 
             this.level = level;
         }
 
         private void HandleInput()
         {
-            if (Scenes.Input.KeyDown(Key.Down))
+            if (SceneManager.Input.KeyDown(Key.Down))
             {
                 if (down == 0)
                 {
@@ -337,48 +323,50 @@ namespace KreativerName.Scenes
                 down--;
             }
 
-            if (Scenes.Input.KeyPress(Key.Right))
+            if (SceneManager.Input.KeyPress(Key.Right))
             {
                 if (Fits(currentPiece, currentRot, currentX + 1, currentY))
                     currentX += 1;
                 right = 16;
             }
-            if (Scenes.Input.KeyDown(Key.Right))
+            if (SceneManager.Input.KeyDown(Key.Right))
             {
                 if (right == 0)
                 {
                     if (Fits(currentPiece, currentRot, currentX + 1, currentY))
                         currentX += 1;
-                    right = 2;
+                    right = 5;
                 }
                 right--;
             }
 
-            if (Scenes.Input.KeyPress(Key.Left))
+            if (SceneManager.Input.KeyPress(Key.Left))
             {
                 if (Fits(currentPiece, currentRot, currentX - 1, currentY))
                     currentX -= 1;
                 left = 16;
             }
-            if (Scenes.Input.KeyDown(Key.Left))
+            if (SceneManager.Input.KeyDown(Key.Left))
             {
                 if (left == 0)
                 {
                     if (Fits(currentPiece, currentRot, currentX - 1, currentY))
                         currentX -= 1;
-                    left = 2;
+                    left = 6;
                 }
                 left--;
             }
 
-            currentRot += Scenes.Input.KeyPress(Key.X) && Fits(currentPiece, currentRot + 1, currentX, currentY) ? 1 : 0;
-            currentRot += Scenes.Input.KeyPress(Key.Z) && Fits(currentPiece, currentRot + 3, currentX, currentY) ? 3 : 0;
+            currentRot += SceneManager.Input.KeyPress(Key.X) && Fits(currentPiece, currentRot + 1, currentX, currentY) ? 1 : 0;
+            currentRot += SceneManager.Input.KeyPress(Key.Z) && Fits(currentPiece, currentRot + 3, currentX, currentY) ? 3 : 0;
         }
 
         private void NextPiece()
         {
+            lastPiece = currentPiece;
+
             currentX = Width / 2 - 2;
-            currentY = 0;
+            currentY = 2;
             currentRot = 0;
             currentPiece = nextPiece;
 
@@ -401,7 +389,13 @@ namespace KreativerName.Scenes
                     break;
             }
 
-            nextPiece = random.Next(0, 7);
+            rngSeed = Rng(rngSeed);
+            nextPiece = rngSeed % 7;
+            if (nextPiece == lastPiece)
+            {
+                rngSeed = Rng(rngSeed);
+                nextPiece = rngSeed % 7;
+            }
         }
 
         private bool Fits(int piece, int rotation, int x, int y)
@@ -409,11 +403,9 @@ namespace KreativerName.Scenes
             for (int px = 0; px < 4; px++)
                 for (int py = 0; py < 4; py++)
                 {
-                    if (y + py < 0)
-                        continue;
 
                     if ((x + px < 0 || x + px >= Width ||
-                        /*y + py < 0 ||*/ y + py >= Height ||
+                        y + py < 0 || y + py >= Height ||
                         field[x + px, y + py] > 0) && (pieces[piece, rotation % 4] & (1 << (py * 4 + px))) > 0)
                     {
                         return false;
@@ -483,5 +475,43 @@ namespace KreativerName.Scenes
 
             nextPieceIn = 15;
         }
+
+        private int Rng(int value) => ((((value >> 9) & 1) ^ ((value >> 1) & 1)) << 15) | (value >> 1);
+
+        #region IDisposable Support
+
+        private bool disposedValue = false; // Dient zur Erkennung redundanter Aufrufe.
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // verwalteten Zustand (verwaltete Objekte) entsorgen.
+                }
+
+                // nicht verwaltete Ressourcen (nicht verwaltete Objekte) freigeben und Finalizer weiter unten überschreiben.
+                // große Felder auf Null setzen.
+
+                disposedValue = true;
+            }
+        }
+
+        ~Tetris()
+        {
+            // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
+            Dispose(false);
+        }
+
+        // Dieser Code wird hinzugefügt, um das Dispose-Muster richtig zu implementieren.
+        public override void Dispose()
+        {
+            // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
     }
 }

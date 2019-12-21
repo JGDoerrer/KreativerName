@@ -10,14 +10,14 @@ namespace KreativerName.UI
     {
         public UIElement()
         {
-            constaints = new UIConstaints();
+            constraints = new UIConstraints();
         }
         public UIElement(Constraint x, Constraint y, Constraint width, Constraint height)
         {
-            constaints = new UIConstaints(x, y, width, height);
+            constraints = new UIConstraints(x, y, width, height);
         }
 
-        protected UIConstaints constaints;
+        protected UIConstraints constraints;
 
         internal UI ui;
         internal UIElement parent;
@@ -26,11 +26,13 @@ namespace KreativerName.UI
         internal bool HasParent => parent != null;
         public List<UIElement> Children => children;
         public bool Visible { get; set; } = true;
-        public UIConstaints Constaints => constaints;
+        public UIConstraints Constraints { get => constraints; set => constraints = value; }
 
         public abstract void Update(Vector2 windowSize);
 
         public abstract void Render(Vector2 windowSize);
+
+        public void ClearChildren() => children.Clear();
 
         protected void UpdateChildren(Vector2 windowSize)
         {
@@ -49,8 +51,20 @@ namespace KreativerName.UI
             }
         }
 
-        public void SetConstraints(UIConstaints constaints) => this.constaints = constaints;
-        public void SetConstraints(Constraint x, Constraint y, Constraint width, Constraint height) => constaints = new UIConstaints(x, y, width, height);
+        internal bool MouseOverChildren(Vector2 windowSize)
+        {
+            foreach (UIElement child in children)
+            {
+                if (child.MouseOver(windowSize))
+                    return true;
+                else if (child.MouseOverChildren(windowSize))
+                    return true;
+            }
+            return false;
+        }
+
+        public void SetConstraints(UIConstraints constaints) => constraints = constaints;
+        public void SetConstraints(Constraint x, Constraint y, Constraint width, Constraint height) => constraints = new UIConstraints(x, y, width, height);
 
         public void AddChild(UIElement element)
         {
@@ -68,19 +82,19 @@ namespace KreativerName.UI
             }
         }
 
-        internal float GetX(Vector2 windowSize) => constaints.GetX(windowSize, this);
-        internal float GetY(Vector2 windowSize) => constaints.GetY(windowSize, this);
-        internal float GetWidth(Vector2 windowSize) => constaints.GetWidth(windowSize, this);
-        internal float GetHeight(Vector2 windowSize) => constaints.GetHeight(windowSize, this);
+        internal float GetX(Vector2 windowSize) => constraints.GetX(windowSize, this);
+        internal float GetY(Vector2 windowSize) => constraints.GetY(windowSize, this);
+        internal float GetWidth(Vector2 windowSize) => constraints.GetWidth(windowSize, this);
+        internal float GetHeight(Vector2 windowSize) => constraints.GetHeight(windowSize, this);
 
         #region Mouse
 
-        protected bool MouseOver(Vector2 windowSize)
+        internal bool MouseOver(Vector2 windowSize)
         {
-            float x = constaints.GetX(windowSize, this);
-            float y = constaints.GetY(windowSize, this);
-            float w = constaints.GetWidth(windowSize, this);
-            float h = constaints.GetHeight(windowSize, this);
+            float x = constraints.GetX(windowSize, this);
+            float y = constraints.GetY(windowSize, this);
+            float w = constraints.GetWidth(windowSize, this);
+            float h = constraints.GetHeight(windowSize, this);
 
             return ui.MousePosition.X >= x &&
                    ui.MousePosition.X < x + w &&
@@ -109,9 +123,10 @@ namespace KreativerName.UI
             {
                 if (disposing)
                 {
+                    constraints?.Dispose();
+                    parent?.Dispose();
                 }
 
-                parent = null;
                 ui = null;
                 children = null;
 
