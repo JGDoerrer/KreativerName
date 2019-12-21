@@ -171,7 +171,7 @@ namespace KreativerName.Scenes
         private void NewEditor()
         {
             Editor editor = new Editor();
-            editor.Exit += () =>
+            editor.OnExit += () =>
             {
                 SceneManager.LoadScene(new Transition(this, 10));
                 editor.Dispose();

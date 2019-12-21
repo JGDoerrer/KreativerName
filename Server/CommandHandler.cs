@@ -2,7 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Reflection;
+using KreativerName;
+using KreativerName.Grid;
 using KreativerName.Networking;
 
 namespace Server
@@ -77,8 +80,11 @@ namespace Server
                
         private static void PrintObject(object obj, int layer = 0)
         {
+            if (obj == null)
+                return;
+
             Type type = obj.GetType();
-            PropertyInfo[] fields = type.GetProperties();
+            FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             string padding = new string(' ', (layer + 1) * 2);
 
             if (fields.Length > 0)
@@ -87,22 +93,17 @@ namespace Server
 
                 foreach (var field in fields)
                 {
+                    if (field.IsStatic)
+                        continue;
+
                     object value = field.GetValue(obj);
                     switch (value)
                     {
-                        case string _:
-                            Console.WriteLine($"{padding}{(field.Name + ":").PadRight(maxLength)} {value as string}");
-                            break;
                         case byte[] _:
                             Console.WriteLine($"{padding}{(field.Name + ":").PadRight(maxLength)} {BitConverter.ToString(value as byte[])}");
                             break;
                         case uint _:
                             Console.WriteLine($"{padding}{(field.Name + ":").PadRight(maxLength)} {(value as uint?)?.ToString("X")}");
-                            break;
-                        case int _:
-                        case DateTime _:
-                        case TimeSpan _:
-                            Console.WriteLine($"{padding}{(field.Name + ":").PadRight(maxLength)} {value.ToString()}");
                             break;
                         case ICollection _:
                         {
@@ -121,11 +122,13 @@ namespace Server
                                 Console.WriteLine($"{padding}  No elements.");
                             break;
                         }
-
-                        default:
+                        case Stats _:
                             Console.WriteLine($"{padding}{(field.Name + ":").PadRight(maxLength)}");
                             PrintObject(value, layer + 1);
-                            //Console.WriteLine($"{padding}{(property.Name + ":").PadRight(maxLength)} {(value != null ? value.ToString() : "null")}");
+                            break;
+
+                        default:
+                            Console.WriteLine($"{padding}{(field.Name + ":").PadRight(maxLength)} {(value != null ? value.ToString() : "null")}");
                             break;
                     }
                 }

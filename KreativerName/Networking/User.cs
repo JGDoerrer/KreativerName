@@ -21,10 +21,10 @@ namespace KreativerName.Networking
             Statistics = new Stats();
         }
 
-        public string Name { get; set; }
-        public uint ID { get; set; }
-        public uint LoginInfo { get; set; }
-        public Stats Statistics { get; set; }
+        public string Name;
+        public uint ID;
+        public uint LoginInfo;
+        public Stats Statistics;
 
         public byte[] ToBytes()
         {
@@ -55,9 +55,7 @@ namespace KreativerName.Networking
             LoginInfo = BitConverter.ToUInt32(bytes, startIndex + count);
             count += 4;
 
-            Stats stats = new Stats();
-            count += stats.FromBytes(bytes, startIndex + count);
-            Statistics = stats;
+            count += Statistics.FromBytes(bytes, startIndex + count);
 
             return count;
         }
