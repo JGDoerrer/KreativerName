@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using System.Linq;
 using KreativerName.Rendering;
 using KreativerName.UI.Constraints;
 using OpenTK;
@@ -30,8 +29,8 @@ namespace KreativerName.UI
         public string Text { get; set; }//.ToUpper(); }
         public float Size { get; set; }
         public Color Color { get; set; } = Color.Black;
-        public float TextWidth => Text.Sum(x => !char.IsUpper(x) ? Size * 6 : Size * 7);
-        public float TextHeight => Size * 6 + Text.Count(x => x == '\n') * Size * 8;
+        public float TextWidth => TextRenderer.GetWidth(Text, Size);
+        public float TextHeight => TextRenderer.GetHeight(Text, Size);
 
         public override void Update(Vector2 windowSize)
         {

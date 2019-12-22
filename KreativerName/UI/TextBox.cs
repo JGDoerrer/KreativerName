@@ -37,6 +37,15 @@ namespace KreativerName.UI
 
             if (Focused && Enabled)
             {
+                if (Cursor > Text.Length)
+                    Cursor = Text.Length;
+
+                if (Cursor > MaxTextSize - 1)
+                    Cursor = MaxTextSize - 1;
+
+                if (Cursor < 0)
+                    Cursor = 0;
+
                 Text = Text.Insert(Cursor, ui.Input.KeyString);
 
                 Cursor += ui.Input.KeyString.Length;
@@ -54,25 +63,16 @@ namespace KreativerName.UI
                     Text = Text.Remove(Cursor, 1);
                 }
 
-                if (ui.Input.KeyPress(OpenTK.Input.Key.Left))
+                if (ui.Input.KeyPress(OpenTK.Input.Key.Left) && Cursor > 0)
                 {
                     Cursor--;
                     cursorAnim = 0;
                 }
-                if (ui.Input.KeyPress(OpenTK.Input.Key.Right))
+                if (ui.Input.KeyPress(OpenTK.Input.Key.Right) && Cursor < Text.Length)
                 {
                     Cursor++;
                     cursorAnim = 0;
                 }
-
-                if (Cursor > Text.Length)
-                    Cursor = Text.Length;
-                
-                if (Cursor > MaxTextSize - 1)
-                    Cursor = MaxTextSize - 1;
-
-                if (Cursor < 0)
-                    Cursor = 0;
 
                 if (ui.Input.KeyPress(OpenTK.Input.Key.Escape))
                 {

@@ -18,11 +18,37 @@ namespace KreativerName.Rendering
         public static void LoadTextures(string directory)
         {
             string[] files = Directory.GetFiles(directory);
-
+            string[] directories = Directory.GetDirectories(directory);
+            
             textures = new Dictionary<string, Texture2D>();
             foreach (string file in files)
             {
-                textures.Add(Path.GetFileNameWithoutExtension(file), LoadTexture(file));
+                string name = Path.GetFileNameWithoutExtension(file);
+                textures.Add(name, LoadTexture(file));
+            }
+
+            foreach (string dir in directories)
+            {
+                LoadTextures(dir, directory);
+            }
+        }
+
+        static void LoadTextures(string subDir, string directory)
+        {
+            string[] files = Directory.GetFiles(subDir);
+            string[] directories = Directory.GetDirectories(subDir);
+
+            foreach (string file in files)
+            {
+                string name = Path.GetFileNameWithoutExtension(file);
+                name = subDir.Replace(directory + "\\", "") + "\\" + name;
+
+                textures.Add(name, LoadTexture(file));
+            }
+
+            foreach (string dir in directories)
+            {
+                LoadTextures(dir, directory);
             }
         }
 

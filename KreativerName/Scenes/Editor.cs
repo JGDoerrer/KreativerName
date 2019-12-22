@@ -387,7 +387,7 @@ namespace KreativerName.Scenes
 
                 leftFrame.AddChild(textLevel);
 
-                void AddButton(int x, int y, int w, int h, string s, int tx, int ty, ClickEvent ev, Key shortcut)
+                void AddButton1(int x, int y, int w, int h, string s, int tx, int ty, ClickEvent ev, Key shortcut)
                 {
                     Button button = new Button(x, y, w, h);
                     button.OnClick += ev;
@@ -398,13 +398,25 @@ namespace KreativerName.Scenes
                     button.AddChild(text);
                     leftFrame.AddChild(button);
                 }
+                void AddButton2(int x, int y, string s, ClickEvent ev, Key shortcut)
+                {
+                    TextBlock text = new TextBlock(s, 2, 10, 10);
 
-                AddButton(140, 20, 20, 20, "+", 5, 3, NextWorld, new Key());
-                AddButton(160, 20, 20, 20, "-", 5, 3, PreviousWorld, new Key());
-                AddButton(140, 40, 20, 20, "+", 5, 3, NextLevel, new Key());
-                AddButton(160, 40, 20, 20, "-", 5, 3, PreviousLevel, new Key());
-                AddButton(20, 70, 60, 34, "Neu", 10, 10, NewLevel, new Key());
-                AddButton(100, 70, 90, 34, "Testen", 10, 10, TestLevel, Key.T);
+                    Button button = new Button(x, y, (int)text.TextWidth + 18, (int)text.TextHeight + 18);
+                    button.OnClick += ev;
+                    button.Shortcut = shortcut;
+
+
+                    button.AddChild(text);
+                    leftFrame.AddChild(button);
+                }
+
+                AddButton1(140, 20, 20, 20, "+", 5, 3, NextWorld, new Key());
+                AddButton1(160, 20, 20, 20, "-", 5, 3, PreviousWorld, new Key());
+                AddButton1(140, 40, 20, 20, "+", 5, 3, NextLevel, new Key());
+                AddButton1(160, 40, 20, 20, "-", 5, 3, PreviousLevel, new Key());
+                AddButton2(20, 70, "Neu", NewLevel, new Key());
+                AddButton2(100, 70, "Testen", TestLevel, Key.T);
 
                 // Min Moves
                 textMoves = new TextBlock($"Min. Züge: {level.minMoves:00}", 2, 20, 122);
@@ -416,24 +428,24 @@ namespace KreativerName.Scenes
                     level.minMoves++;
                     textMoves.Text = $"Min. Züge: {level.minMoves:00}";
                 }
-                AddButton(180, 120, 20, 20, "+", 5, 3, add, new Key());
+                AddButton1(180, 120, 20, 20, "+", 5, 3, add, new Key());
                 void sub()
                 {
                     if (level.minMoves > 0)
                         level.minMoves--;
                     textMoves.Text = $"Min. Züge: {level.minMoves:00}";
                 }
-                AddButton(200, 120, 20, 20, "-", 5, 3, sub, new Key());
+                AddButton1(200, 120, 20, 20, "-", 5, 3, sub, new Key());
 
 
-                AddButton(20, 150, 130, 34, "Speichern", 10, 10, SaveWorld, Key.S);
-                AddButton(20, 200, 80, 34, "Lösen", 10, 10, () =>
+                AddButton2(20, 150, "Speichern", SaveWorld, Key.S);
+                AddButton2(20, 200, "Lösen", () =>
                 {
                     LevelSolver solver = new LevelSolver(level);
                     solver.Solved += () => { textHexDesc.Text = $"Min. Züge: {solver.MinMoves}"; };
                     SceneManager.LoadScene(new LoadingScene(solver.SolveAsync, new Transition(this, 10)));
                 }, new Key());
-                AddButton(110, 200, 90, 34, "Upload", 10, 10, () =>
+                AddButton2(110, 200, "Upload", () =>
                 {
                     if (SceneManager.Client?.Connected != true)
                     {

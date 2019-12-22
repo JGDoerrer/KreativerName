@@ -25,7 +25,7 @@ namespace KreativerName
 
             SceneManager.SetWindow(this);
             SceneManager.LoadScene(new LoadingScene(LoadStuff, new Transition(new MainMenu(), 30)));
-
+            
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
@@ -56,7 +56,7 @@ namespace KreativerName
                 Stats.Current.FirstStart = DateTime.Now;
 
             WindowState = Settings.Current.Fullscreen ? WindowState.Fullscreen : WindowState.Normal;
-
+            
             worker.ReportProgress(100);
         }
 

@@ -10,7 +10,8 @@ namespace KreativerName.Grid
         public const int MaxID = 32;
 
         public byte ID;
-        public HexFlags Flags;
+        public HexFlags HexFlags;
+        public RenderFlags RenderFlags;
         public byte Texture;
         public byte AnimationLength;
         public byte AnimationSpeed;
@@ -23,7 +24,8 @@ namespace KreativerName.Grid
             List<byte> bytes = new List<byte>();
 
             bytes.Add(ID);
-            bytes.Add((byte)Flags);
+            bytes.Add((byte)HexFlags);
+            bytes.Add((byte)RenderFlags);
             bytes.Add(Texture);
             bytes.Add(AnimationLength);
             bytes.Add(AnimationSpeed);
@@ -45,7 +47,9 @@ namespace KreativerName.Grid
 
             ID = bytes[startIndex + count];
             count += 1;
-            Flags = (HexFlags)bytes[startIndex + count];
+            HexFlags = (HexFlags)bytes[startIndex + count];
+            count += 1;
+            RenderFlags = (RenderFlags)bytes[startIndex + count];
             count += 1;
             Texture = bytes[startIndex + count];
             count += 1;
@@ -72,7 +76,7 @@ namespace KreativerName.Grid
             return count;
         }
 
-        public override string ToString() => $"ID: {ID}, Flags: {Flags}, Texture: {Texture}, Changes: {Changes.Count}";
+        public override string ToString() => $"ID: {ID}, Flags: {HexFlags}, Texture: {Texture}, Changes: {Changes.Count}";
         
         public static HexData[] Data;
 
@@ -171,5 +175,12 @@ namespace KreativerName.Grid
         Solid = 1 << 0,
         Deadly = 1 << 1,
         Goal = 1 << 2,
+    }
+
+    [Flags]
+    public enum RenderFlags : byte
+    {
+        Animated = 1 << 0,
+        Connected = 1 << 1,
     }
 }

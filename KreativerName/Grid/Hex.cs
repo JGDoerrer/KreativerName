@@ -42,7 +42,7 @@ namespace KreativerName.Grid
 
                 foreach (HexData hexData in Types)
                 {
-                    flags |= hexData.Flags;
+                    flags |= hexData.HexFlags;
                 }
 
                 return flags;
