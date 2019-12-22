@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Threading;
 using KreativerName.Grid;
 using KreativerName.Rendering;
@@ -22,6 +23,9 @@ namespace KreativerName
             input = new Input(this);
 
             Textures.LoadTextures(@"Resources\Textures");
+
+            if (File.Exists(@"Resources\Icon.ico"))
+            Icon = new Icon(@"Resources\Icon.ico");
 
             SceneManager.SetWindow(this);
             SceneManager.LoadScene(new LoadingScene(LoadStuff, new Transition(new MainMenu(), 30)));
