@@ -35,62 +35,10 @@ namespace KreativerName
         public int FrameCounter;
         double fps;
 
-        private void LoadStuff(object sender, DoWorkEventArgs e)
-        {
-            BackgroundWorker worker = sender as BackgroundWorker;
-
-            Stats.Current = Stats.LoadFromFile("statistics");
-            worker.ReportProgress(20);
-
-            Settings.Current = Settings.LoadFromFile("settings");
-            worker.ReportProgress(40);
-
-            HexData.LoadData(@"Resources\HexData");
-            worker.ReportProgress(60);
-
-            SceneManager.ConnectClient();
-            Login();
-            worker.ReportProgress(80);
-
-            if (Stats.Current.FirstStart.Ticks == 0)
-                Stats.Current.FirstStart = DateTime.Now;
-
-            WindowState = Settings.Current.Fullscreen ? WindowState.Fullscreen : WindowState.Normal;
-            
-            worker.ReportProgress(100);
-        }
-
-        private void Login()
-        {
-            if (Settings.Current.LoggedIn && SceneManager.Client != null)
-            {
-                byte[] msg = new byte[10];
-                new byte[] { 0x10, 0x01 }.CopyTo(msg, 0);
-                BitConverter.GetBytes(Settings.Current.UserID).CopyTo(msg, 2);
-                BitConverter.GetBytes(Settings.Current.LoginInfo).CopyTo(msg, 6);
-
-                void handle(Networking.Client c, byte[] b)
-                {
-                    ushort code = BitConverter.ToUInt16(b, 0);
-                    if (code == 0x0110 && b[2] == 0x80)
-                    {
-                        SceneManager.Client.BytesRecieved -= handle;
-                    }
-                }
-                SceneManager.Client.BytesRecieved += handle;
-
-                SceneManager.Client.Send(msg);
-
-            }
-            else
-                Notification.Show("Konnte nicht mit Server verbinden");
-        }
-
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             if (FrameCounter % 10 == 0)
             {
-                Title = $"KreativerName {RenderFrequency:N1} fps, {UpdateFrequency:N1} ups";
                 fps = RenderFrequency;
             }
 
@@ -163,6 +111,57 @@ namespace KreativerName
                 TextRenderer.RenderString($"{fps:00} fps", new Vector2(Width - 80, Height - 20), Color.White);
             
             SwapBuffers();
+        }
+
+        private void LoadStuff(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+
+            Stats.Current = Stats.LoadFromFile("statistics");
+            worker.ReportProgress(20);
+
+            Settings.Current = Settings.LoadFromFile("settings");
+            worker.ReportProgress(40);
+
+            HexData.LoadData(@"Resources\HexData");
+            worker.ReportProgress(60);
+
+            SceneManager.ConnectClient();
+            Login();
+            worker.ReportProgress(80);
+
+            if (Stats.Current.FirstStart.Ticks == 0)
+                Stats.Current.FirstStart = DateTime.Now;
+
+            WindowState = Settings.Current.Fullscreen ? WindowState.Fullscreen : WindowState.Normal;
+
+            worker.ReportProgress(100);
+        }
+
+        private void Login()
+        {
+            if (Settings.Current.LoggedIn && SceneManager.Client != null)
+            {
+                byte[] msg = new byte[10];
+                new byte[] { 0x10, 0x01 }.CopyTo(msg, 0);
+                BitConverter.GetBytes(Settings.Current.UserID).CopyTo(msg, 2);
+                BitConverter.GetBytes(Settings.Current.LoginInfo).CopyTo(msg, 6);
+
+                void handle(Networking.Client c, byte[] b)
+                {
+                    ushort code = BitConverter.ToUInt16(b, 0);
+                    if (code == 0x0110 && b[2] == 0x80)
+                    {
+                        SceneManager.Client.BytesRecieved -= handle;
+                    }
+                }
+                SceneManager.Client.BytesRecieved += handle;
+
+                SceneManager.Client.Send(msg);
+
+            }
+            else
+                Notification.Show("Konnte nicht mit Server verbinden");
         }
 
         protected override void OnFileDrop(FileDropEventArgs e)
