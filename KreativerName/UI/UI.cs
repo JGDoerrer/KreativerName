@@ -13,9 +13,11 @@ namespace KreativerName.UI
         }
 
         List<UIElement> Elements { get; set; } = new List<UIElement>();
-        internal Input Input;// { get; set; }
 
+        internal Input Input;
         internal Vector2 MousePosition => Input?.MousePosition ?? new Vector2();
+
+        internal bool ignoreShortcuts = false;
 
         public void Update(Vector2 windowSize)
         {

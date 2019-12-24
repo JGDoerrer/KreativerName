@@ -2,7 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Reflection;
+using System.Text;
+using KreativerName;
+using KreativerName.Grid;
 using KreativerName.Networking;
 
 namespace Server
@@ -21,6 +25,12 @@ namespace Server
                     {
                         PrintClients();
                         break;
+                    }
+                    switch (args[1])
+                    {
+                        case "send":
+                            SendClients();
+                            break;
                     }
                     break;
                 }
@@ -42,6 +52,67 @@ namespace Server
                     }
                     break;
                 }
+                case "version":
+                {
+                    if (args.Length == 1)
+                    {
+                        Console.WriteLine($"Current Version: {Program.version}");
+                        break;
+                    }
+                    switch (args[1])
+                    {
+                        case "set":
+                            SetVersion();
+                            break;
+                    }
+                    break;
+                }
+            }
+        }
+
+        static void SendClients()
+        {
+            Console.WriteLine("Message: ");
+            string s = "";
+
+            for (string line = ""; (line = Console.ReadLine()) != "";)
+            {
+                s += line + "\n";
+            }
+
+            s = s.TrimEnd();
+
+            byte[] msg = Encoding.UTF8.GetBytes(s);
+
+            foreach (var client in Program.clients)
+            {
+                List<byte> bytes = new List<byte>() { 0x00, 0x04 };
+
+                bytes.AddRange(BitConverter.GetBytes(msg.Length));
+                bytes.AddRange(msg);
+
+                client.Send(bytes.ToArray());
+            }
+        }
+
+        static void SetVersion()
+        {
+            try
+            {
+                Console.Write("Major: ");
+                uint mayor = uint.Parse(Console.ReadLine());
+                Console.Write("Minor: ");
+                uint minor = uint.Parse(Console.ReadLine());
+                Console.Write("Build: ");
+                uint build = uint.Parse(Console.ReadLine());
+                Console.Write("Revision: ");
+                uint revision = uint.Parse(Console.ReadLine());
+
+                Program.version = new KreativerName.Version(mayor, minor, build, revision);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Error");
             }
         }
 
@@ -50,8 +121,14 @@ namespace Server
             int count = 0;
             foreach (Client client in Program.clients)
             {
-                Console.WriteLine($"Clients {++count}:");
-                PrintObject(client);
+                Console.WriteLine($"Client {++count}:");
+
+                Console.WriteLine($"  ID:        {client.UserID}");
+                Console.WriteLine($"  LoggedIn:  {client.LoggedIn}");
+                Console.WriteLine($"  Connected: {client.Connected}");
+                Console.WriteLine( "  TcpClient:");
+                Console.WriteLine($"    LocalIP:  {client.LocalIP}");
+                Console.WriteLine($"    RemoteIP: {client.RemoteIP}");
             }
         }
 
@@ -61,7 +138,7 @@ namespace Server
             foreach (User user in DataBase.GetUsers())
             {
                 Console.WriteLine($"User {++count}:");
-                PrintObject(user);
+                
             }
         }
 
@@ -71,67 +148,7 @@ namespace Server
             foreach (uint id in DataBase.GetWorldIDs())
             {
                 Console.WriteLine($"World {++count}:");
-                PrintObject(DataBase.GetWorld(id));
             }
-        }
-               
-        private static void PrintObject(object obj, int layer = 0)
-        {
-            Type type = obj.GetType();
-            PropertyInfo[] fields = type.GetProperties();
-            string padding = new string(' ', (layer + 1) * 2);
-
-            if (fields.Length > 0)
-            {
-                int maxLength = fields.Max(x => x.Name.Length) + 1;
-
-                foreach (var field in fields)
-                {
-                    object value = field.GetValue(obj);
-                    switch (value)
-                    {
-                        case string _:
-                            Console.WriteLine($"{padding}{(field.Name + ":").PadRight(maxLength)} {value as string}");
-                            break;
-                        case byte[] _:
-                            Console.WriteLine($"{padding}{(field.Name + ":").PadRight(maxLength)} {BitConverter.ToString(value as byte[])}");
-                            break;
-                        case uint _:
-                            Console.WriteLine($"{padding}{(field.Name + ":").PadRight(maxLength)} {(value as uint?)?.ToString("X")}");
-                            break;
-                        case int _:
-                        case DateTime _:
-                        case TimeSpan _:
-                            Console.WriteLine($"{padding}{(field.Name + ":").PadRight(maxLength)} {value.ToString()}");
-                            break;
-                        case ICollection _:
-                        {
-                            Console.WriteLine($"{padding}{(field.Name + ":").PadRight(maxLength)}");
-
-                            if ((value as ICollection).Count > 0)
-                            {
-                                int counter = 0;
-                                foreach (var item in value as ICollection)
-                                {
-                                    Console.WriteLine($"{padding}  {counter++}:");
-                                    PrintObject(item, layer + 2);
-                                }
-                            }
-                            else
-                                Console.WriteLine($"{padding}  No elements.");
-                            break;
-                        }
-
-                        default:
-                            Console.WriteLine($"{padding}{(field.Name + ":").PadRight(maxLength)}");
-                            PrintObject(value, layer + 1);
-                            //Console.WriteLine($"{padding}{(property.Name + ":").PadRight(maxLength)} {(value != null ? value.ToString() : "null")}");
-                            break;
-                    }
-                }
-            }
-            else
-                Console.WriteLine($"{padding}{obj.ToString()}");
         }
     }
 }

@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Threading;
+using System.IO;
+using System.Text;
 using KreativerName.Grid;
+using KreativerName.Networking;
 using KreativerName.Rendering;
 using KreativerName.Scenes;
 using KreativerName.UI;
@@ -23,6 +25,9 @@ namespace KreativerName
 
             Textures.LoadTextures(@"Resources\Textures");
 
+            if (File.Exists(@"Resources\Icon.ico"))
+                Icon = new Icon(@"Resources\Icon.ico");
+
             SceneManager.SetWindow(this);
             SceneManager.LoadScene(new LoadingScene(LoadStuff, new Transition(new MainMenu(), 30)));
 
@@ -34,63 +39,12 @@ namespace KreativerName
         Input input;
         public int FrameCounter;
         double fps;
-
-        private void LoadStuff(object sender, DoWorkEventArgs e)
-        {
-            BackgroundWorker worker = sender as BackgroundWorker;
-
-            Stats.Current = Stats.LoadFromFile("statistics");
-            worker.ReportProgress(20);
-
-            Settings.Current = Settings.LoadFromFile("settings");
-            worker.ReportProgress(40);
-
-            HexData.LoadData(@"Resources\HexData");
-            worker.ReportProgress(60);
-
-            SceneManager.ConnectClient();
-            Login();
-            worker.ReportProgress(80);
-
-            if (Stats.Current.FirstStart.Ticks == 0)
-                Stats.Current.FirstStart = DateTime.Now;
-
-            WindowState = Settings.Current.Fullscreen ? WindowState.Fullscreen : WindowState.Normal;
-
-            worker.ReportProgress(100);
-        }
-
-        private void Login()
-        {
-            if (Settings.Current.LoggedIn && SceneManager.Client != null)
-            {
-                byte[] msg = new byte[10];
-                new byte[] { 0x10, 0x01 }.CopyTo(msg, 0);
-                BitConverter.GetBytes(Settings.Current.UserID).CopyTo(msg, 2);
-                BitConverter.GetBytes(Settings.Current.LoginInfo).CopyTo(msg, 6);
-
-                void handle(Networking.Client c, byte[] b)
-                {
-                    ushort code = BitConverter.ToUInt16(b, 0);
-                    if (code == 0x0110 && b[2] == 0x80)
-                    {
-                        SceneManager.Client.BytesRecieved -= handle;
-                    }
-                }
-                SceneManager.Client.BytesRecieved += handle;
-
-                SceneManager.Client.Send(msg);
-
-            }
-            else
-                Notification.Show("Konnte nicht mit Server verbinden");
-        }
+        public static readonly Version version = new Version(0, 1, 0, 0);
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             if (FrameCounter % 10 == 0)
             {
-                Title = $"KreativerName {RenderFrequency:N1} fps, {UpdateFrequency:N1} ups";
                 fps = RenderFrequency;
             }
 
@@ -120,7 +74,7 @@ namespace KreativerName
 
             // Update TimePlaying
             Stats.Current.TimePlaying = Stats.Current.TimePlaying.Add(TimeSpan.FromSeconds(e.Time));
-            
+
             if (FrameCounter % 600 == 0 && SceneManager.Client?.Connected == true)
             {
                 List<byte> bytes = new List<byte>() { 0x00, 0x03 };
@@ -161,8 +115,111 @@ namespace KreativerName
             // Render Fps
             if (Settings.Current.ShowFps)
                 TextRenderer.RenderString($"{fps:00} fps", new Vector2(Width - 80, Height - 20), Color.White);
-            
+
             SwapBuffers();
+        }
+
+        private void LoadStuff(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+
+            Stats.Current = Stats.LoadFromFile("statistics");
+            worker.ReportProgress(20);
+
+            Settings.Current = Settings.LoadFromFile("settings");
+            worker.ReportProgress(40);
+
+            HexData.LoadData(@"Resources\HexData");
+            worker.ReportProgress(60);
+
+            SceneManager.ConnectClient();
+            if (SceneManager.Client != null)
+            {
+                SceneManager.Client.BytesRecieved += HandleRequest;
+                Login();
+                CompareVersion();
+            }
+            else
+            {
+                Notification.Show("Konnte nicht mit Server verbinden");
+            }
+            worker.ReportProgress(80);
+
+            if (Stats.Current.FirstStart.Ticks == 0)
+                Stats.Current.FirstStart = DateTime.Now;
+
+            WindowState = Settings.Current.Fullscreen ? WindowState.Fullscreen : WindowState.Normal;
+
+            worker.ReportProgress(100);
+        }
+
+        private void Login()
+        {
+            if (SceneManager.Client == null)
+                return;
+            if (!Settings.Current.LoggedIn)
+                return;
+
+            byte[] msg = new byte[10];
+            new byte[] { 0x10, 0x01 }.CopyTo(msg, 0);
+            BitConverter.GetBytes(Settings.Current.UserID).CopyTo(msg, 2);
+            BitConverter.GetBytes(Settings.Current.LoginInfo).CopyTo(msg, 6);
+
+            void handle(Client c, byte[] b)
+            {
+                ushort code = BitConverter.ToUInt16(b, 0);
+                if (code == 0x0110 && b[2] == 0x80)
+                {
+                    Notification.Show($"Eingeloggt unter {Settings.Current.UserName} ({Settings.Current.UserID.ToID()})");
+                    SceneManager.Client.BytesRecieved -= handle;
+                }
+            }
+            SceneManager.Client.BytesRecieved += handle;
+
+            SceneManager.Client.Send(msg);
+        }
+
+        private void CompareVersion()
+        {
+            if (SceneManager.Client == null)
+                return;
+
+            List<byte> msg = new List<byte>() { 0x00, 0x05 };
+
+            msg.AddRange(version.ToBytes());
+
+            void handle(Client client, byte[] msg)
+            {
+                ushort code = BitConverter.ToUInt16(msg, 0);
+                if (code == 0x0500)
+                {
+                    if (msg[2] == 0x40)
+                        Notification.Show("Eine neue Version ist verfügbar!");
+                    else if (msg[2] == 0xFF)
+                        Notification.Show("Fehler beim Überprüfen der Version");
+
+                    SceneManager.Client.BytesRecieved -= handle;
+                }
+            }
+
+            SceneManager.Client.BytesRecieved += handle;
+
+            SceneManager.Client.Send(msg.ToArray());
+        }
+
+        private void HandleRequest(Client client, byte[] msg)
+        {
+            ushort code = BitConverter.ToUInt16(msg, 0);
+
+            switch (code)
+            {
+                case 0x0400:
+                    int sLength = BitConverter.ToInt32(msg, 2);
+                    string s = Encoding.UTF8.GetString(msg, 6, sLength);
+
+                    Notification.Show(s);
+                    break;
+            }
         }
 
         protected override void OnFileDrop(FileDropEventArgs e)
@@ -177,6 +234,12 @@ namespace KreativerName
                 };
                 SceneManager.LoadScene(new Transition(game, 10));
             }
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            SceneManager.Client?.StopRecieve();
+            SceneManager.Client?.Disconnect();
         }
     }
 }

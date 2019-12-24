@@ -41,11 +41,15 @@ namespace KreativerName.Scenes
 
             ui.Input = SceneManager.Input;
 
-            float size = 5;
-            TextBlock title = new TextBlock("KREATIVER NAME", size);
-            title.SetConstraints(new CenterConstraint(), new PixelConstraint(50), new PixelConstraint((int)title.TextWidth), new PixelConstraint((int)title.TextHeight));
+            TextBlock title = new TextBlock("KREATIVER NAME", 5);
+            title.Constraints = new UIConstraints(new CenterConstraint(), new PixelConstraint(50), new PixelConstraint((int)title.TextWidth), new PixelConstraint((int)title.TextHeight));
             title.Color = Color.White;
             ui.Add(title);
+
+            TextBlock version = new TextBlock($"version {MainWindow.version}", 2);
+            version.Constraints = new UIConstraints(new PixelConstraint(10), new PixelConstraint(6, RelativeTo.Window, Direction.Bottom), new PixelConstraint((int)version.TextWidth), new PixelConstraint((int)version.TextHeight));
+            version.Color = Color.White;
+            ui.Add(version);
 
             Frame mainFrame = new Frame();
             mainFrame.Color = Color.Transparent;
@@ -65,6 +69,7 @@ namespace KreativerName.Scenes
                 mainFrame.AddChild(button);
             }
             {
+                // TODO: Refactor
                 Frame frame = new Frame();
                 frame.Color = Color.Transparent;
                 frame.SetConstraints(new CenterConstraint(), new PixelConstraint(100), new PixelConstraint(300), new PixelConstraint(60));
@@ -171,7 +176,7 @@ namespace KreativerName.Scenes
         private void NewEditor()
         {
             Editor editor = new Editor();
-            editor.Exit += () =>
+            editor.OnExit += () =>
             {
                 SceneManager.LoadScene(new Transition(this, 10));
                 editor.Dispose();

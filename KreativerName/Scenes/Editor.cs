@@ -51,9 +51,10 @@ namespace KreativerName.Scenes
         float scale = 1;
         GridRenderer renderer;
 
-        public event EmptyEvent Exit;
+        public event EmptyEvent OnExit;
 
         public HexGrid<Hex> Grid { get => level.grid; set => level.grid = value; }
+        public string Path { get; set; } = "Worlds";
 
         public override void Update()
         {
@@ -110,30 +111,33 @@ namespace KreativerName.Scenes
                     }
                 }
             }
-            if (input.KeyPress(Key.A))
+            if (!ui.ignoreShortcuts)
             {
-                //if (GetPlayerMoves().Contains(mouse))
-                player = mouse;
-            }
-            if (input.KeyPress(Key.Escape))
-            {
-                Exit?.Invoke();
-            }
-            if (input.KeyDown(Key.Left))
-            {
-                scrolling.X += scrollSpeed;
-            }
-            if (input.KeyDown(Key.Right))
-            {
-                scrolling.X -= scrollSpeed;
-            }
-            if (input.KeyDown(Key.Up))
-            {
-                scrolling.Y += scrollSpeed;
-            }
-            if (input.KeyDown(Key.Down))
-            {
-                scrolling.Y -= scrollSpeed;
+                if (input.KeyPress(Key.A))
+                {
+                    //if (GetPlayerMoves().Contains(mouse))
+                    player = mouse;
+                }
+                if (input.KeyPress(Key.Escape))
+                {
+                    OnExit?.Invoke();
+                }
+                if (input.KeyDown(Key.Left))
+                {
+                    scrolling.X += scrollSpeed;
+                }
+                if (input.KeyDown(Key.Right))
+                {
+                    scrolling.X -= scrollSpeed;
+                }
+                if (input.KeyDown(Key.Up))
+                {
+                    scrolling.Y += scrollSpeed;
+                }
+                if (input.KeyDown(Key.Down))
+                {
+                    scrolling.Y -= scrollSpeed;
+                }
             }
             scale *= (float)Math.Pow(2, input.MouseScroll());
 
@@ -253,7 +257,8 @@ namespace KreativerName.Scenes
 
         public void LoadWorld()
         {
-            world = World.LoadFromFile($"{worldIndex:000}");
+            world = World.LoadFromFile($"{Path}/{worldIndex:000}.wld", false);
+            boxWorldName.Text = world.Title ?? "";
             textWorld.Text = $"Welt  {worldIndex + 1:000}";
         }
 
@@ -279,7 +284,8 @@ namespace KreativerName.Scenes
             SaveLevel();
             world.AllCompleted = false;
             world.AllPerfect = false;
-            world.SaveToFile($"{worldIndex:000}");
+            world.Title = boxWorldName.Text;
+            world.SaveToFile($"{Path}/{worldIndex:000}.wld", false);
 
             Notification.Show("Welt gespeichert!", 2);
         }
@@ -311,6 +317,7 @@ namespace KreativerName.Scenes
         TextBlock textWorld;
         TextBlock textMoves;
         TextBlock textHexDesc;
+        TextBox boxWorldName;
         Frame buttonFrame;
         Frame lowerFrame;
         Frame leftFrame;
@@ -370,19 +377,24 @@ namespace KreativerName.Scenes
             // Level
             {
                 leftFrame = new Frame();
-                leftFrame.SetConstraints(new UIConstraints(0, 0, 220, 260));
+                leftFrame.SetConstraints(new UIConstraints(0, 0, 260, 300));
 
-                textWorld = new TextBlock($"Welt  {worldIndex:000}", 2);
-                textWorld.SetConstraints(new UIConstraints(20, 12, 200, 12));
+                Button exitButton = new Button(20, 20, 40, 40)
+                {
+                    Shortcut = Key.Escape
+                };
+                exitButton.OnClick += () =>
+                {
+                    SceneManager.LoadScene(new Transition(new MainMenu(), 10));
+                };
+                UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black);
+                exitImage.SetConstraints(new UIConstraints(10, 10, 20, 20));
 
-                leftFrame.AddChild(textWorld);
+                exitButton.AddChild(exitImage);
+                leftFrame.AddChild(exitButton);
 
-                textLevel = new TextBlock($"Level {levelIndex:000}", 2);
-                textLevel.SetConstraints(new UIConstraints(20, 32, 200, 12));
 
-                leftFrame.AddChild(textLevel);
-
-                void AddButton(int x, int y, int w, int h, string s, int tx, int ty, ClickEvent ev, Key shortcut)
+                void AddButton1(int x, int y, int w, int h, string s, int tx, int ty, ClickEvent ev, Key shortcut)
                 {
                     Button button = new Button(x, y, w, h);
                     button.OnClick += ev;
@@ -393,58 +405,35 @@ namespace KreativerName.Scenes
                     button.AddChild(text);
                     leftFrame.AddChild(button);
                 }
-
-                AddButton(20, 60, 60, 34, "Neu", 10, 10, NewLevel, new Key());
-                AddButton(100, 60, 90, 34, "Testen", 10, 10, TestLevel, Key.T);
-                AddButton(20, 150, 130, 34, "Speichern", 10, 10, SaveWorld, Key.S);
-                AddButton(140, 30, 20, 20, "+", 5, 3, NextLevel, new Key());
-                AddButton(160, 30, 20, 20, "-", 5, 3, PreviousLevel, new Key());
-                AddButton(140, 10, 20, 20, "+", 5, 3, NextWorld, new Key());
-                AddButton(160, 10, 20, 20, "-", 5, 3, PreviousWorld, new Key());
-
-                AddButton(20, 200, 80, 34, "Lösen", 10, 10, () =>
+                void AddButton2(int x, int y, string s, ClickEvent ev, Key shortcut)
                 {
-                    LevelSolver solver = new LevelSolver(level);
-                    solver.Solved += () => { textHexDesc.Text = $"Min. Züge: {solver.MinMoves}"; };
-                    SceneManager.LoadScene(new LoadingScene(solver.SolveAsync, new Transition(this, 10)));
-                }, new Key());
-                AddButton(110, 200, 90, 34, "Upload", 10, 10, () =>
-                 {
-                     if (SceneManager.Client?.Connected != true)
-                     {
-                         Notification.Show("Nicht mit Server verbunden");
-                         return;
-                     }
+                    TextBlock text = new TextBlock(s, 2, 10, 10);
 
-                     List<byte> bytes = new List<byte>() { 0x20, 0x02 };
+                    Button button = new Button(x, y, (int)text.TextWidth + 18, (int)text.TextHeight + 18);
+                    button.OnClick += ev;
+                    button.Shortcut = shortcut;
+                    
+                    button.AddChild(text);
+                    leftFrame.AddChild(button);
+                }
 
-                     bytes.AddRange(world.ToCompressed());
+                textWorld = new TextBlock($"Welt  {worldIndex:000}", 2, 80, 22);
+                leftFrame.AddChild(textWorld);
 
-                     void uploaded(Client client, byte[] bytes)
-                     {
-                         ushort code = BitConverter.ToUInt16(bytes, 0);
-                         if (code == 0x0220 && bytes[2] == 0x80)
-                         {
-                             uint id = BitConverter.ToUInt32(bytes, 3);
+                AddButton1(200, 20, 20, 20, "+", 5, 3, NextWorld, new Key());
+                AddButton1(220, 20, 20, 20, "-", 5, 3, PreviousWorld, new Key());
 
-                             Notification.Show($"Hochgeladen unter {id.ToString("x")}");
+                textLevel = new TextBlock($"Level {levelIndex:000}", 2, 80, 42);
+                leftFrame.AddChild(textLevel);
 
-                             SceneManager.Client.BytesRecieved -= uploaded;
-                         }
-                         else if (code == 0x0220 && bytes[2] == 0xFF)
-                         {
-                             Notification.Show($"Fehler beim Hochladen");
-                             SceneManager.Client.BytesRecieved -= uploaded;
-                         }
-                     }
+                AddButton1(200, 40, 20, 20, "+", 5, 3, NextLevel, new Key());
+                AddButton1(220, 40, 20, 20, "-", 5, 3, PreviousLevel, new Key());
 
-                     SceneManager.Client.BytesRecieved += uploaded;
-                     SceneManager.Client.Send(bytes.ToArray());
-
-                 }, new Key());
+                AddButton2(20, 70, "Neu", NewLevel, new Key());
+                AddButton2(100, 70, "Testen", TestLevel, Key.T);
 
                 // Min Moves
-                textMoves = new TextBlock($"Min. Züge: {level.minMoves:00}", 2, 20, 110);
+                textMoves = new TextBlock($"Min. Züge: {level.minMoves:00}", 2, 20, 122);
 
                 leftFrame.AddChild(textMoves);
 
@@ -453,15 +442,64 @@ namespace KreativerName.Scenes
                     level.minMoves++;
                     textMoves.Text = $"Min. Züge: {level.minMoves:00}";
                 }
-                AddButton(160, 130, 20, 20, "+", 5, 3, add, new Key());
+                AddButton1(180, 120, 20, 20, "+", 5, 3, add, new Key());
                 void sub()
                 {
                     if (level.minMoves > 0)
                         level.minMoves--;
                     textMoves.Text = $"Min. Züge: {level.minMoves:00}";
                 }
-                AddButton(180, 130, 20, 20, "-", 5, 3, sub, new Key());
+                AddButton1(200, 120, 20, 20, "-", 5, 3, sub, new Key());
 
+
+                AddButton2(20, 150, "Speichern", SaveWorld, Key.S);
+                AddButton2(20, 200, "Lösen", () =>
+                {
+                    LevelSolver solver = new LevelSolver(level);
+                    solver.Solved += () => { textHexDesc.Text = $"Min. Züge: {solver.MinMoves}"; };
+                    SceneManager.LoadScene(new LoadingScene(solver.SolveAsync, new Transition(this, 10)));
+                }, new Key());
+                AddButton2(110, 200, "Upload", () =>
+                {
+                    if (SceneManager.Client?.Connected != true)
+                    {
+                        Notification.Show("Nicht mit Server verbunden");
+                        return;
+                    }
+
+                    List<byte> bytes = new List<byte>() { 0x20, 0x02 };
+
+                    bytes.AddRange(world.ToCompressed());
+
+                    void uploaded(Client client, byte[] bytes)
+                    {
+                        ushort code = BitConverter.ToUInt16(bytes, 0);
+                        if (code == 0x0220 && bytes[2] == 0x80)
+                        {
+                            uint id = BitConverter.ToUInt32(bytes, 3);
+
+                            Notification.Show($"Hochgeladen unter {id.ToString("x")}");
+
+                            SceneManager.Client.BytesRecieved -= uploaded;
+                        }
+                        else if (code == 0x0220 && bytes[2] == 0xFF)
+                        {
+                            Notification.Show($"Fehler beim Hochladen");
+                            SceneManager.Client.BytesRecieved -= uploaded;
+                        }
+                    }
+
+                    SceneManager.Client.BytesRecieved += uploaded;
+                    SceneManager.Client.Send(bytes.ToArray());
+
+                }, new Key());
+
+                boxWorldName = new TextBox(20, 250, 200, 30)
+                {
+                    Text = world.Title ?? "",
+                    MaxTextSize = 15
+                };
+                leftFrame.AddChild(boxWorldName);
 
                 ui.Add(leftFrame);
             }

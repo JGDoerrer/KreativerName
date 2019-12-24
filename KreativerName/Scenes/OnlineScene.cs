@@ -17,7 +17,7 @@ namespace KreativerName.Scenes
         public OnlineScene()
         {
             InitUI();
-            
+
             if (SceneManager.Client?.Connected == true)
             {
                 SceneManager.Client.BytesRecieved += HandleRequest;
@@ -33,7 +33,7 @@ namespace KreativerName.Scenes
 
             }
         }
-        
+
         List<World> worlds = new List<World>();
 
         public override void Update()
@@ -53,7 +53,8 @@ namespace KreativerName.Scenes
 
         public override void Exit()
         {
-            SceneManager.Client.BytesRecieved -= HandleRequest;
+            if (SceneManager.Client != null)
+                SceneManager.Client.BytesRecieved -= HandleRequest;
         }
 
         #region UI

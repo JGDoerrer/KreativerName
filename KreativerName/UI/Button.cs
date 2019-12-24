@@ -35,7 +35,7 @@ namespace KreativerName.UI
             UpdateChildren(windowSize);
 
             bool down = MouseLeftDown;
-            bool b = (MouseOver(windowSize) && !mouseDown && MouseLeftDown) || ui.Input.KeyDown(Shortcut);
+            bool b = (MouseOver(windowSize) && !mouseDown && MouseLeftDown) || (ui.Input.KeyDown(Shortcut) && !ui.ignoreShortcuts);
             if (Enabled && !Clicked && b)
             {
                 OnClick?.Invoke();

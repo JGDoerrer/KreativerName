@@ -15,6 +15,15 @@ namespace KreativerName
             return 4;
         }
 
+        public static byte[] ToBytes(this ulong i)
+            => BitConverter.GetBytes(i);
+
+        public static int FromBytes(this ref ulong i, byte[] bytes, int startIndex)
+        {
+            i = BitConverter.ToUInt64(bytes, startIndex);
+            return 8;
+        }
+
         public static byte[] ToBytes(this TimeSpan ts)
             => BitConverter.GetBytes(ts.Ticks);
 

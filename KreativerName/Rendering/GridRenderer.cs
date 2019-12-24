@@ -56,7 +56,7 @@ namespace KreativerName.Rendering
                     TextureRenderer.DrawHex(Textures.Get("Player"), hex.Position, Layout, Vector2.One * Layout.size, color, null);
                 else
                 {
-                    RenderHex(hex.Position, hex.Types, Layout, color, frameCount);
+                    RenderHex(hex.Position, hex.Types, Layout, color, frameCount, Grid);
                 }
             }
 
@@ -64,18 +64,39 @@ namespace KreativerName.Rendering
         }
 
 
-        public static void RenderHex(HexPoint pos, List<HexData> types, HexLayout layout, Color color, int frameCount)
+        public static void RenderHex(HexPoint pos, List<HexData> types, HexLayout layout, Color color, int frameCount, HexGrid<Hex> grid = null)
         {
             types = types.OrderBy(x => x.ID).ToList();
 
             for (int i = 0; i < types.Count; i++)
             {
                 int animation = 0;
-                if (types[i].AnimationLength > 0 && types[i].AnimationSpeed > 0)
+                int connection = 0;
+
+                if (types[i].RenderFlags.HasFlag(RenderFlags.Animated))
                 {
                     animation = ((frameCount + types[i].AnimationPhase) / types[i].AnimationSpeed) % types[i].AnimationLength;
                 }
-                TextureRenderer.DrawHex(Textures.Get("Hex"), pos, layout, Vector2.One * layout.size, color, new RectangleF(32 * types[i].Texture, animation * 32, 32, 32));
+
+                if (grid != null && types[i].RenderFlags.HasFlag(RenderFlags.Connected))
+                {
+                    HexPoint[] directions = {
+                        new HexPoint( 1,  0), // E  1
+                        new HexPoint( 1, -1), // NE 2
+                        new HexPoint( 0, -1), // NW 4
+                        new HexPoint(-1,  0), // W  8
+                        new HexPoint(-1,  1), // SW 16
+                        new HexPoint( 0,  1), // SE 32
+                    };
+
+                    for (int j = 0; j < 6; j++)
+                    {
+                        if (grid[pos + directions[j]].HasValue && grid[pos + directions[j]].Value.IDs.Contains(types[i].ID))
+                            connection += 1 << j;
+                    }
+                }
+
+                TextureRenderer.DrawHex(Textures.Get($"Hex\\{types[i].ID}"), pos, layout, Vector2.One * layout.size, color, new RectangleF(32 * connection, animation * 32, 32, 32));
             }
         }
     }

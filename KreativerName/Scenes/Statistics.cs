@@ -60,7 +60,7 @@ namespace KreativerName.Scenes
             AddText("Level perfekt geschafft: ", Stats.Current.LevelsCompletedPerfect.ToString(), y += 30);
             AddText("Erstes Spiel: ", Stats.Current.FirstStart.ToString("dd.MM.yy"), y += 30);
             AddText("Spielzeit: ", $"{(int)Stats.Current.TimePlaying.TotalHours}:{Stats.Current.TimePlaying.Minutes:00}:{Stats.Current.TimePlaying.Seconds:00}", y += 30);
-            AddText("Tode: ", Stats.Current.Deaths.ToString(), y += 30);
+            AddText("Tode: ", Stats.Current.Fails.ToString(), y += 30);
             if (Stats.Current.TetrisHighScore > 0)
             {
                 AddText("Tetris höchste Punktzahl: ", Stats.Current.TetrisHighScore.ToString(), y += 30);

@@ -72,8 +72,10 @@ namespace KreativerName.Rendering
                 if (!sourceRect.HasValue)
                     GL.TexCoord2(vertecies[i]);
                 else
-                    GL.TexCoord2((sourceRect.Value.Left + vertecies[i].X * sourceRect.Value.Width) / texture.Width,
-                    (sourceRect.Value.Top + vertecies[i].Y * sourceRect.Value.Height) / texture.Height);
+                {
+                    GL.TexCoord2(Math.Round(sourceRect.Value.Left + vertecies[i].X * sourceRect.Value.Width) / texture.Width,
+                                Math.Round(sourceRect.Value.Top + vertecies[i].Y * sourceRect.Value.Height) / texture.Height);
+                }
 
                 vertecies[i] = layout.HexCorner(hex, i);
 
@@ -84,21 +86,6 @@ namespace KreativerName.Rendering
             }
 
             GL.End();
-        }
-
-
-        static Vector2 RotatedAround(Vector2 pointToRotate, Vector2 centerPoint, double angleInDegrees)
-        {
-            double angleInRadians = angleInDegrees * (Math.PI / 180);
-            double cosTheta = Math.Cos(angleInRadians);
-            double sinTheta = Math.Sin(angleInRadians);
-            return new Vector2
-            {
-                X = (int)(cosTheta * (pointToRotate.X - centerPoint.X) -
-                    sinTheta * (pointToRotate.Y - centerPoint.Y) + centerPoint.X),
-                Y = (int)(sinTheta * (pointToRotate.X - centerPoint.X) +
-                    cosTheta * (pointToRotate.Y - centerPoint.Y) + centerPoint.Y)
-            };
         }
     }
 }

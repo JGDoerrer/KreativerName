@@ -65,7 +65,7 @@ namespace KreativerName.UI
                     AnimationStay--;
 
                 if (AnimationIn == 0)
-                    AnimationStay = maxAnimation;
+                    AnimationStay = 120 + Text.Length * 5;
                 if (AnimationStay == 0)
                     AnimationOut = maxAnimation;
 

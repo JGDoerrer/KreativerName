@@ -1,5 +1,10 @@
 ﻿using System;
+using System.Drawing;
+using KreativerName.Rendering;
+using KreativerName.UI;
+using KreativerName.UI.Constraints;
 using OpenTK;
+using OpenTK.Input;
 
 namespace KreativerName.Scenes
 {
@@ -7,14 +12,7 @@ namespace KreativerName.Scenes
     {
         public ClickGame()
         {
-
-        }
-
-        UI.UI ui;
-
-        private void InitUI()
-        {
-
+            InitUI();
         }
 
         public override void Update()
@@ -22,13 +20,61 @@ namespace KreativerName.Scenes
 
         }
 
-        public override void UpdateUI(Vector2 windowSize)
+        public override void Render(Vector2 windowSize)
+        {
+            ui.Render(windowSize);
+        }
+
+        #region UI
+
+        UI.UI ui;
+        TextBlock textClips;
+        TextBlock textWire;
+
+        private void InitUI()
+        {
+            ui = new UI.UI();
+            ui.Input = SceneManager.Input;
+
+            void AddButton(int x, int y, string s, ClickEvent ev)
+            {
+                TextBlock text = new TextBlock(s, 2, 10, 10);
+
+                Button button = new Button(x, y, (int)text.TextWidth + 18, (int)text.TextHeight + 18);
+                button.OnClick += ev;
+
+                button.AddChild(text);
+                ui.Add(button);
+            }
+
+            Button exitButton = new Button(40, 40, 40, 40)
+            {
+                Shortcut = Key.Escape
+            };
+            exitButton.OnClick += () =>
+            {
+                SceneManager.LoadScene(new Transition(new MainMenu(), 10));
+            };
+            UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black);
+            exitImage.SetConstraints(new UIConstraints(10, 10, 20, 20));
+
+            exitButton.AddChild(exitImage);
+            ui.Add(exitButton);
+                        
+            AddButton(190, 100, "Büroklammer machen", Click);
+
+        }
+
+        private static void Click()
         {
         }
 
-        public override void Render(Vector2 windowSize)
+        public override void UpdateUI(Vector2 windowSize)
         {
+            ui.Update(windowSize);
         }
+
+        #endregion
 
         #region IDisposable Support
 
