@@ -52,6 +52,21 @@ namespace Server
                     }
                     break;
                 }
+                case "version":
+                {
+                    if (args.Length == 1)
+                    {
+                        Console.WriteLine($"Current Version: {Program.version}");
+                        break;
+                    }
+                    switch (args[1])
+                    {
+                        case "set":
+                            SetVersion();
+                            break;
+                    }
+                    break;
+                }
             }
         }
 
@@ -77,6 +92,27 @@ namespace Server
                 bytes.AddRange(msg);
 
                 client.Send(bytes.ToArray());
+            }
+        }
+
+        static void SetVersion()
+        {
+            try
+            {
+                Console.Write("Major: ");
+                uint mayor = uint.Parse(Console.ReadLine());
+                Console.Write("Minor: ");
+                uint minor = uint.Parse(Console.ReadLine());
+                Console.Write("Build: ");
+                uint build = uint.Parse(Console.ReadLine());
+                Console.Write("Revision: ");
+                uint revision = uint.Parse(Console.ReadLine());
+
+                Program.version = new KreativerName.Version(mayor, minor, build, revision);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Error");
             }
         }
 

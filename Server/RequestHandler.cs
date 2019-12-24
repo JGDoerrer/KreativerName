@@ -222,10 +222,10 @@ namespace Server
                 KreativerName.Version version = new KreativerName.Version();
                 version.FromBytes(msg, 2);
 
-                if (version.Equals(Program.version))
-                    client.Send(new byte[] { 0x00, 0x05, SuccessCode });
-                else
+                if (Program.version.IsBiggerThan(version))
                     client.Send(new byte[] { 0x00, 0x05, 0x40 });
+                else
+                    client.Send(new byte[] { 0x00, 0x05, SuccessCode });
             }
             catch (Exception)
             {

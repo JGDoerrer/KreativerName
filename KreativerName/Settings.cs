@@ -63,7 +63,7 @@ namespace KreativerName
             bytes.AddRange(BitConverter.GetBytes(UserID));
             bytes.AddRange(BitConverter.GetBytes(LoginInfo));
 
-            byte[] name = Encoding.UTF8.GetBytes(UserName);
+            byte[] name = Encoding.UTF8.GetBytes(UserName ?? "");
             bytes.AddRange(BitConverter.GetBytes(name.Length));
             bytes.AddRange(name);
 
