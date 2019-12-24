@@ -13,11 +13,13 @@ namespace KreativerName.Grid
         }
 
         Level level;
+        int[] possibleMoves;
+        bool logMoves = false;
 
         public event EmptyEvent Solved;
         public int MinMoves { get; private set; }
-        public List<HexPoint> Solution { get; private set; }
-
+        public List<List<HexPoint>> Solutions { get; private set; }
+        
         public void Solve()
         {
             List<List<HexPoint>> results = new List<List<HexPoint>>();
@@ -30,7 +32,7 @@ namespace KreativerName.Grid
             }
 
             MinMoves = results.Min(x => x.Count);
-            Solution = results.Where(x => x.Count == MinMoves).First();
+            Solutions = results.Where(x => x.Count == MinMoves).ToList();
             Solved?.Invoke();
         }
 
@@ -42,10 +44,13 @@ namespace KreativerName.Grid
             int moves = 1;
             bool done = false;
 
+            logMoves = false;
             while (!done)
             {
+                logMoves = true;
+                possibleMoves = new int[moves + 1];
                 results = Solve(level.GetPossibleMoves(level.startPos), level.Copy(), moves, new List<HexPoint>());
-
+                
                 if (results.Count > 0)
                 {
                     List<List<HexPoint>> prevResults = results;
@@ -53,6 +58,9 @@ namespace KreativerName.Grid
                     if (moves > 1)
                     {
                         moves--;
+                        logMoves = true;
+                        possibleMoves = new int[moves + 1];
+
                         results = Solve(level.GetPossibleMoves(level.startPos), level.Copy(), moves, new List<HexPoint>());
 
                         if (results.Count == 0)
@@ -64,9 +72,14 @@ namespace KreativerName.Grid
                 moves += 2;
                 worker.ReportProgress(moves);
             }
+            
+            for (int i = 1; i < possibleMoves.Length; i++)
+            {
+                System.Console.WriteLine($"Possible Moves at {i} moves: {possibleMoves[possibleMoves.Length - i - 1]}");
+            }
 
             MinMoves = results.Min(x => x.Count);
-            Solution = results.Where(x => x.Count == MinMoves).First();
+            Solutions = results.Where(x => x.Count == MinMoves).ToList();
             worker.ReportProgress(100);
             Solved?.Invoke();
         }
@@ -75,8 +88,12 @@ namespace KreativerName.Grid
         {
             List<List<HexPoint>> results = new List<List<HexPoint>>();
 
+            if (logMoves)
+                possibleMoves[movesLeft]++;
+
             if (movesLeft == 0)
                 return null;
+
 
             foreach (var move in moves)
             {

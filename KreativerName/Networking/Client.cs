@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
@@ -15,12 +16,17 @@ namespace KreativerName.Networking
 
         TcpClient tcp;
         Thread threadRecieve;
+        bool recieve = false;
+
 
         public event ByteEvent BytesRecieved;
         public bool Connected => tcp.Connected;
         public uint UserID;
         public bool LoggedIn;
 
+        public EndPoint LocalIP => tcp.Client.LocalEndPoint;
+        public EndPoint RemoteIP => tcp.Client.RemoteEndPoint;
+        
         public void Send(byte[] bytes)
         {
             if (Connected)
@@ -39,18 +45,20 @@ namespace KreativerName.Networking
 
         public void StartRecieve()
         {
+            recieve = true;
             threadRecieve = new Thread(Recieve);
             threadRecieve.Start();
         }
 
         public void StopRecieve()
         {
+            recieve = false;
             threadRecieve.Abort();
         }
 
         private void Recieve()
         {
-            while (true)
+            while (recieve)
             {
                 try
                 {
@@ -67,6 +75,15 @@ namespace KreativerName.Networking
                 {
                     break;
                 }
+            }
+        }
+
+        public void Disconnect()
+        {
+            if (tcp.Connected)
+            {
+                Send(new byte[] { 0x00, 0xFF});
+                tcp.Close();
             }
         }
     }

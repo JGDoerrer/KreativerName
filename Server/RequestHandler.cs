@@ -26,9 +26,14 @@ namespace Server
                 case 0x0210: GetIDs(client, msg); break;
                 case 0x0220: UploadWorld(client, msg); break;
                 case 0x0300: UploadStats(client, msg); break;
+                // 0x0400: Send Message
+                case 0x0410: Message(client, msg); break;
+                case 0x0500: CompareVersion(client, msg); break;
+                case 0xFF00: Disconnect(client, msg); break;
             }
         }
 
+        // 0x0100
         static void SignUp(Client client, byte[] msg)
         {
             try
@@ -67,6 +72,7 @@ namespace Server
             }
         }
 
+        // 0x0110
         static void LogIn(Client client, byte[] msg)
         {
             try
@@ -88,6 +94,7 @@ namespace Server
             }
         }
 
+        // 0x0200
         static void GetWorldByID(Client client, byte[] msg)
         {
             try
@@ -107,6 +114,7 @@ namespace Server
             }
         }
 
+        // 0x0210
         static void GetIDs(Client client, byte[] msg)
         {
             try
@@ -133,6 +141,7 @@ namespace Server
             }
         }
 
+        // 0x0220
         static void UploadWorld(Client client, byte[] msg)
         {
             try
@@ -167,6 +176,7 @@ namespace Server
             }
         }
 
+        // 0x0300
         static void UploadStats(Client client, byte[] msg)
         {
             try
@@ -185,6 +195,48 @@ namespace Server
             {
                 client.Send(new byte[] { 0x00, 0x03, ErrorCode });
             }
+        }
+
+        // 0x0410
+        static void Message(Client client, byte[] msg)
+        {
+            try
+            {
+                int length = BitConverter.ToInt32(msg, 2);
+                string s = Encoding.UTF8.GetString(msg, 6, length);
+
+
+                client.Send(new byte[] { 0x10, 0x04, SuccessCode });
+            }
+            catch (Exception)
+            {
+                client.Send(new byte[] { 0x10, 0x04, ErrorCode });
+            }
+        }
+
+        // 0x0500
+        static void CompareVersion(Client client, byte[] msg)
+        {
+            try
+            {
+                KreativerName.Version version = new KreativerName.Version();
+                version.FromBytes(msg, 2);
+
+                if (version.Equals(Program.version))
+                    client.Send(new byte[] { 0x00, 0x05, SuccessCode });
+                else
+                    client.Send(new byte[] { 0x00, 0x05, 0x40 });
+            }
+            catch (Exception)
+            {
+                client.Send(new byte[] { 0x00, 0x05, ErrorCode });
+            }
+        }
+
+        // 0xFF00
+        static void Disconnect(Client client, byte[] msg)
+        {
+            client.Disconnect();
         }
     }
 }

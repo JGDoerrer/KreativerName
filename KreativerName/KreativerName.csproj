@@ -134,6 +134,7 @@
     <Compile Include="UI\UI.cs" />
     <Compile Include="UI\UIElement.cs" />
     <Compile Include="Grid\World.cs" />
+    <Compile Include="Version.cs" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
     <Content Include="Resources\Icon.ico">

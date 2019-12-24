@@ -190,7 +190,7 @@ namespace KreativerName.Scenes
             if (flags.HasFlag(HexFlags.Deadly))
             {
                 if (!singleLevel)
-                    Stats.Current.Deaths++;
+                    Stats.Current.Fails++;
 
                 LoadLevel();
                 return;

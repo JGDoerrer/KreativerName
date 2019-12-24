@@ -7,38 +7,15 @@ namespace KreativerName
 {
     public struct Stats : IBytes
     {
-        private int totalMoves;
-        private TimeSpan timePlaying;
-        private DateTime firstStart;
-        private int levelsCompleted;
-        private int levelsCompletedPerfect;
-        private int deaths;
-        private int tetrisMostLines;
-        private int tetrisHighScore;
-        private int tetrisHighLevel;
-
-        public int TotalMoves { get => totalMoves; set => totalMoves = value; }
-        public TimeSpan TimePlaying
-        {
-            get => timePlaying;
-            set
-            {
-                int newHours = (int)value.TotalHours;
-                if (Equals(Current) && (int)timePlaying.TotalHours % 5 < newHours % 5)
-                {
-                    Notification.Show($"{newHours} Stunden gespielt");
-                }
-
-                timePlaying = value;
-            }
-        }
-        public DateTime FirstStart { get => firstStart; set => firstStart = value; }
-        public int LevelsCompleted { get => levelsCompleted; set => levelsCompleted = value; }
-        public int LevelsCompletedPerfect { get => levelsCompletedPerfect; set => levelsCompletedPerfect = value; }
-        public int Deaths { get => deaths; set => deaths = value; }
-        public int TetrisMostLines { get => tetrisMostLines; set => tetrisMostLines = value; }
-        public int TetrisHighScore { get => tetrisHighScore; set => tetrisHighScore = value; }
-        public int TetrisHighLevel { get => tetrisHighLevel; set => tetrisHighLevel = value; }
+        public int TotalMoves;
+        public TimeSpan TimePlaying;
+        public DateTime FirstStart;
+        public int LevelsCompleted;
+        public int LevelsCompletedPerfect;
+        public int Fails;
+        public int TetrisMostLines;
+        public int TetrisHighScore;
+        public int TetrisHighLevel;
 
         public byte[] ToBytes()
         {
@@ -49,7 +26,7 @@ namespace KreativerName
             bytes.AddRange(FirstStart.ToBytes());
             bytes.AddRange(LevelsCompleted.ToBytes());
             bytes.AddRange(LevelsCompletedPerfect.ToBytes());
-            bytes.AddRange(Deaths.ToBytes());
+            bytes.AddRange(Fails.ToBytes());
             bytes.AddRange(TetrisMostLines.ToBytes());
             bytes.AddRange(TetrisHighScore.ToBytes());
             bytes.AddRange(TetrisHighLevel.ToBytes());
@@ -61,15 +38,15 @@ namespace KreativerName
         {
             int count = 0;
 
-            count += totalMoves.FromBytes(bytes, startIndex + count);
-            count += timePlaying.FromBytes(bytes, startIndex + count);
-            count += firstStart.FromBytes(bytes, startIndex + count);
-            count += levelsCompleted.FromBytes(bytes, startIndex + count);
-            count += levelsCompletedPerfect.FromBytes(bytes, startIndex + count);
-            count += deaths.FromBytes(bytes, startIndex + count);
-            count += tetrisMostLines.FromBytes(bytes, startIndex + count);
-            count += tetrisHighScore.FromBytes(bytes, startIndex + count);
-            count += tetrisHighLevel.FromBytes(bytes, startIndex + count);
+            count += TotalMoves.FromBytes(bytes, startIndex + count);
+            count += TimePlaying.FromBytes(bytes, startIndex + count);
+            count += FirstStart.FromBytes(bytes, startIndex + count);
+            count += LevelsCompleted.FromBytes(bytes, startIndex + count);
+            count += LevelsCompletedPerfect.FromBytes(bytes, startIndex + count);
+            count += Fails.FromBytes(bytes, startIndex + count);
+            count += TetrisMostLines.FromBytes(bytes, startIndex + count);
+            count += TetrisHighScore.FromBytes(bytes, startIndex + count);
+            count += TetrisHighLevel.FromBytes(bytes, startIndex + count);
 
             return count;
         }

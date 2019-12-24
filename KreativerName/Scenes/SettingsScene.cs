@@ -83,11 +83,14 @@ namespace KreativerName.Scenes
                 Settings.Current.ShowFps = b;
             });
 
-            TextBox textBox = new TextBox();
-            textBox.SetConstraints(new CenterConstraint(), new PixelConstraint(260), new PixelConstraint(180), new PixelConstraint(34));
-            textBox.Enabled = !Settings.Current.LoggedIn;
-            textBox.TextColor = Color.Black;
-            textBox.MaxTextSize = 15;
+            TextBox textBox = new TextBox
+            {
+                Constraints = new UIConstraints(new CenterConstraint(), new PixelConstraint(260), new PixelConstraint(180), new PixelConstraint(34)),
+                Enabled = !Settings.Current.LoggedIn,
+                TextColor = Color.Black,
+                MaxTextSize = 15,
+                Text = Settings.Current.UserName ?? ""
+            };
             ui.Add(textBox);
 
             Button sendButton = new Button();

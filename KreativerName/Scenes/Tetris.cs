@@ -19,7 +19,7 @@ namespace KreativerName.Scenes
         }
 
         const int Width = 10;
-        const int Height = 20;
+        const int Height = 22;
         const float Scale = 3;
 
         static Random random = new Random();
@@ -96,7 +96,7 @@ namespace KreativerName.Scenes
             0xFFFC9838,
         };
 
-        byte[,] field = new byte[Width, Height + 2];
+        byte[,] field = new byte[Width, Height];
 
         bool gameOver = false;
 

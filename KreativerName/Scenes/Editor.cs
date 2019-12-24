@@ -377,15 +377,22 @@ namespace KreativerName.Scenes
             // Level
             {
                 leftFrame = new Frame();
-                leftFrame.SetConstraints(new UIConstraints(0, 0, 240, 300));
+                leftFrame.SetConstraints(new UIConstraints(0, 0, 260, 300));
 
-                textWorld = new TextBlock($"Welt  {worldIndex:000}", 2, 20, 22);
+                Button exitButton = new Button(20, 20, 40, 40)
+                {
+                    Shortcut = Key.Escape
+                };
+                exitButton.OnClick += () =>
+                {
+                    SceneManager.LoadScene(new Transition(new MainMenu(), 10));
+                };
+                UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black);
+                exitImage.SetConstraints(new UIConstraints(10, 10, 20, 20));
 
-                leftFrame.AddChild(textWorld);
+                exitButton.AddChild(exitImage);
+                leftFrame.AddChild(exitButton);
 
-                textLevel = new TextBlock($"Level {levelIndex:000}", 2, 20, 42);
-
-                leftFrame.AddChild(textLevel);
 
                 void AddButton1(int x, int y, int w, int h, string s, int tx, int ty, ClickEvent ev, Key shortcut)
                 {
@@ -405,16 +412,23 @@ namespace KreativerName.Scenes
                     Button button = new Button(x, y, (int)text.TextWidth + 18, (int)text.TextHeight + 18);
                     button.OnClick += ev;
                     button.Shortcut = shortcut;
-
-
+                    
                     button.AddChild(text);
                     leftFrame.AddChild(button);
                 }
 
-                AddButton1(140, 20, 20, 20, "+", 5, 3, NextWorld, new Key());
-                AddButton1(160, 20, 20, 20, "-", 5, 3, PreviousWorld, new Key());
-                AddButton1(140, 40, 20, 20, "+", 5, 3, NextLevel, new Key());
-                AddButton1(160, 40, 20, 20, "-", 5, 3, PreviousLevel, new Key());
+                textWorld = new TextBlock($"Welt  {worldIndex:000}", 2, 80, 22);
+                leftFrame.AddChild(textWorld);
+
+                AddButton1(200, 20, 20, 20, "+", 5, 3, NextWorld, new Key());
+                AddButton1(220, 20, 20, 20, "-", 5, 3, PreviousWorld, new Key());
+
+                textLevel = new TextBlock($"Level {levelIndex:000}", 2, 80, 42);
+                leftFrame.AddChild(textLevel);
+
+                AddButton1(200, 40, 20, 20, "+", 5, 3, NextLevel, new Key());
+                AddButton1(220, 40, 20, 20, "-", 5, 3, PreviousLevel, new Key());
+
                 AddButton2(20, 70, "Neu", NewLevel, new Key());
                 AddButton2(100, 70, "Testen", TestLevel, Key.T);
 

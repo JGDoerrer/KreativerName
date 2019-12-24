@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace KreativerName
 {
@@ -13,6 +14,7 @@ namespace KreativerName
 
         public uint UserID;
         public uint LoginInfo;
+        public string UserName;
 
         public static Settings Current;
         public static Settings New => new Settings()
@@ -23,9 +25,9 @@ namespace KreativerName
             LoggedIn = false,
             UserID = 0,
             LoginInfo = 0,
+            UserName = "",
         };
-
-
+        
         public int FromBytes(byte[] bytes, int startIndex)
         {
             int count = 0;
@@ -43,6 +45,11 @@ namespace KreativerName
             LoginInfo = BitConverter.ToUInt32(bytes, startIndex + count);
             count += 4;
 
+            int nameLength = BitConverter.ToInt32(bytes, startIndex + count);
+            count += 4;
+            UserName = Encoding.UTF8.GetString(bytes, startIndex + count, nameLength);
+            count += nameLength;
+
             return count;
         }
 
@@ -55,6 +62,10 @@ namespace KreativerName
 
             bytes.AddRange(BitConverter.GetBytes(UserID));
             bytes.AddRange(BitConverter.GetBytes(LoginInfo));
+
+            byte[] name = Encoding.UTF8.GetBytes(UserName);
+            bytes.AddRange(BitConverter.GetBytes(name.Length));
+            bytes.AddRange(name);
 
             return bytes.ToArray();
         }

@@ -9,6 +9,8 @@ namespace Server
 {
     partial class Program
     {
+        public readonly static KreativerName.Version version = new KreativerName.Version(0, 1, 0, 0);
+        
         public static List<Client> clients = new List<Client>();
         static TcpListener listener;
 
