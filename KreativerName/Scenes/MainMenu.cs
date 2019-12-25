@@ -15,9 +15,9 @@ namespace KreativerName.Scenes
             InitUI();
 
             if (random.NextDouble() < 0.001f)
-                backScroll = new Vector2(.5f, .5f);
+                backScroll = new Vector2(.2f, .2f);
             else
-                backScroll = new Vector2(-.5f, .5f);
+                backScroll = new Vector2(-.2f, .2f);
         }
 
         UI.UI ui;
@@ -166,7 +166,7 @@ namespace KreativerName.Scenes
             {
                 for (int x = -(y / 2) - 4; x < w - (y + 1) / 2; x++)
                 {
-                    TextureRenderer.DrawHex(Textures.Get("Hex"), new HexPoint(x, y), layout, Vector2.One, Color.FromArgb(20, 20, 20), new RectangleF(0, 0, 32, 32));
+                    TextureRenderer.DrawHex(Textures.Get("Hex"), new HexPoint(x, y), layout, Vector2.One, Color.FromArgb(10, 10, 10), new RectangleF(0, 0, 32, 32));
                 }
             }
 
