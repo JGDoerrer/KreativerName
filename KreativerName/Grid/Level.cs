@@ -31,65 +31,77 @@ namespace KreativerName.Grid
             {
                 Hex hex = grid.Values.ElementAt(i);
 
-                foreach (HexData type in hex.Types)
-                {
-                    HexPoint position = hex.Position;
-
-                    foreach (HexAction action in type.Changes)
-                    {
-                        bool conditionMet = false;
-                        bool move = true;
-                        HexPoint nextPos = position + new HexPoint(action.MoveX, action.MoveY);
-
-                        switch (action.Condition)
-                        {
-                            case HexCondition.Move:
-                                conditionMet = true;
-                                break;
-                            case HexCondition.PlayerEnter:
-                                conditionMet = position == player;
-                                break;
-                            case HexCondition.PlayerLeave:
-                                conditionMet = position == lastPlayer;
-                                break;
-                            case HexCondition.NextSolid:
-                                conditionMet = grid[nextPos] == null || (grid[nextPos]?.Flags & HexFlags.Solid) != 0;
-                                move = false;
-                                break;
-                            case HexCondition.NextNotSolid:
-                                conditionMet = grid[nextPos] != null && (grid[nextPos]?.Flags & HexFlags.Solid) == 0;
-                                break;
-                        }
-
-                        if (conditionMet && nextGrid[position].Value.IDs.Contains(type.ID))
-                        {
-                            if (nextPos == position || !move)
-                            {
-                                Hex temp = nextGrid[position].Value;
-                                temp.IDs.Remove(type.ID);
-                                temp.IDs.Add(action.ChangeTo);
-                                nextGrid[position] = temp;
-                            }
-                            else if (nextGrid[nextPos].HasValue && move)
-                            {
-                                Hex temp = nextGrid[position].Value;
-                                temp.IDs.Remove(type.ID);
-                                nextGrid[position] = temp;
-
-                                Hex next = nextGrid[nextPos].Value;
-                                next.IDs.Add(action.ChangeTo);
-                                nextGrid[nextPos] = next;
-
-                                position = nextPos;
-                            }
-                        }
-                    }
-                }
+                UpdateHex(hex, player, nextGrid);
             }
 
             grid = nextGrid;
 
             lastPlayer = player;
+        }
+
+        private void UpdateHex(Hex hex, HexPoint player, HexGrid<Hex> nextGrid)
+        {
+            HexPoint position = hex.Position;
+
+            foreach (HexData type in hex.Types)
+            {
+                foreach (HexAction action in type.Changes)
+                {
+                    bool conditionMet = false;
+                    bool move = true;
+                    HexPoint nextPos = position + new HexPoint(action.MoveX, action.MoveY);
+
+                    switch (action.Condition)
+                    {
+                        case HexCondition.Move:
+                            conditionMet = true;
+                            break;
+                        case HexCondition.PlayerEnter:
+                            conditionMet = position == player;
+                            break;
+                        case HexCondition.PlayerLeave:
+                            conditionMet = position == lastPlayer;
+                            break;
+                        case HexCondition.NextFlag:
+                            conditionMet = grid[nextPos] == null || (grid[nextPos]?.Flags & (HexFlags)action.Data) != 0;
+                            move = false;
+                            break;
+                        case HexCondition.NextNotFlag:
+                            conditionMet = grid[nextPos] != null && (grid[nextPos]?.Flags & (HexFlags)action.Data) == 0;
+                            break;
+                        case HexCondition.NextID:
+                            conditionMet = grid[nextPos] == null || grid[nextPos]?.IDs.Contains(action.Data) == true;
+                            move = false;
+                            break;
+                        case HexCondition.NextNotID:
+                            conditionMet = grid[nextPos] != null && grid[nextPos]?.IDs.Contains(action.Data) != true;
+                            break;
+                    }
+
+                    if (conditionMet && nextGrid[position].Value.IDs.Contains(type.ID))
+                    {
+                        if (nextPos == position || !move)
+                        {
+                            Hex temp = nextGrid[position].Value;
+                            temp.IDs.Remove(type.ID);
+                            temp.IDs.Add(action.ChangeTo);
+                            nextGrid[position] = temp;
+                        }
+                        else if (nextGrid[nextPos].HasValue && move)
+                        {
+                            Hex temp = nextGrid[position].Value;
+                            temp.IDs.Remove(type.ID);
+                            nextGrid[position] = temp;
+
+                            Hex next = nextGrid[nextPos].Value;
+                            next.IDs.Add(action.ChangeTo);
+                            nextGrid[nextPos] = next;
+
+                            position = nextPos;
+                        }
+                    }
+                }
+            }
         }
 
         public List<HexPoint> GetPossibleMoves(HexPoint player)
@@ -120,19 +132,6 @@ namespace KreativerName.Grid
             }
 
             return moves;
-        }
-
-        public List<Hex> GetGoals()
-        {
-            List<Hex> goals = new List<Hex>();
-
-            foreach (Hex hex in grid)
-            {
-                if (hex.Flags.HasFlag(HexFlags.Goal))
-                    goals.Add(hex);
-            }
-
-            return goals;
         }
 
         #region Load & Save

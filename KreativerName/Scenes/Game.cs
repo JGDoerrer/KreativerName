@@ -129,7 +129,7 @@ namespace KreativerName.Scenes
             int width = (int)windowSize.X;
             int height = (int)windowSize.Y;
 
-            GL.ClearColor(Color.FromArgb(255, 0, 0, 0));
+            GL.ClearColor(Color.FromArgb(255, 0,0,0));
 
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();

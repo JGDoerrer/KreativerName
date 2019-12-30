@@ -28,8 +28,6 @@ namespace KreativerName.Scenes
         #region UI
 
         UI.UI ui;
-        TextBlock textClips;
-        TextBlock textWire;
 
         private void InitUI()
         {

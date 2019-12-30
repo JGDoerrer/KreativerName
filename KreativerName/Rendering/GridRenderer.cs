@@ -48,16 +48,14 @@ namespace KreativerName.Rendering
                         color = Color.FromArgb(255, 200, 200, 200);
                 }
                 else if (moves != null && moves.Contains(hex.Position))
-                    color = Color.LightGreen;
+                    color = Color.FromArgb(255, 150, 250, 150);
                 else
                     color = Color.White;
 
+                RenderHex(hex.Position, hex.Types, Layout, color, frameCount, Grid);
+
                 if (hex.Position == player)
                     TextureRenderer.DrawHex(Textures.Get("Player"), hex.Position, Layout, Vector2.One * Layout.size, color, null);
-                else
-                {
-                    RenderHex(hex.Position, hex.Types, Layout, color, frameCount, Grid);
-                }
             }
 
             frameCount++;
