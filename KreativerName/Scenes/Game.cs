@@ -96,8 +96,9 @@ namespace KreativerName.Scenes
 
         public HexGrid<Hex> Grid { get => level.grid; set => level.grid = value; }
         public World World { get => world; }
+        public int Moves => moves;
         private int Levels => world.Levels.Count;
-
+        
         public override void Update()
         {
             if (worldTitle > 0)
