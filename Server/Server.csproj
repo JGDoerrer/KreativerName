@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DataBase\Users\" />
+    <Folder Include="DataBase\Weekly\" />
     <Folder Include="DataBase\Worlds\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

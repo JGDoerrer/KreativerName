@@ -10,6 +10,7 @@ namespace Server
     {
         const string userPath = "DataBase/Users";
         const string worldPath = "DataBase/Worlds";
+        const string weeklyPath = "DataBase/Weekly";
 
         #region Worlds
 
@@ -52,6 +53,18 @@ namespace Server
 
         public static bool ExistsWorld(uint id)
             => File.Exists($"{worldPath}/{id.ToString("X")}.wld");
+
+        public static World? GetWeekly(int week)
+        {
+            string path = $"{weeklyPath}/{week}.wld";
+
+            if (File.Exists(path))
+            {
+                return World.LoadFromFile(path, false);
+            }
+
+            return null;
+        }
 
         #endregion
 

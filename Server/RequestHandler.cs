@@ -25,6 +25,7 @@ namespace Server
                 case 0x0200: GetWorldByID(client, msg); break;
                 case 0x0210: GetIDs(client, msg); break;
                 case 0x0220: UploadWorld(client, msg); break;
+                case 0x0230: GetWeeklyWorld(client, msg); break;
                 case 0x0300: UploadStats(client, msg); break;
                 // 0x0400: Send Message
                 case 0x0410: Message(client, msg); break;
@@ -173,6 +174,26 @@ namespace Server
             catch (Exception)
             {
                 client.Send(new byte[] { 0x20, 0x02, ErrorCode });
+            }
+        }
+
+        // 0x0230
+        static void GetWeeklyWorld(Client client, byte[] msg)
+        {
+            try
+            {
+                int week = DateTime.Now.Subtract(new DateTime(2020, 1, 1, 0, 0, 0)).Days / 7;
+
+                World world = DataBase.GetWeekly(week).Value;
+
+                byte[] bytes = new byte[] { 0x30, 0x02, SuccessCode };
+                bytes = bytes.Concat(world.ToCompressed()).ToArray();
+
+                client.Send(bytes);
+            }
+            catch (Exception)
+            {
+                client.Send(new byte[] { 0x30, 0x02, ErrorCode });
             }
         }
 
