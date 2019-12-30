@@ -69,56 +69,28 @@ namespace KreativerName.Scenes
                 mainFrame.AddChild(button);
             }
             {
-                // TODO: Refactor
                 Frame frame = new Frame();
                 frame.Color = Color.Transparent;
                 frame.SetConstraints(new CenterConstraint(), new PixelConstraint(100), new PixelConstraint(300), new PixelConstraint(60));
 
+                void AddButton(int x, int icon, ClickEvent click)
                 {
-                    Button button = new Button(0, 0, 60, 60);
-                    button.OnClick += () => { SceneManager.LoadScene(new Transition(new Statistics(), 10)); };
+                    Button button = new Button(x, 0, 60, 60);
+                    button.OnClick += click;
 
-                    UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(10, 10, 10, 10));
+                    UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(icon * 10, 10, 10, 10));
                     image.Color = Color.Black;
                     image.SetConstraints(new UIConstraints(10, 10, 40, 40));
 
                     button.AddChild(image);
                     frame.AddChild(button);
                 }
-                {
-                    Button button = new Button(80, 0, 60, 60);
-                    button.OnClick += () => { SceneManager.LoadScene(new Transition(new SettingsScene(), 10)); };
 
-                    UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(20, 10, 10, 10));
-                    image.Color = Color.Black;
-                    image.SetConstraints(new UIConstraints(10, 10, 40, 40));
+                AddButton(0, 1, () => { SceneManager.LoadScene(new Transition(new Statistics(), 10)); });
+                AddButton(80, 2, () => { SceneManager.LoadScene(new Transition(new SettingsScene(), 10)); });
+                AddButton(160, 3, NewEditor);
+                AddButton(240, 4, () => { SceneManager.LoadScene(new Transition(new OnlineScene(), 10)); });
 
-                    button.AddChild(image);
-                    frame.AddChild(button);
-                }
-                {
-                    Button button = new Button(160, 0, 60, 60);
-                    button.Shortcut = OpenTK.Input.Key.E;
-                    button.OnClick += NewEditor;
-
-                    UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(30, 10, 10, 10));
-                    image.Color = Color.Black;
-                    image.SetConstraints(new UIConstraints(10, 10, 40, 40));
-
-                    button.AddChild(image);
-                    frame.AddChild(button);
-                }
-                {
-                    Button button = new Button(240, 0, 60, 60);
-                    button.OnClick += () => { SceneManager.LoadScene(new Transition(new OnlineScene(), 10)); };
-
-                    UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(40, 10, 10, 10));
-                    image.Color = Color.Black;
-                    image.SetConstraints(new UIConstraints(10, 10, 40, 40));
-
-                    button.AddChild(image);
-                    frame.AddChild(button);
-                }
                 mainFrame.AddChild(frame);
             }
             {

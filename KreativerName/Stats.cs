@@ -7,15 +7,26 @@ namespace KreativerName
 {
     public struct Stats : IBytes
     {
-        public int TotalMoves;
-        public TimeSpan TimePlaying;
-        public DateTime FirstStart;
-        public int LevelsCompleted;
-        public int LevelsCompletedPerfect;
-        public int Fails;
-        public int TetrisMostLines;
-        public int TetrisHighScore;
-        public int TetrisHighLevel;
+        public static Stats Current = new Stats();
+        private int totalMoves;
+        private TimeSpan timePlaying;
+        private DateTime firstStart;
+        private int levelsCompleted;
+        private int levelsCompletedPerfect;
+        private int fails;
+        private int tetrisMostLines;
+        private int tetrisHighScore;
+        private int tetrisHighLevel;
+
+        public int TotalMoves { get => totalMoves; set => totalMoves = value; }
+        public TimeSpan TimePlaying { get => timePlaying; set => timePlaying = value; }
+        public DateTime FirstStart { get => firstStart; set => firstStart = value; }
+        public int LevelsCompleted { get => levelsCompleted; set => levelsCompleted = value; }
+        public int LevelsCompletedPerfect { get => levelsCompletedPerfect; set => levelsCompletedPerfect = value; }
+        public int Fails { get => fails; set => fails = value; }
+        public int TetrisMostLines { get => tetrisMostLines; set => tetrisMostLines = value; }
+        public int TetrisHighScore { get => tetrisHighScore; set => tetrisHighScore = value; }
+        public int TetrisHighLevel { get => tetrisHighLevel; set => tetrisHighLevel = value; }
 
         public byte[] ToBytes()
         {
@@ -38,20 +49,19 @@ namespace KreativerName
         {
             int count = 0;
 
-            count += TotalMoves.FromBytes(bytes, startIndex + count);
-            count += TimePlaying.FromBytes(bytes, startIndex + count);
-            count += FirstStart.FromBytes(bytes, startIndex + count);
-            count += LevelsCompleted.FromBytes(bytes, startIndex + count);
-            count += LevelsCompletedPerfect.FromBytes(bytes, startIndex + count);
-            count += Fails.FromBytes(bytes, startIndex + count);
-            count += TetrisMostLines.FromBytes(bytes, startIndex + count);
-            count += TetrisHighScore.FromBytes(bytes, startIndex + count);
-            count += TetrisHighLevel.FromBytes(bytes, startIndex + count);
+            count += totalMoves.FromBytes(bytes, startIndex + count);
+            count += timePlaying.FromBytes(bytes, startIndex + count);
+            count += firstStart.FromBytes(bytes, startIndex + count);
+            count += levelsCompleted.FromBytes(bytes, startIndex + count);
+            count += levelsCompletedPerfect.FromBytes(bytes, startIndex + count);
+            count += fails.FromBytes(bytes, startIndex + count);
+            count += tetrisMostLines.FromBytes(bytes, startIndex + count);
+            count += tetrisHighScore.FromBytes(bytes, startIndex + count);
+            count += tetrisHighLevel.FromBytes(bytes, startIndex + count);
 
             return count;
         }
 
-        public static Stats Current = new Stats();
 
         public void SaveToFile(string name)
         {

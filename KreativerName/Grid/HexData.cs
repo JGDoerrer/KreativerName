@@ -7,7 +7,7 @@ namespace KreativerName.Grid
 {
     public struct HexData : IBytes
     {
-        public const int MaxID = 32;
+        public const byte MaxID = byte.MaxValue;
 
         public byte ID;
         public HexFlags HexFlags;
@@ -125,6 +125,7 @@ namespace KreativerName.Grid
     public struct HexAction : IBytes
     {
         public byte ChangeTo;
+        public byte Data;
         public sbyte MoveX;
         public sbyte MoveY;
         public HexCondition Condition;
@@ -134,6 +135,8 @@ namespace KreativerName.Grid
             int count = 0;
 
             ChangeTo = bytes[startIndex + count];
+            count += 1;
+            Data = bytes[startIndex + count];
             count += 1;
             MoveX = (sbyte)bytes[startIndex + count];
             count += 1;
@@ -162,11 +165,13 @@ namespace KreativerName.Grid
 
     public enum HexCondition : byte
     {
-        Move,
-        PlayerEnter,
-        PlayerLeave,
-        NextSolid,
-        NextNotSolid,
+        Move = 0,
+        PlayerEnter = 1,
+        PlayerLeave = 2,
+        NextFlag = 3,
+        NextNotFlag = 4,
+        NextID = 5,
+        NextNotID = 6,
     }
 
     [Flags]

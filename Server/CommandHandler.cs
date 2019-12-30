@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Reflection;
 using System.Text;
 using KreativerName;
-using KreativerName.Grid;
 using KreativerName.Networking;
 
 namespace Server
@@ -72,6 +67,11 @@ namespace Server
 
         static void SendClients()
         {
+            Console.Write("Size: ");
+            float size;
+
+            while (!float.TryParse(Console.ReadLine(), out size)) ;
+
             Console.WriteLine("Message: ");
             string s = "";
 
@@ -82,11 +82,14 @@ namespace Server
 
             s = s.TrimEnd();
 
+
             byte[] msg = Encoding.UTF8.GetBytes(s);
 
             foreach (var client in Program.clients)
             {
                 List<byte> bytes = new List<byte>() { 0x00, 0x04 };
+
+                bytes.AddRange(BitConverter.GetBytes(size));
 
                 bytes.AddRange(BitConverter.GetBytes(msg.Length));
                 bytes.AddRange(msg);
@@ -126,7 +129,7 @@ namespace Server
                 Console.WriteLine($"  ID:        {client.UserID}");
                 Console.WriteLine($"  LoggedIn:  {client.LoggedIn}");
                 Console.WriteLine($"  Connected: {client.Connected}");
-                Console.WriteLine( "  TcpClient:");
+                Console.WriteLine("  TcpClient:");
                 Console.WriteLine($"    LocalIP:  {client.LocalIP}");
                 Console.WriteLine($"    RemoteIP: {client.RemoteIP}");
             }
@@ -138,7 +141,17 @@ namespace Server
             foreach (User user in DataBase.GetUsers())
             {
                 Console.WriteLine($"User {++count}:");
-                
+                Console.WriteLine($"  ID:        {user.ID.ToID()}");
+                Console.WriteLine($"  Name:      {user.Name}");
+                Console.WriteLine($"  LoginInfo: {user.LoginInfo.ToString("X")}");
+                Console.WriteLine("  Statistics:");
+
+                foreach (var property in user.Statistics.GetType().GetProperties())
+                {
+                    string value = property.GetValue(user.Statistics).ToString();
+                    value = value.PadLeft(30 - property.Name.Length+ value.Length);
+                    Console.WriteLine($"    {property.Name}: {value}");
+                }
             }
         }
 

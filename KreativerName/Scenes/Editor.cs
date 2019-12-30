@@ -284,7 +284,7 @@ namespace KreativerName.Scenes
             SaveLevel();
             world.AllCompleted = false;
             world.AllPerfect = false;
-            world.Title = boxWorldName.Text;
+            world.Title = boxWorldName.Text ?? "";
             world.SaveToFile($"{Path}/{worldIndex:000}.wld", false);
 
             Notification.Show("Welt gespeichert!", 2);

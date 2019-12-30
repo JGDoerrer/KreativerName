@@ -27,7 +27,7 @@ namespace KreativerName
 
             if (File.Exists(@"Resources\Icon.ico"))
                 Icon = new Icon(@"Resources\Icon.ico");
-
+            
             SceneManager.SetWindow(this);
             SceneManager.LoadScene(new LoadingScene(LoadStuff, new Transition(new MainMenu(), 30)));
 
@@ -39,7 +39,7 @@ namespace KreativerName
         Input input;
         public int FrameCounter;
         double fps;
-        public static readonly Version version = new Version(0, 1, 0, 0);
+        public static readonly Version version = new Version(0, 1, 1, 0);
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
@@ -214,10 +214,11 @@ namespace KreativerName
             switch (code)
             {
                 case 0x0400:
-                    int sLength = BitConverter.ToInt32(msg, 2);
-                    string s = Encoding.UTF8.GetString(msg, 6, sLength);
+                    float size = BitConverter.ToSingle(msg, 2);
+                    int sLength = BitConverter.ToInt32(msg, 6);
+                    string s = Encoding.UTF8.GetString(msg, 10, sLength);
 
-                    Notification.Show(s);
+                    Notification.Show(s, size);
                     break;
             }
         }

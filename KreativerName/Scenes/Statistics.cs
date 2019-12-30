@@ -76,19 +76,14 @@ namespace KreativerName.Scenes
         int numsClicked = 0;
         byte?[] clickedNums = new byte?[maxNums];
         int correctAnimation = -1;
+        int wrongAnimation = -1;
         Scene scene = null;
 
         static Random random = new Random();
 
         public override void Update()
         {
-            if (numsClicked > maxNums)
-            {
-                clickedNums = new byte?[maxNums];
-                numsClicked = 0;
-            }
-
-            if (numsClicked == maxNums && correctAnimation < 0)
+            if (numsClicked == maxNums && correctAnimation < 0 && wrongAnimation < 0)
             {
                 int number = 0;
 
@@ -108,6 +103,10 @@ namespace KreativerName.Scenes
                     correctAnimation = 60;
                     scene = new ClickGame();
                 }
+                else
+                {
+                    wrongAnimation = 60;
+                }
             }
 
             if (correctAnimation > 0)
@@ -118,6 +117,17 @@ namespace KreativerName.Scenes
             {
                 SceneManager.LoadScene(new Transition(scene, 10));
                 correctAnimation--;
+            }
+
+            if (wrongAnimation > 0)
+            {
+                wrongAnimation--;
+            }
+            else if (wrongAnimation == 0)
+            {
+                clickedNums = new byte?[maxNums];
+                numsClicked = 0;
+                wrongAnimation--;
             }
         }
 
@@ -137,10 +147,11 @@ namespace KreativerName.Scenes
                         position.Y = (float)Math.Round(position.Y - i);
                         position *= 16;
 
-                        if (mousePos.X >= position.X &&
-                            mousePos.X <= position.X + 16 &&
-                            mousePos.Y >= position.Y &&
-                            mousePos.Y <= position.Y + 16 && correctAnimation < 0)
+                        if (mousePos.X > position.X &&
+                            mousePos.X < position.X + 16 &&
+                            mousePos.Y > position.Y &&
+                            mousePos.Y < position.Y + 16 &&
+                            correctAnimation < 0 && wrongAnimation < 0)
                         {
                             // shift values
                             for (int j = maxNums - 1; j >= 1; j--)
@@ -154,8 +165,7 @@ namespace KreativerName.Scenes
                     }
                 }
             }
-
-
+            
             ui.Update(windowSize);
         }
 
@@ -182,9 +192,9 @@ namespace KreativerName.Scenes
 
                 TextBlock number = new TextBlock(s, 3);
                 if (correctAnimation > 0)
-                {
                     number.Color = (correctAnimation / 10) % 2 == 0 ? Color.Green : Color.White;
-                }
+                else if (wrongAnimation > 0)
+                    number.Color = (wrongAnimation / 10) % 2 == 0 ? Color.Red : Color.White;
                 else
                     number.Color = Color.White;
 
