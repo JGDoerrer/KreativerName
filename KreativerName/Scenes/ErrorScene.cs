@@ -7,8 +7,15 @@ using OpenTK.Graphics.OpenGL;
 
 namespace KreativerName.Scenes
 {
+    /// <summary>
+    /// A class for displaying an error.
+    /// </summary>
     public class ErrorScene : Scene
     {
+        /// <summary>
+        /// Creates a new ErrorScene
+        /// </summary>
+        /// <param name="e">The error to display</param>
         public ErrorScene(Exception e)
         {
             InitUI(e);
@@ -41,6 +48,9 @@ namespace KreativerName.Scenes
             AddText($"Bitte an den Entwickler weiterleiten!", 3, 180 + stack.Length * 10);
         }
 
+        /// <summary>
+        /// Updates the scene.
+        /// </summary>
         public override void Update()
         {
             if (SceneManager.Input.KeyPress(OpenTK.Input.Key.Escape) ||
@@ -51,10 +61,18 @@ namespace KreativerName.Scenes
             }
         }
 
+        /// <summary>
+        /// Updates the ui of the scene.
+        /// </summary>
+        /// <param name="windowSize">The current window size.</param>
         public override void UpdateUI(Vector2 windowSize)
         {
         }
 
+        /// <summary>
+        /// Renders the scene to the window.
+        /// </summary>
+        /// <param name="windowSize">The current window size.</param>
         public override void Render(Vector2 windowSize)
         {
             GL.ClearColor(Color.FromArgb(90, 0, 0));
@@ -66,6 +84,10 @@ namespace KreativerName.Scenes
 
         private bool disposedValue = false; // Dient zur Erkennung redundanter Aufrufe.
 
+        /// <summary>
+        /// Disposes the scene.
+        /// </summary>
+        /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -79,6 +101,9 @@ namespace KreativerName.Scenes
             }
         }
 
+        /// <summary>
+        /// Disposes the scene.
+        /// </summary>
         ~ErrorScene()
         {
             // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
@@ -86,6 +111,9 @@ namespace KreativerName.Scenes
         }
 
         // Dieser Code wird hinzugefügt, um das Dispose-Muster richtig zu implementieren.
+        /// <summary>
+        /// Disposes the scene.
+        /// </summary>
         public override void Dispose()
         {
             // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.

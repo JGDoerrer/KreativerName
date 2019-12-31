@@ -26,15 +26,16 @@ namespace KreativerName.Scenes
                 bytes.AddRange(BitConverter.GetBytes(10));
 
                 SceneManager.Client.Send(bytes.ToArray());
+                SceneManager.Client.Send(new byte[] { 0x30, 0x02 });
             }
             else
             {
                 Notification.Show("Nicht zum Server verbunden");
-
             }
         }
 
         List<World> worlds = new List<World>();
+        World? weekly = null;
 
         public override void Update()
         {
@@ -82,6 +83,22 @@ namespace KreativerName.Scenes
 
             exitButton.AddChild(exitImage);
             ui.Add(exitButton);
+
+            Button weeklyButton = new Button(200, 40, 40, 40);
+            weeklyButton.OnClick += () =>
+            {
+                if (!weekly.HasValue)
+                {
+                    Notification.Show("Wöchentliche Welt ist nicht verfügbar");
+                    return;
+                }
+
+                Game game = new Game(weekly.Value);
+                game.Exit += () => { SceneManager.LoadScene(new Transition(this, 10)); };
+                SceneManager.LoadScene(new Transition(game, 10));
+            };
+
+            ui.Add(weeklyButton);
 
             worldFrame = new Frame
             {
@@ -143,6 +160,8 @@ namespace KreativerName.Scenes
                 case 0x021000 | ErrorCode: Notification.Show("Konnte IDs nicht herunterladen"); break;
                 case 0x022000 | SuccessCode: UploadWorldSuccess(client, msg); break;
                 case 0x022000 | ErrorCode: Notification.Show("Konnte Welt nicht hochladen"); break;
+                case 0x023000 | SuccessCode: GetWeeklySuccess(client, msg); break;
+                case 0x023000 | ErrorCode: Notification.Show("Konnte wöchentliche Welt nicht herunterladen"); break;
             }
         }
 
@@ -179,6 +198,13 @@ namespace KreativerName.Scenes
         void UploadWorldSuccess(Client client, byte[] msg)
         {
             Notification.Show($"Welt hochgeladen\nID: {BitConverter.ToUInt32(msg, 3)}");
+        }
+
+        void GetWeeklySuccess(Client client, byte[] msg)
+        {
+            World world = World.LoadFromBytes(msg.Skip(3).ToArray());
+
+            weekly = world;
         }
 
         #endregion

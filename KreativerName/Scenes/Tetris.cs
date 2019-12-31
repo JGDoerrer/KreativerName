@@ -15,6 +15,8 @@ namespace KreativerName.Scenes
             NextPiece();
             SetLevel(level);
 
+            rngSeed = random.Next();
+
             nextLevel = Math.Min((level + 1) * 10, Math.Max(100, level * 10 - 50));
         }
 

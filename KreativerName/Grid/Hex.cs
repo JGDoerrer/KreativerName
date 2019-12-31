@@ -1,15 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace KreativerName.Grid
 {
     public struct Hex : IBytes
     {
-        public Hex(int x, int y)
+        /// <summary>
+        /// Creates a new hex with the specified position.
+        /// </summary>
+        /// <param name="x">The x-coordinate of the position.</param>
+        /// <param name="y">The y-coordinate of the position.</param>
+        public Hex(int x, int y)    
         {
             Position = new HexPoint(x, y);
             IDs = new List<byte>();
         }
 
+        /// <summary>
+        /// Creates a new hex with the specified position.
+        /// </summary>
+        /// <param name="pos">The position of the hex</param>
         public Hex(HexPoint pos)
         {
             Position = pos;
@@ -28,12 +38,29 @@ namespace KreativerName.Grid
             IDs = new List<byte>() { type };
         }
 
+        /// <summary>
+        /// The position of the hex.
+        /// </summary>
         public HexPoint Position;
+
+        /// <summary>
+        /// The IDs of the types of the hex.
+        /// </summary>
         public List<byte> IDs;
 
+        /// <summary>
+        /// The x-coordinate of the position.
+        /// </summary>
         public int X => Position.X;
-        public int Y => Position.Y;
 
+        /// <summary>
+        /// The y-coordinate of the position.
+        /// </summary>
+        public int Y => Position.Y;
+        
+        /// <summary>
+        /// The combined HexFlags of the types.
+        /// </summary>
         public HexFlags Flags
         {
             get
@@ -66,6 +93,10 @@ namespace KreativerName.Grid
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public byte[] ToBytes()
         {
             List<byte> bytes = new List<byte>();
@@ -74,7 +105,7 @@ namespace KreativerName.Grid
 
             bytes.Add((byte)IDs.Count);
             bytes.AddRange(IDs);
-
+            
             return bytes.ToArray();
         }
 

@@ -33,21 +33,24 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\bin\KreativerName\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>preview</LangVersion>
+    <DocumentationFile>..\bin\KreativerName\Debug\KreativerName.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\bin\KreativerName\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>8.0</LangVersion>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>KreativerName.Program</StartupObject>
@@ -87,7 +90,6 @@
     <Compile Include="Networking\User.cs" />
     <Compile Include="Rendering\GridRenderer.cs" />
     <Compile Include="Rendering\TextRenderer.cs" />
-    <Compile Include="Scenes\ClickGame.cs" />
     <Compile Include="Scenes\Editor.cs" />
     <Compile Include="Extentions.cs" />
     <Compile Include="Scenes\ErrorScene.cs" />

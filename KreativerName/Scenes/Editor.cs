@@ -13,8 +13,14 @@ using OpenTK.Input;
 
 namespace KreativerName.Scenes
 {
+    /// <summary>
+    /// A class for the level editor.
+    /// </summary>
     public class Editor : Scene
     {
+        /// <summary>
+        /// Creates a new level editor.
+        /// </summary>
         public Editor()
         {
             input = SceneManager.Input;
@@ -42,7 +48,7 @@ namespace KreativerName.Scenes
         const float sqrt3 = 1.732050807568877293527446341505872366942805253810380628055f;
 
         const float hexSize = 16 * 2;
-        public HexLayout layout = new HexLayout(
+        HexLayout layout = new HexLayout(
             new Matrix2(sqrt3, sqrt3 / 2f, 0, 3f / 2f),
             new Matrix2(sqrt3 / 3f, -1f / 3f, 0, 2f / 3f),
             new Vector2(0, 0),
@@ -51,11 +57,24 @@ namespace KreativerName.Scenes
         float scale = 1;
         GridRenderer renderer;
 
+        /// <summary>
+        /// Gets invoked when leaving the editor.
+        /// </summary>
         public event EmptyEvent OnExit;
 
+        /// <summary>
+        /// The grid of the current level.
+        /// </summary>
         public HexGrid<Hex> Grid { get => level.grid; set => level.grid = value; }
+
+        /// <summary>
+        /// The current path of the world files.
+        /// </summary>
         public string Path { get; set; } = "Worlds";
 
+        /// <summary>
+        /// Updates the scene.
+        /// </summary>
         public override void Update()
         {
             for (int i = 0; i < buttonFrame.Children.Count; i++)
@@ -144,6 +163,10 @@ namespace KreativerName.Scenes
             scale = scale.Clamp(0.125f, 16);
         }
 
+        /// <summary>
+        /// Renders the scene to the window.
+        /// </summary>
+        /// <param name="windowSize">The current window size.</param>
         public override void Render(Vector2 windowSize)
         {
             int width = (int)windowSize.X;
@@ -191,14 +214,64 @@ namespace KreativerName.Scenes
 
         #region Loading
 
+        private void SolveLevel()
+        {
+            int worldCopy = worldIndex;
+            int levelCopy = levelIndex;
+
+            LevelSolver solver = new LevelSolver(level);
+            solver.Solved += () => { textHexDesc.Text = $"Min. Züge: {solver.MinMoves}"; };
+
+            System.ComponentModel.BackgroundWorker worker = new System.ComponentModel.BackgroundWorker();
+            worker.WorkerReportsProgress = true;
+            worker.DoWork += solver.SolveAsync;
+            worker.ProgressChanged += (o, e) => { Notification.Show($"{e.ProgressPercentage}% ({worldIndex + 1}-{levelIndex + 1})"); };
+            worker.RunWorkerAsync();
+
+        }
+
+        private void UploadLevel()
+        {
+            if (SceneManager.Client?.Connected != true)
+            {
+                Notification.Show("Nicht mit Server verbunden");
+                return;
+            }
+
+            List<byte> bytes = new List<byte>() { 0x20, 0x02 };
+
+            bytes.AddRange(world.ToCompressed());
+
+            void uploaded(Client client, byte[] bytes)
+            {
+                ushort code = BitConverter.ToUInt16(bytes, 0);
+                if (code == 0x0220 && bytes[2] == 0x80)
+                {
+                    uint id = BitConverter.ToUInt32(bytes, 3);
+
+                    Notification.Show($"Hochgeladen unter {id.ToString("x")}");
+
+                    SceneManager.Client.BytesRecieved -= uploaded;
+                }
+                else if (code == 0x0220 && bytes[2] == 0xFF)
+                {
+                    Notification.Show($"Fehler beim Hochladen");
+                    SceneManager.Client.BytesRecieved -= uploaded;
+                }
+            }
+
+            SceneManager.Client.BytesRecieved += uploaded;
+            SceneManager.Client.Send(bytes.ToArray());
+
+        }
+
         private void TestLevel()
         {
             testGame = new Game();
             testGame.LoadLevel(level);
-            testGame.Exit += () =>
-            {
-                SceneManager.LoadScene(new Transition(this, 10));
-            };
+            testGame.Exit += () => SceneManager.LoadScene(new Transition(this, 10));
+            testGame.LevelCompleted += (a) => Notification.Show($"{testGame.Moves} Züge");
+
             SceneManager.LoadScene(new Transition(testGame, 10));
         }
 
@@ -453,46 +526,8 @@ namespace KreativerName.Scenes
 
 
                 AddButton2(20, 150, "Speichern", SaveWorld, Key.S);
-                AddButton2(20, 200, "Lösen", () =>
-                {
-                    LevelSolver solver = new LevelSolver(level);
-                    solver.Solved += () => { textHexDesc.Text = $"Min. Züge: {solver.MinMoves}"; };
-                    SceneManager.LoadScene(new LoadingScene(solver.SolveAsync, new Transition(this, 10)));
-                }, new Key());
-                AddButton2(110, 200, "Upload", () =>
-                {
-                    if (SceneManager.Client?.Connected != true)
-                    {
-                        Notification.Show("Nicht mit Server verbunden");
-                        return;
-                    }
-
-                    List<byte> bytes = new List<byte>() { 0x20, 0x02 };
-
-                    bytes.AddRange(world.ToCompressed());
-
-                    void uploaded(Client client, byte[] bytes)
-                    {
-                        ushort code = BitConverter.ToUInt16(bytes, 0);
-                        if (code == 0x0220 && bytes[2] == 0x80)
-                        {
-                            uint id = BitConverter.ToUInt32(bytes, 3);
-
-                            Notification.Show($"Hochgeladen unter {id.ToString("x")}");
-
-                            SceneManager.Client.BytesRecieved -= uploaded;
-                        }
-                        else if (code == 0x0220 && bytes[2] == 0xFF)
-                        {
-                            Notification.Show($"Fehler beim Hochladen");
-                            SceneManager.Client.BytesRecieved -= uploaded;
-                        }
-                    }
-
-                    SceneManager.Client.BytesRecieved += uploaded;
-                    SceneManager.Client.Send(bytes.ToArray());
-
-                }, new Key());
+                AddButton2(20, 200, "Lösen", SolveLevel, new Key());
+                AddButton2(110, 200, "Upload", UploadLevel, new Key());
 
                 boxWorldName = new TextBox(20, 250, 200, 30)
                 {
@@ -505,6 +540,10 @@ namespace KreativerName.Scenes
             }
         }
 
+        /// <summary>
+        /// Updates the UI of the scene.
+        /// </summary>
+        /// <param name="windowSize">The current window size.</param>
         public override void UpdateUI(Vector2 windowSize)
         {
             ui.Update(windowSize);
@@ -518,6 +557,10 @@ namespace KreativerName.Scenes
 
         private bool disposedValue = false; // Dient zur Erkennung redundanter Aufrufe.
 
+        /// <summary>
+        /// Disposes the level editor.
+        /// </summary>
+        /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -542,6 +585,9 @@ namespace KreativerName.Scenes
             }
         }
 
+        /// <summary>
+        /// Disposes the level editor.
+        /// </summary>
         ~Editor()
         {
             // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
@@ -549,6 +595,9 @@ namespace KreativerName.Scenes
         }
 
         // Dieser Code wird hinzugefügt, um das Dispose-Muster richtig zu implementieren.
+        /// <summary>
+        /// Disposes the level editor.
+        /// </summary>
         public override void Dispose()
         {
             // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
