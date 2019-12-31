@@ -39,7 +39,7 @@ namespace KreativerName
         Input input;
         public int FrameCounter;
         double fps;
-        public static readonly Version version = new Version(0, 1, 1, 0);
+        public static readonly Version version = new Version(0,1,1,0);
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
@@ -165,7 +165,7 @@ namespace KreativerName
             BitConverter.GetBytes(Settings.Current.UserID).CopyTo(msg, 2);
             BitConverter.GetBytes(Settings.Current.LoginInfo).CopyTo(msg, 6);
 
-            void handle(Client c, byte[] b)
+            static void handle(Client c, byte[] b)
             {
                 ushort code = BitConverter.ToUInt16(b, 0);
                 if (code == 0x0110 && b[2] == 0x80)
@@ -188,7 +188,7 @@ namespace KreativerName
 
             msg.AddRange(version.ToBytes());
 
-            void handle(Client client, byte[] msg)
+            static void handle(Client client, byte[] msg)
             {
                 ushort code = BitConverter.ToUInt16(msg, 0);
                 if (code == 0x0500)

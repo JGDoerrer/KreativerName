@@ -20,29 +20,27 @@ namespace KreativerName.Scenes
 
         private void InitUI()
         {
-            ui = new UI.UI();
-            ui.Input = new Input(SceneManager.Window);
+            ui = new UI.UI
+            {
+                Input = new Input(SceneManager.Window)
+            };
 
             void AddText(string s, string value, int y)
             {
-                TextBlock text1 = new TextBlock(s, 3);
-                text1.Color = Color.White;
-                text1.SetConstraints(new CenterConstraint(-text1.TextWidth / 2f), new PixelConstraint(y), new PixelConstraint((int)text1.TextWidth), new PixelConstraint((int)text1.TextHeight));
+                TextBlock text1 = new TextBlock(s, 3, 0, y) { Color = Color.White };
+                text1.Constraints.xCon = new CenterConstraint(-text1.TextWidth / 2f);
                 ui.Add(text1);
 
-                TextBlock text2 = new TextBlock(value, 3);
-                text2.Color = Color.White;
-                text2.SetConstraints(new CenterConstraint(text2.TextWidth / 2f), new PixelConstraint(y), new PixelConstraint((int)text2.TextWidth), new PixelConstraint((int)text2.TextHeight));
+                TextBlock text2 = new TextBlock(value, 3, 0, y) { Color = Color.White };
+                text2.Constraints.xCon = new CenterConstraint(text2.TextWidth / 2f);
                 ui.Add(text2);
             }
 
-            TextBlock title = new TextBlock("Statistik", 4);
-            title.Color = Color.White;
-            title.SetConstraints(new CenterConstraint(), new PixelConstraint(50), new PixelConstraint((int)title.TextWidth), new PixelConstraint((int)title.TextHeight));
+            TextBlock title = new TextBlock("Statistik", 4, 0, 50) { Color = Color.White };
+            title.Constraints.xCon = new CenterConstraint();
             ui.Add(title);
 
-            Button button = new Button(40, 40, 40, 40);
-            button.Shortcut = OpenTK.Input.Key.Escape;
+            Button button = new Button(40, 40, 40, 40) { Shortcut = OpenTK.Input.Key.Escape };
             button.OnClick += () =>
             {
                 SceneManager.LoadScene(new Transition(new MainMenu(), 10));
