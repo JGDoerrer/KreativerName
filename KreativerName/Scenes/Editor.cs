@@ -65,7 +65,7 @@ namespace KreativerName.Scenes
         /// <summary>
         /// The grid of the current level.
         /// </summary>
-        public HexGrid<Hex> Grid { get => level.grid; set => level.grid = value; }
+        public HexGrid<Hex> Grid { get => level.Grid; set => level.Grid = value; }
 
         /// <summary>
         /// The current path of the world files.
@@ -320,12 +320,12 @@ namespace KreativerName.Scenes
             else
                 level = new Level();
 
-            player = level.startPos;
-            renderer.Grid = level.grid;
+            player = level.StartPos;
+            renderer.Grid = level.Grid;
             scrolling = new Vector2(0, 0);
 
             textLevel.Text = $"Level {levelIndex + 1:000}";
-            textMoves.Text = $"Min. Züge: {level.minMoves:00}";
+            textMoves.Text = $"Min. Züge: {level.MinMoves:00}";
         }
 
         public void LoadWorld()
@@ -337,11 +337,11 @@ namespace KreativerName.Scenes
 
         private void SaveLevel()
         {
-            if (level.grid == null)
+            if (level.Grid == null)
                 return;
 
-            level.startPos = player;
-            level.completed = false;
+            level.StartPos = player;
+            level.Completed = false;
 
             if (world.Levels == null)
                 world.Levels = new List<Level>();
@@ -506,21 +506,21 @@ namespace KreativerName.Scenes
                 AddButton2(100, 70, "Testen", TestLevel, Key.T);
 
                 // Min Moves
-                textMoves = new TextBlock($"Min. Züge: {level.minMoves:00}", 2, 20, 122);
+                textMoves = new TextBlock($"Min. Züge: {level.MinMoves:00}", 2, 20, 122);
 
                 leftFrame.AddChild(textMoves);
 
                 void add()
                 {
-                    level.minMoves++;
-                    textMoves.Text = $"Min. Züge: {level.minMoves:00}";
+                    level.MinMoves++;
+                    textMoves.Text = $"Min. Züge: {level.MinMoves:00}";
                 }
                 AddButton1(180, 120, 20, 20, "+", 5, 3, add, new Key());
                 void sub()
                 {
-                    if (level.minMoves > 0)
-                        level.minMoves--;
-                    textMoves.Text = $"Min. Züge: {level.minMoves:00}";
+                    if (level.MinMoves > 0)
+                        level.MinMoves--;
+                    textMoves.Text = $"Min. Züge: {level.MinMoves:00}";
                 }
                 AddButton1(200, 120, 20, 20, "-", 5, 3, sub, new Key());
 

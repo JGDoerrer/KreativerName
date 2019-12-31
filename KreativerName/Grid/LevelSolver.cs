@@ -27,7 +27,7 @@ namespace KreativerName.Grid
 
             while (results.Count == 0)
             {
-                results = Solve(level.GetPossibleMoves(level.startPos), level.Copy(), moves, new List<HexPoint>());
+                results = Solve(level.GetPossibleMoves(level.StartPos), level.Copy(), moves, new List<HexPoint>());
                 moves++;
             }
 
@@ -49,7 +49,7 @@ namespace KreativerName.Grid
             {
                 logMoves = true;
                 possibleMoves = new int[moves];
-                results = Solve(level.GetPossibleMoves(level.startPos), level.Copy(), moves, new List<HexPoint>());
+                results = Solve(level.GetPossibleMoves(level.StartPos), level.Copy(), moves, new List<HexPoint>());
                 
                 if (results.Count > 0)
                 {
@@ -61,7 +61,7 @@ namespace KreativerName.Grid
                         logMoves = true;
                         possibleMoves = new int[moves];
 
-                        results = Solve(level.GetPossibleMoves(level.startPos), level.Copy(), moves, new List<HexPoint>());
+                        results = Solve(level.GetPossibleMoves(level.StartPos), level.Copy(), moves, new List<HexPoint>());
 
                         if (results.Count == 0)
                             results = prevResults;
@@ -96,7 +96,7 @@ namespace KreativerName.Grid
                 Level copy = level;//.Copy();
                 copy.Update(move);
 
-                HexFlags flags = copy.grid[move].Value.Flags;
+                HexFlags flags = copy.Grid[move].Value.Flags;
 
                 if (flags.HasFlag(HexFlags.Deadly))
                     continue;

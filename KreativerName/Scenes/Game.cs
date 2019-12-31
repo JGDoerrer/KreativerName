@@ -97,7 +97,7 @@ namespace KreativerName.Scenes
         /// <summary>
         /// The grid of the current level.
         /// </summary>
-        public HexGrid<Hex> Grid { get => level.grid; set => level.grid = value; }
+        public HexGrid<Hex> Grid { get => level.Grid; set => level.Grid = value; }
 
         /// <summary>
         /// The current world.
@@ -159,7 +159,7 @@ namespace KreativerName.Scenes
                 return;
             }
 
-            if (perfect && moves >= level.minMoves)
+            if (perfect && moves >= level.MinMoves)
             {
                 LoadLevel();
                 return;
@@ -219,9 +219,9 @@ namespace KreativerName.Scenes
             else
             {
                 Level level = world.Levels[levelIndex];
-                level.completed = true;
+                level.Completed = true;
                 if (perfect)
-                    level.perfect = true;
+                    level.Perfect = true;
 
                 world.Levels[levelIndex] = level;
                 //world.SaveToFile($"{worldIndex:000}");
@@ -385,9 +385,9 @@ namespace KreativerName.Scenes
             else
                 Exit?.Invoke();
 
-            player = level.startPos;
+            player = level.StartPos;
             moves = 0;
-            renderer.Grid = level.grid;
+            renderer.Grid = level.Grid;
 
             scrolling = new Vector2();
             scale = 1;
@@ -418,7 +418,7 @@ namespace KreativerName.Scenes
 
             UpdateTitle();
 
-            player = level.startPos;
+            player = level.StartPos;
             moves = 0;
         }
 
