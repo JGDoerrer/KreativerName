@@ -101,7 +101,7 @@ namespace KreativerName.Scenes
                 else if (number.IsPrime())
                 {
                     correctAnimation = 60;
-                    scene = new ClickGame();
+                    scene = new Tetris(18);
                 }
                 else
                 {

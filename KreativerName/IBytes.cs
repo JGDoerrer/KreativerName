@@ -1,19 +1,22 @@
 ﻿namespace KreativerName
 {
+    /// <summary>
+    /// An interface for byte management.
+    /// </summary>
     public interface IBytes
     {
         /// <summary>
-        /// Gibt das Objekt als Bytes zurück
+        /// Returns the object as bytes.
         /// </summary>
-        /// <returns>Das Objekt als Bytes</returns>
+        /// <returns>The object as bytes.</returns>
         byte[] ToBytes();
 
         /// <summary>
-        /// Erstellt ein Objekt von Bytes und gibt die Anzahl an Bytes zurück, die benötigt wurden
+        /// Creates an object from bytes.
         /// </summary>
-        /// <param name="bytes"></param>
-        /// <param name="startIndex"></param>
-        /// <returns>Anzahl an Bytes, die benötigt wurden, um das Objekt zu erstellen</returns>
+        /// <param name="bytes">The byte array</param>
+        /// <param name="startIndex">The start index in the array</param>
+        /// <returns>The amount of bytes used</returns>
         int FromBytes(byte[] bytes, int startIndex);
     }
 }

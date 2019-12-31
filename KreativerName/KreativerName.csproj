@@ -90,7 +90,6 @@
     <Compile Include="Networking\User.cs" />
     <Compile Include="Rendering\GridRenderer.cs" />
     <Compile Include="Rendering\TextRenderer.cs" />
-    <Compile Include="Scenes\ClickGame.cs" />
     <Compile Include="Scenes\Editor.cs" />
     <Compile Include="Extentions.cs" />
     <Compile Include="Scenes\ErrorScene.cs" />

@@ -13,8 +13,14 @@ using OpenTK.Input;
 
 namespace KreativerName.Scenes
 {
+    /// <summary>
+    /// A class for the level editor.
+    /// </summary>
     public class Editor : Scene
     {
+        /// <summary>
+        /// Creates a new level editor.
+        /// </summary>
         public Editor()
         {
             input = SceneManager.Input;
@@ -51,11 +57,24 @@ namespace KreativerName.Scenes
         float scale = 1;
         GridRenderer renderer;
 
+        /// <summary>
+        /// Gets invoked when leaving the editor.
+        /// </summary>
         public event EmptyEvent OnExit;
 
+        /// <summary>
+        /// The grid of the current level.
+        /// </summary>
         public HexGrid<Hex> Grid { get => level.grid; set => level.grid = value; }
+
+        /// <summary>
+        /// The current path of the world files.
+        /// </summary>
         public string Path { get; set; } = "Worlds";
 
+        /// <summary>
+        /// Updates the scene.
+        /// </summary>
         public override void Update()
         {
             for (int i = 0; i < buttonFrame.Children.Count; i++)
@@ -144,6 +163,10 @@ namespace KreativerName.Scenes
             scale = scale.Clamp(0.125f, 16);
         }
 
+        /// <summary>
+        /// Renders the scene to the window.
+        /// </summary>
+        /// <param name="windowSize">The current window size.</param>
         public override void Render(Vector2 windowSize)
         {
             int width = (int)windowSize.X;
@@ -517,6 +540,10 @@ namespace KreativerName.Scenes
             }
         }
 
+        /// <summary>
+        /// Updates the UI of the scene.
+        /// </summary>
+        /// <param name="windowSize">The current window size.</param>
         public override void UpdateUI(Vector2 windowSize)
         {
             ui.Update(windowSize);
@@ -530,6 +557,10 @@ namespace KreativerName.Scenes
 
         private bool disposedValue = false; // Dient zur Erkennung redundanter Aufrufe.
 
+        /// <summary>
+        /// Disposes the level editor.
+        /// </summary>
+        /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -554,6 +585,9 @@ namespace KreativerName.Scenes
             }
         }
 
+        /// <summary>
+        /// Disposes the level editor.
+        /// </summary>
         ~Editor()
         {
             // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
@@ -561,6 +595,9 @@ namespace KreativerName.Scenes
         }
 
         // Dieser Code wird hinzugefügt, um das Dispose-Muster richtig zu implementieren.
+        /// <summary>
+        /// Disposes the level editor.
+        /// </summary>
         public override void Dispose()
         {
             // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.

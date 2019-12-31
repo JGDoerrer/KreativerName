@@ -94,11 +94,26 @@ namespace KreativerName.Scenes
         Vector2 scrolling;
         float scale = 1;
 
+        /// <summary>
+        /// The grid of the current level.
+        /// </summary>
         public HexGrid<Hex> Grid { get => level.grid; set => level.grid = value; }
+
+        /// <summary>
+        /// The current world.
+        /// </summary>
         public World World { get => world; }
+
+        /// <summary>
+        /// The amount of moves taken in the level.
+        /// </summary>
         public int Moves => moves;
+
         private int Levels => world.Levels.Count;
         
+        /// <summary>
+        /// Updates the scene.
+        /// </summary>
         public override void Update()
         {
             if (worldTitle > 0)
@@ -118,65 +133,6 @@ namespace KreativerName.Scenes
             }
 
             HandleInput();
-        }
-
-        public override void UpdateUI(Vector2 windowSize)
-        {
-            ui.Update(windowSize);
-        }
-
-        public override void Render(Vector2 windowSize)
-        {
-            int width = (int)windowSize.X;
-            int height = (int)windowSize.Y;
-
-            GL.ClearColor(Color.FromArgb(255, 0,0,0));
-
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadIdentity();
-            GL.Ortho(0, width, height, 0, -1, 1);
-
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-
-            if (Grid != null)
-            {
-                const int margin = 100;
-
-                float maxX = Grid.Max(x => x.Value.X + x.Value.Y / 2f);
-                float minX = Grid.Min(x => x.Value.X + x.Value.Y / 2f);
-                int maxY = Grid.Max(x => x.Value.Y);
-                int minY = Grid.Min(x => x.Value.Y);
-
-                layout.size = Math.Min((windowSize.X - margin) / (sqrt3 * (maxX - minX + 1)), (windowSize.Y - margin) / (1.5f * (maxY - minY + 1.25f)));
-                // Round to multiples of 16
-                layout.size = (float)Math.Floor(layout.size / 16) * 16;
-                layout.size = Math.Min(layout.size, 48) * scale;
-
-                int centerX = (int)(layout.size * sqrt3 * (maxX + minX));
-                int centerY = (int)(layout.size * 1.5f * (maxY + minY));
-
-                // Center grid
-                layout.origin = new Vector2((windowSize.X - centerX) / 2, (windowSize.Y - centerY) / 2) + scrolling;
-
-                //int totalWidth = (int)(editor.layout.size * sqrt3 * (maxX - minX + 1));
-                //int totalHeight = (int)(editor.layout.size * 1.5f * (maxY - minY + 1.25f));
-                renderer.Layout = layout;
-            }
-
-            renderer.Grid = Grid;
-
-            if (Settings.Current.ShowMoves)
-                renderer.Render(player, selectedHex, level.GetPossibleMoves(player));
-            else
-                renderer.Render(player, selectedHex, null);
-
-            ui.Render(windowSize);
-
-            if (worldTitle > 0)
-            {
-                RenderTitle(width, height);
-            }
         }
 
         private void UpdatePlayer()
@@ -293,7 +249,65 @@ namespace KreativerName.Scenes
         }
 
         #region Rendering
-        
+
+        /// <summary>
+        /// Renders the scene to the window.
+        /// </summary>
+        /// <param name="windowSize">The current window size.</param>
+        public override void Render(Vector2 windowSize)
+        {
+            int width = (int)windowSize.X;
+            int height = (int)windowSize.Y;
+
+            GL.ClearColor(Color.FromArgb(255, 0, 0, 0));
+
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
+            GL.Ortho(0, width, height, 0, -1, 1);
+
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+
+            if (Grid != null)
+            {
+                const int margin = 100;
+
+                float maxX = Grid.Max(x => x.Value.X + x.Value.Y / 2f);
+                float minX = Grid.Min(x => x.Value.X + x.Value.Y / 2f);
+                int maxY = Grid.Max(x => x.Value.Y);
+                int minY = Grid.Min(x => x.Value.Y);
+
+                layout.size = Math.Min((windowSize.X - margin) / (sqrt3 * (maxX - minX + 1)), (windowSize.Y - margin) / (1.5f * (maxY - minY + 1.25f)));
+                // Round to multiples of 16
+                layout.size = (float)Math.Floor(layout.size / 16) * 16;
+                layout.size = Math.Min(layout.size, 48) * scale;
+
+                int centerX = (int)(layout.size * sqrt3 * (maxX + minX));
+                int centerY = (int)(layout.size * 1.5f * (maxY + minY));
+
+                // Center grid
+                layout.origin = new Vector2((windowSize.X - centerX) / 2, (windowSize.Y - centerY) / 2) + scrolling;
+
+                //int totalWidth = (int)(editor.layout.size * sqrt3 * (maxX - minX + 1));
+                //int totalHeight = (int)(editor.layout.size * 1.5f * (maxY - minY + 1.25f));
+                renderer.Layout = layout;
+            }
+
+            renderer.Grid = Grid;
+
+            if (Settings.Current.ShowMoves)
+                renderer.Render(player, selectedHex, level.GetPossibleMoves(player));
+            else
+                renderer.Render(player, selectedHex, null);
+
+            ui.Render(windowSize);
+
+            if (worldTitle > 0)
+            {
+                RenderTitle(width, height);
+            }
+        }
+
         private void RenderTitle(int width, int height)
         {
             int alpha = (int)((1 - QuarticOut(1 - (float)worldTitle.Clamp(0, 120) / 120)) * 255);
@@ -349,6 +363,15 @@ namespace KreativerName.Scenes
             ui.Add(title);
         }
 
+        /// <summary>
+        /// Updates the UI of the scene.
+        /// </summary>
+        /// <param name="windowSize">The current window size.</param>
+        public override void UpdateUI(Vector2 windowSize)
+        {
+            ui.Update(windowSize);
+        }
+
         private void UpdateTitle() => title.Text = $"Level {levelIndex + 1:000}/{world.Levels?.Count:000}";
 
         #endregion
@@ -370,12 +393,20 @@ namespace KreativerName.Scenes
             scale = 1;
         }
 
+        /// <summary>
+        /// Loads a level of the current world.
+        /// </summary>
+        /// <param name="index">The index of the level in the world.</param>
         public void LoadLevel(int index)
         {
             levelIndex = index;
             LoadLevel();
         }
 
+        /// <summary>
+        /// Loads the given level.
+        /// </summary>
+        /// <param name="level">The level to be loaded.</param>
         public void LoadLevel(Level level)
         {
             singleLevel = true;
@@ -391,6 +422,9 @@ namespace KreativerName.Scenes
             moves = 0;
         }
 
+        /// <summary>
+        /// Loads the world at the current world index.
+        /// </summary>
         public void LoadWorld()
         {
             world = World.LoadFromFile($"{worldIndex:000}");
@@ -401,6 +435,10 @@ namespace KreativerName.Scenes
             UpdateTitle();
         }
 
+        /// <summary>
+        /// Loads the world at the given index.
+        /// </summary>
+        /// <param name="index">The index of the world to be loaded.</param>
         public void LoadWorld(int index)
         {
             world = World.LoadFromFile($"{index:000}");
@@ -412,6 +450,10 @@ namespace KreativerName.Scenes
             UpdateTitle();
         }
 
+        /// <summary>
+        /// Loads the given world.
+        /// </summary>
+        /// <param name="world">The world to be loaded.</param>
         public void LoadWorld(World world)
         {
             this.world = world;
@@ -429,6 +471,10 @@ namespace KreativerName.Scenes
 
         private bool disposedValue = false; // Dient zur Erkennung redundanter Aufrufe.
 
+        /// <summary>
+        /// Disposes the scene.
+        /// </summary>
+        /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -447,6 +493,9 @@ namespace KreativerName.Scenes
             }
         }
 
+        /// <summary>
+        /// Disposes the scene.
+        /// </summary>
         ~Game()
         {
             // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
@@ -454,6 +503,9 @@ namespace KreativerName.Scenes
         }
 
         // Dieser Code wird hinzugefügt, um das Dispose-Muster richtig zu implementieren.
+        /// <summary>
+        /// Disposes the scene.
+        /// </summary>
         public override void Dispose()
         {
             // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
