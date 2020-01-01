@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using KreativerName.Grid;
 using KreativerName.Networking;
@@ -222,10 +223,13 @@ namespace KreativerName.Scenes
             LevelSolver solver = new LevelSolver(level);
             solver.Solved += () => { textHexDesc.Text = $"Min. Züge: {solver.MinMoves}"; };
 
-            System.ComponentModel.BackgroundWorker worker = new System.ComponentModel.BackgroundWorker();
-            worker.WorkerReportsProgress = true;
+            System.ComponentModel.BackgroundWorker worker = new System.ComponentModel.BackgroundWorker
+            {
+                WorkerReportsProgress = true
+            };
             worker.DoWork += solver.SolveAsync;
-            worker.ProgressChanged += (o, e) => { Notification.Show($"{e.ProgressPercentage}% ({worldIndex + 1}-{levelIndex + 1})"); };
+            //worker.ProgressChanged += (o, e) => { Notification.Show($"{e.ProgressPercentage}% ({worldIndex + 1}-{levelIndex + 1})"); };
+            worker.RunWorkerCompleted += (o, e) => { Notification.Show($"Level gelöst ({worldIndex + 1}-{levelIndex + 1}): {solver.MinMoves} Züge benötigt"); };
             worker.RunWorkerAsync();
 
         }
@@ -328,7 +332,7 @@ namespace KreativerName.Scenes
             textMoves.Text = $"Min. Züge: {level.MinMoves:00}";
         }
 
-        public void LoadWorld()
+        private void LoadWorld()
         {
             world = World.LoadFromFile($"{Path}/{worldIndex:000}.wld", false);
             boxWorldName.Text = world.Title ?? "";
@@ -358,6 +362,12 @@ namespace KreativerName.Scenes
             world.AllCompleted = false;
             world.AllPerfect = false;
             world.Title = boxWorldName.Text ?? "";
+
+            if (!Directory.Exists(Path))
+            {
+                Directory.CreateDirectory(Path);
+            }
+
             world.SaveToFile($"{Path}/{worldIndex:000}.wld", false);
 
             Notification.Show("Welt gespeichert!", 2);
