@@ -43,7 +43,7 @@ namespace KreativerName.Scenes
 
             Button button = new Button(40, 40, 40, 40);
             button.Shortcut = OpenTK.Input.Key.Escape;
-            button.OnClick += () =>
+            button.OnLeftClick += () =>
             {
                 SceneManager.LoadScene(new Transition(new MainMenu(), 10));
             };
@@ -66,6 +66,11 @@ namespace KreativerName.Scenes
                 AddText("Tetris höchste Punktzahl: ", Stats.Current.TetrisHighScore.ToString(), y += 30);
                 AddText("Tetris meiste Linien: ", Stats.Current.TetrisMostLines.ToString(), y += 30);
                 AddText("Tetris höchstes Level: ", Stats.Current.TetrisHighLevel.ToString(), y += 30);
+            }
+            if (Stats.Current.MinesweeperWon > 0 || Stats.Current.MinesweeperLost > 0)
+            {
+                AddText("Minesweeper geschafft: ", Stats.Current.MinesweeperWon.ToString(), y += 30);
+                AddText("Minesweeper gescheitert: ", Stats.Current.MinesweeperLost.ToString(), y += 30);
             }
         }
 
@@ -96,12 +101,37 @@ namespace KreativerName.Scenes
                 if (clickedNums.All(x => x == clickedNums[0]))
                 {
                     correctAnimation = 60;
-                    scene = new Tetris((int)clickedNums[0]);
+
+                    uint level = (uint)clickedNums[0];
+                    if (SceneManager.Input.KeyDown(OpenTK.Input.Key.X))
+                        level += 10;
+
+                    scene = new Tetris(level);
                 }
-                else if (number.IsPrime())
+                else if (number.Factor().Count == 4)
                 {
-                    correctAnimation = 60;
-                    scene = new Tetris(18);
+
+                    int f1 = 0, f2 = 0;
+                    List<int> factors = number.Factor();
+
+                    for (int i = 0; i < 4; i++)
+                    {
+                        if (factors[i] == 1 || factors[i] == number)
+                            continue;
+
+                        if (f1 == 0)
+                            f1 = factors[i];
+                        else
+                            f2 = factors[i];
+                    }
+
+                    if (f1 < 40 && f2 < 40)
+                    {
+                        scene = new Minesweeper(f2, f1, f1 * f2 / 6);
+                        correctAnimation = 60;
+                    }
+                    else
+                        wrongAnimation = 60;
                 }
                 else
                 {
@@ -165,7 +195,7 @@ namespace KreativerName.Scenes
                     }
                 }
             }
-            
+
             ui.Update(windowSize);
         }
 

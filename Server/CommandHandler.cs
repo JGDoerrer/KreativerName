@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using KreativerName;
 using KreativerName.Networking;
@@ -36,6 +37,10 @@ namespace Server
                         PrintUsers();
                         break;
                     }
+                    switch (args[1])
+                    {
+                        case "resave": DataBase.ReSaveUsers(); break;
+                    }
                     break;
                 }
                 case "worlds":
@@ -59,6 +64,15 @@ namespace Server
                         case "set":
                             SetVersion();
                             break;
+                    }
+                    break;
+                }
+                case "stats":
+                {
+                    if (args.Length == 1)
+                    {
+                        AnalyseStats();
+                        break;
                     }
                     break;
                 }
@@ -149,7 +163,7 @@ namespace Server
                 foreach (var property in user.Statistics.GetType().GetProperties())
                 {
                     string value = property.GetValue(user.Statistics).ToString();
-                    value = value.PadLeft(30 - property.Name.Length+ value.Length);
+                    value = value.PadLeft(30 - property.Name.Length + value.Length);
                     Console.WriteLine($"    {property.Name}: {value}");
                 }
             }
@@ -161,6 +175,38 @@ namespace Server
             foreach (uint id in DataBase.GetWorldIDs())
             {
                 Console.WriteLine($"World {++count}:");
+            }
+        }
+
+        static void AnalyseStats()
+        {
+            List<User> users = DataBase.GetUsers();
+
+            Console.WriteLine($"Total Statistics: {users.Count}");
+
+            PropertyInfo[] properties = typeof(Stats).GetProperties();
+            foreach (PropertyInfo property in properties)
+            {
+                User highest = users[0];
+                User lowest = users[0];
+
+                foreach (User user in users)
+                {
+                    object v = property.GetValue(user.Statistics);
+                    object vHighest = property.GetValue(highest.Statistics);
+                    object vLowest = property.GetValue(lowest.Statistics);
+
+
+
+                    if (Comparer<object>.Default.Compare(v, vHighest) > 0)
+                        highest = user;
+                    if (Comparer<object>.Default.Compare(v, vLowest) < 0)
+                        lowest = user;
+                }
+
+                Console.WriteLine($"{property.Name}:");
+                Console.WriteLine($"  Best:  {highest.ID.ToID()} with {property.GetValue(highest.Statistics)}");
+                Console.WriteLine($"  Worst: {lowest.ID.ToID()} with {property.GetValue(lowest.Statistics)}");
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace KreativerName
 {
@@ -12,6 +13,15 @@ namespace KreativerName
         public static int FromBytes(this ref int i, byte[] bytes, int startIndex)
         {
             i = BitConverter.ToInt32(bytes, startIndex);
+            return 4;
+        }
+
+        public static byte[] ToBytes(this uint i)
+            => BitConverter.GetBytes(i);
+
+        public static int FromBytes(this ref uint i, byte[] bytes, int startIndex)
+        {
+            i = BitConverter.ToUInt32(bytes, startIndex);
             return 4;
         }
 
@@ -64,6 +74,24 @@ namespace KreativerName
             return i;
         }
 
+        public static float Pow(this int b, int exp)
+        {
+            float result = 1;
+
+            if (exp > 0)
+            {
+                for (int i = 0; i < exp; i++)
+                    result *= b;
+            }
+            else
+            {
+                for (int i = 0; i < -exp; i++)
+                    result /= b;
+            }
+
+            return result;
+        }
+
         public static string ToRoman(this int i)
         {
             if (i >= 1000) return "M" + (i - 1000).ToRoman();
@@ -84,13 +112,37 @@ namespace KreativerName
 
         public static bool IsPrime(this int i)
         {
-            for (int j = 2; j * j < i; j++)
+            if (i < 2)
+                return false;
+
+            for (int j = 2; j * j <= i; j++)
             {
                 if (i % j == 0)
                     return false;
             }
 
             return true;
+        }
+
+        public static List<int> Factor(this int x)
+        {
+            List<int> factors = new List<int>();
+
+            for (int factor = 1; factor * factor <= x; ++factor)
+            { 
+                //test from 1 to the square root, or the int below it, inclusive.
+                if (x % factor == 0)
+                {
+                    factors.Add(factor);
+                    if (factor * factor != x)
+                    { 
+                        // Don't add the square root twice!
+                        factors.Add(x / factor);
+                    }
+                }
+            }
+
+            return factors;
         }
 
         public static string ToID(this uint i)

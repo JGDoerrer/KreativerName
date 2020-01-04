@@ -102,7 +102,7 @@ namespace KreativerName.Scenes
             HexPoint mouse = layout.PixelToHex(input.MousePosition);
             selectedHex = mouse;
 
-            float scrollSpeed = 8;
+            float scrollSpeed = 2 * (4 + (float)Math.Log(scale, 2));
 
             if (!ignoreMouse)
             {
@@ -159,9 +159,15 @@ namespace KreativerName.Scenes
                     scrolling.Y -= scrollSpeed;
                 }
             }
-            scale *= (float)Math.Pow(2, input.MouseScroll());
+            if (input.MouseScroll() != 0)
+            {
+                float oldScale = scale;
 
-            scale = scale.Clamp(0.125f, 16);
+                scale *= 2.Pow(input.MouseScroll());
+                scale = scale.Clamp(0.125f, 16);
+
+                scrolling = scrolling * scale / oldScale;
+            }
         }
 
         /// <summary>
@@ -407,9 +413,10 @@ namespace KreativerName.Scenes
 
         private void InitUI()
         {
-            ui = new UI.UI();
-
-            ui.Input = input;
+            ui = new UI.UI
+            {
+                Input = input
+            };
 
             {
                 const int size = 42;
@@ -442,7 +449,7 @@ namespace KreativerName.Scenes
                     button.Shortcut = (Key)(110 + i);
 
                     int copy = i;
-                    button.OnClick += () =>
+                    button.OnLeftClick += () =>
                     {
                         drawType = values[copy];
                     };
@@ -466,7 +473,7 @@ namespace KreativerName.Scenes
                 {
                     Shortcut = Key.Escape
                 };
-                exitButton.OnClick += () =>
+                exitButton.OnLeftClick += () =>
                 {
                     SceneManager.LoadScene(new Transition(new MainMenu(), 10));
                 };
@@ -480,7 +487,7 @@ namespace KreativerName.Scenes
                 void AddButton1(int x, int y, int w, int h, string s, int tx, int ty, ClickEvent ev, Key shortcut)
                 {
                     Button button = new Button(x, y, w, h);
-                    button.OnClick += ev;
+                    button.OnLeftClick += ev;
                     button.Shortcut = shortcut;
 
                     TextBlock text = new TextBlock(s, 2, tx, ty);
@@ -493,9 +500,9 @@ namespace KreativerName.Scenes
                     TextBlock text = new TextBlock(s, 2, 10, 10);
 
                     Button button = new Button(x, y, (int)text.TextWidth + 18, (int)text.TextHeight + 18);
-                    button.OnClick += ev;
+                    button.OnLeftClick += ev;
                     button.Shortcut = shortcut;
-                    
+
                     button.AddChild(text);
                     leftFrame.AddChild(button);
                 }

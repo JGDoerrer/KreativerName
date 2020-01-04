@@ -91,6 +91,12 @@ namespace Server
             return null;
         }
 
+        public static void ReSaveUsers()
+        {
+            foreach (uint id in GetUserIDs())
+                SaveUser(GetUser(id).Value);
+        }
+
         public static List<User> GetUsers()
         {
             string[] files = Directory.GetFiles(userPath);
@@ -101,6 +107,13 @@ namespace Server
                 user.FromBytes(File.ReadAllBytes(x), 0);
                 return user;
             }).ToList();
+        }
+
+        public static List<uint> GetUserIDs()
+        {
+            string[] files = Directory.GetFiles(userPath);
+
+            return files.Select(x => uint.Parse(Path.GetFileNameWithoutExtension(x), System.Globalization.NumberStyles.HexNumber)).ToList();
         }
 
         public static bool ExistsUser(uint id)

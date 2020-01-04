@@ -185,7 +185,7 @@ namespace KreativerName.Scenes
                 Exit?.Invoke();
             }
 
-            float scrollSpeed = 8;
+            float scrollSpeed = 4 * (4 + (float)Math.Log(scale, 2));
 
             if (input.KeyDown(Key.Left))
             {
@@ -203,9 +203,15 @@ namespace KreativerName.Scenes
             {
                 scrolling.Y -= scrollSpeed;
             }
-            scale *= (float)Math.Pow(2, input.MouseScroll());
+            if (input.MouseScroll() != 0)
+            {
+                float oldScale = scale;
 
-            scale = scale.Clamp(0.125f, 16);
+                scale *= 2.Pow(input.MouseScroll());
+                scale = scale.Clamp(0.125f, 16);
+
+                scrolling = scrolling * scale / oldScale;
+            }
 
             input.Update();
         }

@@ -49,7 +49,7 @@ namespace KreativerName.Scenes
             modeText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)modeText.TextWidth), new PixelConstraint((int)modeText.TextHeight));
             modeButton.AddChild(modeText);
 
-            modeButton.OnClick += () =>
+            modeButton.OnLeftClick += () =>
             {
                 normalMode = !normalMode;
 
@@ -61,7 +61,7 @@ namespace KreativerName.Scenes
 
             Button exitButton = new Button(40, 40, 40, 40);
             exitButton.Shortcut = Key.Escape;
-            exitButton.OnClick += () =>
+            exitButton.OnLeftClick += () =>
             {
                 SceneManager.LoadScene(new Transition(new MainMenu(), 10));
             };
@@ -152,7 +152,7 @@ namespace KreativerName.Scenes
                         button.Enabled = worlds[i - 1].AllCompleted || worlds[i - 1].AllPerfect;
 
                     int world = i;
-                    button.OnClick += () =>
+                    button.OnLeftClick += () =>
                     {
                         NewGame(world);
                     };

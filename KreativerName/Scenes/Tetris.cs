@@ -9,7 +9,7 @@ namespace KreativerName.Scenes
 {
     public class Tetris : Scene
     {
-        public Tetris(int level = 0)
+        public Tetris(uint level = 0)
         {
             NextPiece();
             NextPiece();
@@ -110,15 +110,15 @@ namespace KreativerName.Scenes
         int currentPiece;
 
         int nextPiece;
-        int nextLevel;
+        uint nextLevel;
 
         int frameCount = 0;
         int speed = 48;
         int nextPieceIn = 0;
 
-        int level = 0;
-        int score = 0;
-        int linesCleared = 0;
+        uint level = 0;
+        uint score = 0;
+        uint linesCleared = 0;
 
         int left = 0;
         int right = 0;
@@ -261,7 +261,7 @@ namespace KreativerName.Scenes
             TextureRenderer.Draw(Textures.Get("Tetris"), position, Vector2.One * Scale, tile % 3 != 2 ? c1 : c2, new RectangleF((tile % 3 == 0 ? 0 : 1) * 8, 8, 8, 8));
         }
 
-        public void SetLevel(int level)
+        public void SetLevel(uint level)
         {
             switch (level)
             {
@@ -419,7 +419,7 @@ namespace KreativerName.Scenes
 
         private void ClearLines()
         {
-            int lines = 0;
+            uint lines = 0;
 
             for (int py = 0; py < 4; py++)
             {

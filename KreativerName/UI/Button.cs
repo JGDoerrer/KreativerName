@@ -22,29 +22,48 @@ namespace KreativerName.UI
         }
 
         bool mouseDown;
+        bool clicked;
 
         public Color Color { get; set; } = Color.White;
         public Key Shortcut { get; set; }
         public bool Enabled { get; set; } = true;
-        public bool Clicked { get; private set; }
-        public event ClickEvent OnClick;
+        public int Style { get; set; }
+        public int State { get; set; }
+        public bool ChangeState { get; set; } = true;
 
+        public event ClickEvent OnLeftClick;
+        public event ClickEvent OnRightClick;
 
         public override void Update(Vector2 windowSize)
         {
             UpdateChildren(windowSize);
 
-            bool down = MouseLeftDown;
-            bool b = (MouseOver(windowSize) && !mouseDown && MouseLeftDown) || (ui.Input.KeyDown(Shortcut) && !ui.ignoreShortcuts);
-            if (Enabled && !Clicked && b)
+            if (Enabled && !clicked && MouseOver(windowSize) && MouseLeftClick ||
+                (ui.Input.KeyDown(Shortcut) && !ui.ignoreShortcuts))
             {
-                OnClick?.Invoke();
-                //ui.Input.ReleaseMouse(MouseButton.Left);
+                OnLeftClick?.Invoke();
+            }
+            if (Enabled && MouseOver(windowSize) && MouseRightClick)
+            {
+                OnRightClick?.Invoke();
             }
 
-            Clicked = b;
+            if (ChangeState)
+            {
+                if (MouseOver(windowSize))
+                {
+                    if (mouseDown)
+                        State = 2;
+                    else
+                        State = 1;
+                }
+                else
+                    State = 0;
+            }
 
-            mouseDown = down;
+            clicked = (MouseOver(windowSize) && !mouseDown && MouseLeftDown) || (ui.Input.KeyDown(Shortcut) && !ui.ignoreShortcuts);
+
+            mouseDown = MouseLeftDown;
         }
 
         public override void Render(Vector2 windowSize)
@@ -57,7 +76,8 @@ namespace KreativerName.UI
             float w = GetWidth(windowSize);
             float h = GetHeight(windowSize);
 
-            float offset;
+            float state = State * a * 3;
+            float style = Style * a * 3;
             Color color = Color;
             Texture2D tex = Textures.Get("Button");
 
@@ -66,34 +86,24 @@ namespace KreativerName.UI
                 color = Color.FromArgb(Color.R / 2, Color.B / 2, Color.G / 2);
             }
 
-            if (MouseOver(windowSize))
-            {
-                if (mouseDown)
-                    offset = a * 3 * 2;
-                else
-                    offset = a * 3;
-            }
-            else
-                offset = 0;
-
             // corner top left
-            TextureRenderer.Draw(tex, new Vector2(x, y), Vector2.One * scale, color, new RectangleF(offset, 0, a, a));
+            TextureRenderer.Draw(tex, new Vector2(x, y), Vector2.One * scale, color, new RectangleF(state, style, a, a));
             // corner top right
-            TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y), Vector2.One * scale, color, new RectangleF(offset + a * 2, 0, a, a));
+            TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y), Vector2.One * scale, color, new RectangleF(state + a * 2, style, a, a));
             // corner bottom left
-            TextureRenderer.Draw(tex, new Vector2(x, y + h - a * scale), Vector2.One * scale, color, new RectangleF(offset, a * 2, a, a));
+            TextureRenderer.Draw(tex, new Vector2(x, y + h - a * scale), Vector2.One * scale, color, new RectangleF(state, style + a * 2, a, a));
             // corner bottom right
-            TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y + h - a * scale), Vector2.One * scale, color, new RectangleF(offset + a * 2, a * 2, a, a));
+            TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y + h - a * scale), Vector2.One * scale, color, new RectangleF(state + a * 2, style + a * 2, a, a));
             // left
-            TextureRenderer.Draw(tex, new Vector2(x, y + a * scale), new Vector2(1, h / (a * scale) - 2) * scale, color, new RectangleF(offset, a, a, a));
+            TextureRenderer.Draw(tex, new Vector2(x, y + a * scale), new Vector2(1, h / (a * scale) - 2) * scale, color, new RectangleF(state, style + a, a, a));
             // top
-            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y), new Vector2(w / (a * scale) - 2, 1) * scale, color, new RectangleF(offset + a, 0, a, a));
+            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y), new Vector2(w / (a * scale) - 2, 1) * scale, color, new RectangleF(state + a, style, a, a));
             // right
-            TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y + a * scale), new Vector2(1, h / (a * scale) - 2) * scale, color, new RectangleF(offset + a * 2, a, a, a));
+            TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y + a * scale), new Vector2(1, h / (a * scale) - 2) * scale, color, new RectangleF(state + a * 2, style + a, a, a));
             // bottom
-            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + h - a * scale), new Vector2(w / (a * scale) - 2, 1) * scale, color, new RectangleF(offset + a, a * 2, a, a));
+            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + h - a * scale), new Vector2(w / (a * scale) - 2, 1) * scale, color, new RectangleF(state + a, style + a * 2, a, a));
             // center
-            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + a * scale), new Vector2(w / (a * scale) - 2, h / (a * scale) - 2) * scale, color, new RectangleF(offset + a, a, a, a));
+            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + a * scale), new Vector2(w / (a * scale) - 2, h / (a * scale) - 2) * scale, color, new RectangleF(state + a, style + a, a, a));
 
             RenderChildren(windowSize);
         }

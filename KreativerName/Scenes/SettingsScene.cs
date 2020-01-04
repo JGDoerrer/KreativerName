@@ -32,7 +32,7 @@ namespace KreativerName.Scenes
             {
                 Button button = new Button(40, 40, 40, 40);
                 button.Shortcut = OpenTK.Input.Key.Escape;
-                button.OnClick += () =>
+                button.OnLeftClick += () =>
                 {
                     SceneManager.LoadScene(new Transition(new MainMenu(), 10));
                 };
@@ -96,7 +96,7 @@ namespace KreativerName.Scenes
             Button sendButton = new Button();
             sendButton.SetConstraints(new CenterConstraint(), new PixelConstraint(300), new PixelConstraint(120), new PixelConstraint(34));
             sendButton.Enabled = !Settings.Current.LoggedIn;
-            sendButton.OnClick += () => SignUp(textBox);
+            sendButton.OnLeftClick += () => SignUp(textBox);
 
             TextBlock sendText = new TextBlock("Anmelden", 2, 10, 10);
             sendButton.AddChild(sendText);
