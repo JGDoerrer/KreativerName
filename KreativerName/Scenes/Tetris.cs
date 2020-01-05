@@ -30,48 +30,48 @@ namespace KreativerName.Scenes
         {
             { // T
                 
-                0b0000000011100100,
-                0b0000010011000100,
-                0b0000010011100000,
-                0b0000010001100100,
+                0b0000000001110010,
+                0b0000001001100010,
+                0b0000001001110000,
+                0b0000001000110010,
             },
             { // J         
-                0b0000000011100010,
-                0b0000010001001100,
-                0b0000100011100000,
-                0b0000011001000100,
+                0b0000000001110001,
+                0b0000001000100110,
+                0b0000010001110000,
+                0b0000001100100010,
             },
             { // Z
                 
-                0b0000000011000110,
-                0b0000001001100100,
-                0b0000000011000110,
-                0b0000001001100100,
+                0b0000000001100011,
+                0b0000000100110010,
+                0b0000000001100011,
+                0b0000000100110010,
             },
             { // O        
-                0b0000011001100000,
-                0b0000011001100000,
-                0b0000011001100000,
-                0b0000011001100000,
+                0b0000000001100110,
+                0b0000000001100110,
+                0b0000000001100110,
+                0b0000000001100110,
             },
             { // S
                 
-                0b0000000001101100,
-                0b0000010001100010,
-                0b0000000001101100,
-                0b0000010001100010,
+                0b0000000000110110,
+                0b0000001000110001,
+                0b0000000000110110,
+                0b0000001000110001,
             },
             { // L               
-                0b0000000011101000,
-                0b0000110001000100,
-                0b0000001011100000,
-                0b0000010001000110,
+                0b0000000001110100,
+                0b0000011000100010,
+                0b0000000101110000,
+                0b0000001000100011,
             },
             { // I
                 0b0000000011110000,
-                0b0010001000100010,
+                0b0100010001000100,
                 0b0000000011110000,
-                0b0010001000100010,
+                0b0100010001000100,
             },
         };
         static readonly uint[] colorValues =
@@ -243,8 +243,8 @@ namespace KreativerName.Scenes
 
         private void RenderPiece(Vector2 winSize, int piece, int rot, int x, int y)
         {
-            for (int px = 0; px < 4; px++)
-                for (int py = 0; py < 4; py++)
+            for (int py = 0; py < 4; py++)
+                for (int px = 0; px < 4; px++)
                     if ((pieces[piece, rot % 4] & (1 << (py * 4 + px))) > 0)
                     {
                         RenderTile(winSize, piece % 3, x + px, y + py);
@@ -400,12 +400,11 @@ namespace KreativerName.Scenes
             }
         }
 
-        private bool Fits(int piece, int rotation, int x, int y)
+        private bool Fits(int piece, int rotation, int x, int y) 
         {
-            for (int px = 0; px < 4; px++)
-                for (int py = 0; py < 4; py++)
+            for (int py = 0; py < 4; py++)
+                for (int px = 0; px < 4; px++)
                 {
-
                     if ((x + px < 0 || x + px >= Width ||
                         y + py < 0 || y + py >= Height ||
                         field[x + px, y + py] > 0) && (pieces[piece, rotation % 4] & (1 << (py * 4 + px))) > 0)
@@ -468,8 +467,8 @@ namespace KreativerName.Scenes
 
         private void SetPiece()
         {
-            for (int px = 0; px < 4; px++)
-                for (int py = 0; py < 4; py++)
+            for (int py = 0; py < 4; py++)
+                for (int px = 0; px < 4; px++)
                 {
                     if ((pieces[currentPiece, currentRot % 4] & (1 << (py * 4 + px))) > 0)
                         field[currentX + px, currentY + py] = (byte)(currentPiece % 3 + 1);
