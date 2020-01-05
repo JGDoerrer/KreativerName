@@ -88,7 +88,7 @@ namespace KreativerName.Scenes
 
         public override void Update()
         {
-            if (numsClicked == maxNums && correctAnimation < 0 && wrongAnimation < 0)
+            if (numsClicked >= maxNums && correctAnimation < 0 && wrongAnimation < 0)
             {
                 int number = 0;
 
@@ -108,30 +108,10 @@ namespace KreativerName.Scenes
 
                     scene = new Tetris(level);
                 }
-                else if (number.Factor().Count == 4)
+                else if (number.IsPrime())
                 {
-
-                    int f1 = 0, f2 = 0;
-                    List<int> factors = number.Factor();
-
-                    for (int i = 0; i < 4; i++)
-                    {
-                        if (factors[i] == 1 || factors[i] == number)
-                            continue;
-
-                        if (f1 == 0)
-                            f1 = factors[i];
-                        else
-                            f2 = factors[i];
-                    }
-
-                    if (f1 < 40 && f2 < 40)
-                    {
-                        scene = new Minesweeper(f2, f1, f1 * f2 / 6);
-                        correctAnimation = 60;
-                    }
-                    else
-                        wrongAnimation = 60;
+                    scene = new Minesweeper(30, 30, 30 * 30 / 6);
+                    correctAnimation = 60;
                 }
                 else
                 {
