@@ -8,14 +8,16 @@ namespace KreativerName.Grid
 #nullable enable
 
     /// <summary>
-    /// Eine Klasse zum Speichern einer hexagonalen Fläche.
-    /// Es werden axiale Koordinaten verwendet.
-    /// x: + => rechts  - => links
-    /// y: + => unten rechts  - => oben links
+    /// Stores a hexagonal grid using axial coordinates.
+    /// x: + => east  - => west
+    /// y: + => south east  - => north west
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The type of the object to store.</typeparam>
     public class HexGrid<T> : IDictionary<HexPoint, T>, IBytes where T : struct, IBytes
     {
+        /// <summary>
+        /// Creates a new HexGrid.
+        /// </summary>
         public HexGrid()
         {
             dictonary = new Dictionary<HexPoint, T>();
@@ -23,6 +25,15 @@ namespace KreativerName.Grid
 
         Dictionary<HexPoint, T> dictonary;
 
+        /// <summary>
+        /// Gets or sets the object at the specified position.
+        /// Returns null if there is no object at the position.
+        /// </summary>
+        /// <param name="pos">The position to access</param>
+        /// <returns>
+        /// Returns the object at the position.
+        /// Returns null if there is no object at the position.
+        /// </returns>
         public T? this[HexPoint pos]
         {
             get
@@ -48,12 +59,26 @@ namespace KreativerName.Grid
 
             }
         }
+
+        /// <summary>
+        /// Gets or sets the object at the specified position.
+        /// Returns null if there is no object at the position.
+        /// </summary>
+        /// <param name="x">The x-coordinate of the position</param>
+        /// <param name="y">The y-coordinate of the position</param>
+        /// <returns>
+        /// Returns the object at the position.
+        /// Returns null if there is no object at the position.
+        /// </returns>
         public T? this[int x, int y]
         {
             get => this[new HexPoint(x, y)];
             set => this[new HexPoint(x, y)] = value;
         }
 
+        /// <summary>
+        /// Clears all objects stored.
+        /// </summary>
         public void Clear()
         {
             dictonary.Clear();
@@ -61,6 +86,10 @@ namespace KreativerName.Grid
 
         #region Interfaces
 
+        /// <summary>
+        /// Returns a byte array of the grid.
+        /// </summary>
+        /// <returns>Returns a byte array of the grid.</returns>
         public byte[] ToBytes()
         {
             List<byte> bytes = new List<byte>();
@@ -75,6 +104,12 @@ namespace KreativerName.Grid
             return bytes.ToArray();
         }
 
+        /// <summary>
+        /// Loads a grid from a byte array.
+        /// </summary>
+        /// <param name="bytes">The byte array</param>
+        /// <param name="startIndex">The start index in the array</param>
+        /// <returns>Returns the amount of bytes loaded.</returns>
         public int FromBytes(byte[] bytes, int startIndex)
         {
             Clear();
@@ -103,6 +138,10 @@ namespace KreativerName.Grid
             return byteCount;
         }
 
+        /// <summary>
+        /// Returns a copy of the grid.
+        /// </summary>
+        /// <returns>Returns a copy of the grid.</returns>
         public HexGrid<T> Copy()
         {
             HexGrid<T> copy = new HexGrid<T>();
@@ -110,6 +149,10 @@ namespace KreativerName.Grid
             return copy;
         }
 
+        /// <summary>
+        /// Returns all values.
+        /// </summary>
+        /// <returns>Returns all values.</returns>
         public IEnumerator<T> GetEnumerator()
         {
             return dictonary.Select(x => x.Value).GetEnumerator();

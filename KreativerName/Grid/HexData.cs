@@ -7,8 +7,6 @@ namespace KreativerName.Grid
 {
     public struct HexData : IBytes
     {
-        public const byte MaxID = byte.MaxValue;
-
         public byte ID;
         public HexFlags HexFlags;
         public RenderFlags RenderFlags;
@@ -16,7 +14,6 @@ namespace KreativerName.Grid
         public byte AnimationLength;
         public byte AnimationSpeed;
         public byte AnimationPhase;
-
         public List<HexAction> Changes;
 
         public byte[] ToBytes()
@@ -75,8 +72,6 @@ namespace KreativerName.Grid
 
             return count;
         }
-
-        public override string ToString() => $"ID: {ID}, Flags: {HexFlags}, Texture: {Texture}, Changes: {Changes.Count}";
         
         public static HexData[] Data;
 
@@ -120,6 +115,8 @@ namespace KreativerName.Grid
 
             File.WriteAllBytes(path, bytes);
         }
+
+        public override string ToString() => $"ID: {ID}, Flags: {HexFlags};{RenderFlags}, Texture: {Texture}, Changes: {Changes.Count}";
     }
 
     public struct HexAction : IBytes

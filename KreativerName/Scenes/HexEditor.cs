@@ -101,7 +101,7 @@ namespace KreativerName.Scenes
                 MaxValue = 9999;
                 MinValue = -999;
 
-                add.OnClick += () =>
+                add.OnLeftClick += () =>
                 {
                     if (add.ui.Input.KeyDown(OpenTK.Input.Key.LControl) ||
                         add.ui.Input.KeyDown(OpenTK.Input.Key.RControl))
@@ -117,7 +117,7 @@ namespace KreativerName.Scenes
                     text.Text = Value.ToString();
                     ValueChanged?.Invoke(Value);
                 };
-                sub.OnClick += () =>
+                sub.OnLeftClick += () =>
                 {
                     if (add.ui.Input.KeyDown(OpenTK.Input.Key.LControl) ||
                         add.ui.Input.KeyDown(OpenTK.Input.Key.RControl))

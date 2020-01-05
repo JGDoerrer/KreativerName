@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using KreativerName.Grid;
 using KreativerName.Networking;
@@ -65,7 +66,7 @@ namespace KreativerName.Scenes
         /// <summary>
         /// The grid of the current level.
         /// </summary>
-        public HexGrid<Hex> Grid { get => level.grid; set => level.grid = value; }
+        public HexGrid<Hex> Grid { get => level.Grid; set => level.Grid = value; }
 
         /// <summary>
         /// The current path of the world files.
@@ -101,7 +102,7 @@ namespace KreativerName.Scenes
             HexPoint mouse = layout.PixelToHex(input.MousePosition);
             selectedHex = mouse;
 
-            float scrollSpeed = 8;
+            float scrollSpeed = 2 * (4 + (float)Math.Log(scale, 2));
 
             if (!ignoreMouse)
             {
@@ -158,9 +159,15 @@ namespace KreativerName.Scenes
                     scrolling.Y -= scrollSpeed;
                 }
             }
-            scale *= (float)Math.Pow(2, input.MouseScroll());
+            if (input.MouseScroll() != 0)
+            {
+                float oldScale = scale;
 
-            scale = scale.Clamp(0.125f, 16);
+                scale *= 2.Pow(input.MouseScroll());
+                scale = scale.Clamp(0.125f, 16);
+
+                scrolling = scrolling * scale / oldScale;
+            }
         }
 
         /// <summary>
@@ -222,10 +229,13 @@ namespace KreativerName.Scenes
             LevelSolver solver = new LevelSolver(level);
             solver.Solved += () => { textHexDesc.Text = $"Min. Züge: {solver.MinMoves}"; };
 
-            System.ComponentModel.BackgroundWorker worker = new System.ComponentModel.BackgroundWorker();
-            worker.WorkerReportsProgress = true;
+            System.ComponentModel.BackgroundWorker worker = new System.ComponentModel.BackgroundWorker
+            {
+                WorkerReportsProgress = true
+            };
             worker.DoWork += solver.SolveAsync;
-            worker.ProgressChanged += (o, e) => { Notification.Show($"{e.ProgressPercentage}% ({worldIndex + 1}-{levelIndex + 1})"); };
+            //worker.ProgressChanged += (o, e) => { Notification.Show($"{e.ProgressPercentage}% ({worldIndex + 1}-{levelIndex + 1})"); };
+            worker.RunWorkerCompleted += (o, e) => { Notification.Show($"Level gelöst ({worldIndex + 1}-{levelIndex + 1}): {solver.MinMoves} Züge benötigt"); };
             worker.RunWorkerAsync();
 
         }
@@ -320,15 +330,15 @@ namespace KreativerName.Scenes
             else
                 level = new Level();
 
-            player = level.startPos;
-            renderer.Grid = level.grid;
+            player = level.StartPos;
+            renderer.Grid = level.Grid;
             scrolling = new Vector2(0, 0);
 
             textLevel.Text = $"Level {levelIndex + 1:000}";
-            textMoves.Text = $"Min. Züge: {level.minMoves:00}";
+            textMoves.Text = $"Min. Züge: {level.MinMoves:00}";
         }
 
-        public void LoadWorld()
+        private void LoadWorld()
         {
             world = World.LoadFromFile($"{Path}/{worldIndex:000}.wld", false);
             boxWorldName.Text = world.Title ?? "";
@@ -337,11 +347,11 @@ namespace KreativerName.Scenes
 
         private void SaveLevel()
         {
-            if (level.grid == null)
+            if (level.Grid == null)
                 return;
 
-            level.startPos = player;
-            level.completed = false;
+            level.StartPos = player;
+            level.Completed = false;
 
             if (world.Levels == null)
                 world.Levels = new List<Level>();
@@ -358,6 +368,12 @@ namespace KreativerName.Scenes
             world.AllCompleted = false;
             world.AllPerfect = false;
             world.Title = boxWorldName.Text ?? "";
+
+            if (!Directory.Exists(Path))
+            {
+                Directory.CreateDirectory(Path);
+            }
+
             world.SaveToFile($"{Path}/{worldIndex:000}.wld", false);
 
             Notification.Show("Welt gespeichert!", 2);
@@ -397,9 +413,10 @@ namespace KreativerName.Scenes
 
         private void InitUI()
         {
-            ui = new UI.UI();
-
-            ui.Input = input;
+            ui = new UI.UI
+            {
+                Input = input
+            };
 
             {
                 const int size = 42;
@@ -432,7 +449,7 @@ namespace KreativerName.Scenes
                     button.Shortcut = (Key)(110 + i);
 
                     int copy = i;
-                    button.OnClick += () =>
+                    button.OnLeftClick += () =>
                     {
                         drawType = values[copy];
                     };
@@ -456,7 +473,7 @@ namespace KreativerName.Scenes
                 {
                     Shortcut = Key.Escape
                 };
-                exitButton.OnClick += () =>
+                exitButton.OnLeftClick += () =>
                 {
                     SceneManager.LoadScene(new Transition(new MainMenu(), 10));
                 };
@@ -470,7 +487,7 @@ namespace KreativerName.Scenes
                 void AddButton1(int x, int y, int w, int h, string s, int tx, int ty, ClickEvent ev, Key shortcut)
                 {
                     Button button = new Button(x, y, w, h);
-                    button.OnClick += ev;
+                    button.OnLeftClick += ev;
                     button.Shortcut = shortcut;
 
                     TextBlock text = new TextBlock(s, 2, tx, ty);
@@ -483,9 +500,9 @@ namespace KreativerName.Scenes
                     TextBlock text = new TextBlock(s, 2, 10, 10);
 
                     Button button = new Button(x, y, (int)text.TextWidth + 18, (int)text.TextHeight + 18);
-                    button.OnClick += ev;
+                    button.OnLeftClick += ev;
                     button.Shortcut = shortcut;
-                    
+
                     button.AddChild(text);
                     leftFrame.AddChild(button);
                 }
@@ -506,21 +523,21 @@ namespace KreativerName.Scenes
                 AddButton2(100, 70, "Testen", TestLevel, Key.T);
 
                 // Min Moves
-                textMoves = new TextBlock($"Min. Züge: {level.minMoves:00}", 2, 20, 122);
+                textMoves = new TextBlock($"Min. Züge: {level.MinMoves:00}", 2, 20, 122);
 
                 leftFrame.AddChild(textMoves);
 
                 void add()
                 {
-                    level.minMoves++;
-                    textMoves.Text = $"Min. Züge: {level.minMoves:00}";
+                    level.MinMoves++;
+                    textMoves.Text = $"Min. Züge: {level.MinMoves:00}";
                 }
                 AddButton1(180, 120, 20, 20, "+", 5, 3, add, new Key());
                 void sub()
                 {
-                    if (level.minMoves > 0)
-                        level.minMoves--;
-                    textMoves.Text = $"Min. Züge: {level.minMoves:00}";
+                    if (level.MinMoves > 0)
+                        level.MinMoves--;
+                    textMoves.Text = $"Min. Züge: {level.MinMoves:00}";
                 }
                 AddButton1(200, 120, 20, 20, "-", 5, 3, sub, new Key());
 

@@ -97,7 +97,7 @@ namespace KreativerName.Scenes
         /// <summary>
         /// The grid of the current level.
         /// </summary>
-        public HexGrid<Hex> Grid { get => level.grid; set => level.grid = value; }
+        public HexGrid<Hex> Grid { get => level.Grid; set => level.Grid = value; }
 
         /// <summary>
         /// The current world.
@@ -159,7 +159,7 @@ namespace KreativerName.Scenes
                 return;
             }
 
-            if (perfect && moves >= level.minMoves)
+            if (perfect && moves >= level.MinMoves)
             {
                 LoadLevel();
                 return;
@@ -185,7 +185,7 @@ namespace KreativerName.Scenes
                 Exit?.Invoke();
             }
 
-            float scrollSpeed = 8;
+            float scrollSpeed = 4 * (4 + (float)Math.Log(scale, 2));
 
             if (input.KeyDown(Key.Left))
             {
@@ -203,9 +203,15 @@ namespace KreativerName.Scenes
             {
                 scrolling.Y -= scrollSpeed;
             }
-            scale *= (float)Math.Pow(2, input.MouseScroll());
+            if (input.MouseScroll() != 0)
+            {
+                float oldScale = scale;
 
-            scale = scale.Clamp(0.125f, 16);
+                scale *= 2.Pow(input.MouseScroll());
+                scale = scale.Clamp(0.125f, 16);
+
+                scrolling = scrolling * scale / oldScale;
+            }
 
             input.Update();
         }
@@ -219,9 +225,9 @@ namespace KreativerName.Scenes
             else
             {
                 Level level = world.Levels[levelIndex];
-                level.completed = true;
+                level.Completed = true;
                 if (perfect)
-                    level.perfect = true;
+                    level.Perfect = true;
 
                 world.Levels[levelIndex] = level;
                 //world.SaveToFile($"{worldIndex:000}");
@@ -385,9 +391,9 @@ namespace KreativerName.Scenes
             else
                 Exit?.Invoke();
 
-            player = level.startPos;
+            player = level.StartPos;
             moves = 0;
-            renderer.Grid = level.grid;
+            renderer.Grid = level.Grid;
 
             scrolling = new Vector2();
             scale = 1;
@@ -418,7 +424,7 @@ namespace KreativerName.Scenes
 
             UpdateTitle();
 
-            player = level.startPos;
+            player = level.StartPos;
             moves = 0;
         }
 

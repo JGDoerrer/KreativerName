@@ -109,6 +109,7 @@
     <Compile Include="Rendering\Textures.cs" />
     <Compile Include="Scenes\HexEditor.cs" />
     <Compile Include="Scenes\LoadingScene.cs" />
+    <Compile Include="Scenes\Minesweeper.cs" />
     <Compile Include="Scenes\OnlineScene.cs" />
     <Compile Include="Scenes\SettingsScene.cs" />
     <Compile Include="Scenes\Statistics.cs" />

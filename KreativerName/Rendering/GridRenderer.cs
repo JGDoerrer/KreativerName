@@ -38,7 +38,7 @@ namespace KreativerName.Rendering
                 renderPos.X = (float)Math.Floor(renderPos.X);
                 renderPos.Y = (float)Math.Floor(renderPos.Y);
 
-                Color color = Color.White;
+                Color color;
 
                 if (selectedHex == hex.Position)
                 {

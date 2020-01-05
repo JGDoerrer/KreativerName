@@ -8,42 +8,71 @@ using System.Text;
 
 namespace KreativerName.Grid
 {
+    /// <summary>
+    /// Stores information about a list of levels.
+    /// </summary>
     public struct World : IBytes
     {
+        /// <summary>
+        /// Stores all levels of the world.
+        /// </summary>
         public List<Level> Levels;
+
+        /// <summary>
+        /// Stores the title of the world.
+        /// </summary>
         public string Title;
+
+        /// <summary>
+        /// Stores the ID of the world.
+        /// </summary>
         public uint ID;
+
+        /// <summary>
+        /// Stores the ID of the user who uploaded the world.
+        /// </summary>
         public uint Uploader;
+
+        /// <summary>
+        /// Stores the time when the world was uploaded.
+        /// </summary>
         public DateTime UploadTime;
 
+        /// <summary>
+        /// Defines if all levels have been completed.
+        /// </summary>
         public bool AllCompleted
         {
             get
             {
-                return Levels.All(x => x.completed);
+                return Levels.All(x => x.Completed);
             }
             set
             {
                 for (int i = 0; i < Levels.Count; i++)
                 {
                     Level level = Levels[i];
-                    level.completed = value;
+                    level.Completed = value;
                     Levels[i] = level;
                 }
             }
         }
+
+        /// <summary>
+        /// Defines if all levels have been completed perfectly.
+        /// </summary>
         public bool AllPerfect
         {
             get
             {
-                return Levels.All(x => x.perfect);
+                return Levels.All(x => x.Perfect);
             }
             set
             {
                 for (int i = 0; i < Levels.Count; i++)
                 {
                     Level level = Levels[i];
-                    level.perfect = value;
+                    level.Perfect = value;
                     Levels[i] = level;
                 }
             }
@@ -51,11 +80,23 @@ namespace KreativerName.Grid
 
         #region Load & Save
 
+        /// <summary>
+        /// The path where the world files are found.
+        /// </summary>
         public static string BasePath => @"Resources\Worlds\";
 
+        /// <summary>
+        /// Saves the world to a file in the base path with the specified name.
+        /// </summary>
+        /// <param name="name">The name of the file.</param>
         public void SaveToFile(string name)
             => Save($@"{BasePath}{name}.wld");
 
+        /// <summary>
+        /// Saves the world to a file with the specified path.
+        /// </summary>
+        /// <param name="path">The path of the file</param>
+        /// <param name="useBasePath"></param>
         public void SaveToFile(string path, bool useBasePath)
             => Save($@"{(useBasePath ? BasePath : "")}{path}");
 
@@ -73,9 +114,20 @@ namespace KreativerName.Grid
             sha256.Dispose();
         }
 
+        /// <summary>
+        /// Loads a world from a file in the base path with the specified name.
+        /// </summary>
+        /// <param name="name">The name of the file</param>
+        /// <returns>Returns the world in the specified file</returns>
         public static World LoadFromFile(string name)
             => Load($"{BasePath}{name}.wld");
 
+        /// <summary>
+        /// Loads a world from a file with the specified path.
+        /// </summary>
+        /// <param name="path">The path of the file</param>
+        /// <param name="useBasePath"></param>
+        /// <returns>Returns the world in the specified file</returns>
         public static World LoadFromFile(string path, bool useBasePath)
             => Load($"{(useBasePath ? BasePath : "")}{path}");
 
@@ -93,6 +145,11 @@ namespace KreativerName.Grid
             return world;
         }
 
+        /// <summary>
+        /// Loads a world from a byte array.
+        /// </summary>
+        /// <param name="bytes">The byte array</param>
+        /// <returns>Returns the world from the array</returns>
         public static World LoadFromBytes(byte[] bytes)
         {
             World world = new World();
@@ -100,11 +157,20 @@ namespace KreativerName.Grid
             return world;
         }
 
+        /// <summary>
+        /// Returns a compressed byte array of the world.
+        /// </summary>
+        /// <returns>Returns a compressed byte array of the world.</returns>
         public byte[] ToCompressed()
         {
             return Compress(ToBytes());
         }
 
+        /// <summary>
+        /// Checks if a file is a valid world file.
+        /// </summary>
+        /// <param name="path">The path of the file</param>
+        /// <returns>Returns if the file is valid</returns>
         public static bool IsValidFile(string path)
         {
             if (File.Exists(path) && Path.GetExtension(path) == ".wld")
@@ -150,6 +216,10 @@ namespace KreativerName.Grid
             return output.ToArray();
         }
 
+        /// <summary>
+        /// Returns a byte array of the world.
+        /// </summary>
+        /// <returns>Returns a byte array of the world.</returns>
         public byte[] ToBytes()
         {
             List<byte> bytes = new List<byte>();
@@ -174,6 +244,12 @@ namespace KreativerName.Grid
             return bytes.ToArray();
         }
 
+        /// <summary>
+        /// Loads a world from a byte array.
+        /// </summary>
+        /// <param name="bytes">The byte array</param>
+        /// <param name="startIndex">The start of the data in the array</param>
+        /// <returns>Returns the amount of bytes loaded</returns>
         public int FromBytes(byte[] bytes, int startIndex)
         {
             Levels = new List<Level>();
@@ -209,6 +285,10 @@ namespace KreativerName.Grid
 
         #endregion
 
+        /// <summary>
+        /// Returns a string describing the world.
+        /// </summary>
+        /// <returns>Returns a string describing the world.</returns>
         public override string ToString() => $"Levels: {Levels.Count}, Completed: {AllCompleted}, Perfect: {AllPerfect}";
     }
 }

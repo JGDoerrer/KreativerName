@@ -43,10 +43,24 @@ namespace KreativerName
         public uint Revision { get; set; }
 
         public bool IsBiggerThan(Version version)
-            => Major >= version.Major && Minor >= version.Minor && Build >= version.Build && Revision > version.Revision;
-        
-        public override string ToString() => $"{Major}.{Minor}.{Build}.{Revision}";
+        {
+            if (Major != version.Major)
+                return Major > version.Major;
 
+            if (Minor != version.Minor)
+                return Minor > version.Minor;
+
+            if (Build != version.Build)
+                return Build > version.Build;
+
+            if (Revision != version.Revision)
+                return Revision > version.Revision;
+            
+            return false;
+        }
+
+        public override string ToString() => $"{Major}.{Minor}.{Build}.{Revision}";
+        
         public int FromBytes(byte[] bytes, int startIndex)
         {
             int count = 0;

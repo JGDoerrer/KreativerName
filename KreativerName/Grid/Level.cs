@@ -6,35 +6,61 @@ using System.Linq;
 
 namespace KreativerName.Grid
 {
+    /// <summary>
+    /// Stores information about a level.
+    /// </summary>
     public struct Level : IBytes
     {
-        public HexGrid<Hex> grid;
-        public HexPoint startPos;
-        public int minMoves;
-        public bool completed;
-        public bool perfect;
+        /// <summary>
+        /// Stores the grid of the level.
+        /// </summary>
+        public HexGrid<Hex> Grid;
+
+        /// <summary>
+        /// Stores the start position of the player.
+        /// </summary>
+        public HexPoint StartPos;
+
+        /// <summary>
+        /// Stores the minimum amount of moves to complete the level.
+        /// </summary>
+        public int MinMoves;
+
+        /// <summary>
+        /// Stores if the level has been completed.
+        /// </summary>
+        public bool Completed;
+
+        /// <summary>
+        /// Stores if the level has been completed perfectly.
+        /// </summary>
+        public bool Perfect;
 
         HexPoint lastPlayer;
         bool updated;
 
+        /// <summary>
+        /// Updates the level.
+        /// </summary>
+        /// <param name="player">The new position of the player</param>
         public void Update(HexPoint player)
         {
             if (!updated)
             {
-                lastPlayer = startPos;
+                lastPlayer = StartPos;
                 updated = true;
             }
 
-            HexGrid<Hex> nextGrid = grid.Copy();
+            HexGrid<Hex> nextGrid = Grid.Copy();
 
-            for (int i = 0; i < grid.Count; i++)
+            for (int i = 0; i < Grid.Count; i++)
             {
-                Hex hex = grid.Values.ElementAt(i);
+                Hex hex = Grid.Values.ElementAt(i);
 
                 UpdateHex(hex, player, nextGrid);
             }
 
-            grid = nextGrid;
+            Grid = nextGrid;
 
             lastPlayer = player;
         }
@@ -63,18 +89,18 @@ namespace KreativerName.Grid
                             conditionMet = position == lastPlayer;
                             break;
                         case HexCondition.NextFlag:
-                            conditionMet = grid[nextPos] == null || (grid[nextPos]?.Flags & (HexFlags)action.Data) != 0;
+                            conditionMet = Grid[nextPos] == null || (Grid[nextPos]?.Flags & (HexFlags)action.Data) != 0;
                             move = false;
                             break;
                         case HexCondition.NextNotFlag:
-                            conditionMet = grid[nextPos] != null && (grid[nextPos]?.Flags & (HexFlags)action.Data) == 0;
+                            conditionMet = Grid[nextPos] != null && (Grid[nextPos]?.Flags & (HexFlags)action.Data) == 0;
                             break;
                         case HexCondition.NextID:
-                            conditionMet = grid[nextPos] == null || grid[nextPos]?.IDs.Contains(action.Data) == true;
+                            conditionMet = Grid[nextPos] == null || Grid[nextPos]?.IDs.Contains(action.Data) == true;
                             move = false;
                             break;
                         case HexCondition.NextNotID:
-                            conditionMet = grid[nextPos] != null && grid[nextPos]?.IDs.Contains(action.Data) != true;
+                            conditionMet = Grid[nextPos] != null && Grid[nextPos]?.IDs.Contains(action.Data) != true;
                             break;
                     }
 
@@ -104,6 +130,11 @@ namespace KreativerName.Grid
             }
         }
 
+        /// <summary>
+        /// Returns all possible moves for a player position.
+        /// </summary>
+        /// <param name="player">The position of the player.</param>
+        /// <returns>All possible moves for the specified player position.</returns>
         public List<HexPoint> GetPossibleMoves(HexPoint player)
         {
             HexPoint[] directions = {
@@ -115,7 +146,7 @@ namespace KreativerName.Grid
                 new HexPoint( 0,  1),
             };
 
-            if (grid == null)
+            if (Grid == null)
                 return new List<HexPoint>();
 
             List<HexPoint> moves = new List<HexPoint>();
@@ -124,7 +155,7 @@ namespace KreativerName.Grid
             {
                 int j = 1;
 
-                while (grid[(directions[i] * j) + player].HasValue && !grid[(directions[i] * j) + player].Value.Flags.HasFlag(HexFlags.Solid))
+                while (Grid[(directions[i] * j) + player].HasValue && !Grid[(directions[i] * j) + player].Value.Flags.HasFlag(HexFlags.Solid))
                 {
                     moves.Add(directions[i] * j + player);
                     j++;
@@ -183,10 +214,10 @@ namespace KreativerName.Grid
         public byte[] ToBytes()
         {
             List<byte> bytes = new List<byte>();
-            bytes.AddRange(grid.ToBytes());
-            bytes.AddRange(startPos.ToBytes());
-            bytes.AddRange(minMoves.ToBytes());
-            byte flags = (byte)((completed ? 1 : 0) << 0 | (perfect ? 1 : 0) << 1);
+            bytes.AddRange(Grid.ToBytes());
+            bytes.AddRange(StartPos.ToBytes());
+            bytes.AddRange(MinMoves.ToBytes());
+            byte flags = (byte)((Completed ? 1 : 0) << 0 | (Perfect ? 1 : 0) << 1);
             bytes.Add(flags);
 
             return bytes.ToArray();
@@ -196,14 +227,14 @@ namespace KreativerName.Grid
         {
             int count = 0;
 
-            grid = new HexGrid<Hex>();
-            count += grid.FromBytes(bytes, startIndex + count);
-            startPos = new HexPoint();
-            count += startPos.FromBytes(bytes, startIndex + count);
-            minMoves = BitConverter.ToInt32(bytes, startIndex + count);
+            Grid = new HexGrid<Hex>();
+            count += Grid.FromBytes(bytes, startIndex + count);
+            StartPos = new HexPoint();
+            count += StartPos.FromBytes(bytes, startIndex + count);
+            MinMoves = BitConverter.ToInt32(bytes, startIndex + count);
             count += 4;
-            completed = (bytes[startIndex + count] & (1 << 0)) > 0;
-            perfect = (bytes[startIndex + count] & (1 << 1)) > 0;
+            Completed = (bytes[startIndex + count] & (1 << 0)) > 0;
+            Perfect = (bytes[startIndex + count] & (1 << 1)) > 0;
             count += 1;
 
             return count;
@@ -218,9 +249,13 @@ namespace KreativerName.Grid
 
         #endregion
 
+        /// <summary>
+        /// Returns a string describing the level.
+        /// </summary>
+        /// <returns>A string describing the level.</returns>
         public override string ToString()
         {
-            string s = $"MinMoves: {minMoves}, Completed: {completed}, Perfect: {perfect}";
+            string s = $"MinMoves: {MinMoves}, Completed: {Completed}, Perfect: {Perfect}";
 
             return s;
         }
