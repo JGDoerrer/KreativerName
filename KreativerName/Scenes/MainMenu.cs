@@ -47,7 +47,7 @@ namespace KreativerName.Scenes
             title.Color = Color.White;
             ui.Add(title);
 
-            TextBlock splash = new TextBlock(/*File.ReadAllLines(@"Resources\Splash.txt").Random()*/"ÄäÖöÜü", 2, 0, 90);
+            TextBlock splash = new TextBlock(File.ReadAllLines(@"Resources\Splash.txt").Random(), 2, 0, 90);
             splash.Constraints.xCon = new  CenterConstraint();
             splash.Color = Color.White;
             ui.Add(splash);
