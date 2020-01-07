@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace KreativerName.Networking
 {
-    public delegate void ByteEvent(Client client, byte[] bytes);
+    public delegate void PacketEvent(Client client, Packet packet);
 
     public class Client
     {
@@ -19,22 +19,26 @@ namespace KreativerName.Networking
         bool recieve = false;
 
 
-        public event ByteEvent BytesRecieved;
+        public event PacketEvent PacketRecieved;
         public bool Connected => tcp.Connected;
         public uint UserID;
         public bool LoggedIn;
 
         public EndPoint LocalIP => tcp.Client.LocalEndPoint;
         public EndPoint RemoteIP => tcp.Client.RemoteEndPoint;
-        
-        public void Send(byte[] bytes)
+
+        public void Send(Packet packet)
         {
             if (Connected)
             {
                 try
                 {
                     NetworkStream stream = tcp.GetStream();
-                    stream.Write(BitConverter.GetBytes(bytes.Length), 0, 4);
+
+                    byte[] bytes = packet.ToBytes();
+                    byte[] length = BitConverter.GetBytes(bytes.Length);
+
+                    stream.Write(length, 0, 4);
                     stream.Write(bytes, 0, bytes.Length);
                     stream.Flush();
                 }
@@ -69,7 +73,7 @@ namespace KreativerName.Networking
                     byte[] data = new byte[size];
                     stream.Read(data, 0, size);
 
-                    BytesRecieved?.Invoke(this, data);
+                    PacketRecieved?.Invoke(this, new Packet(data));
                 }
                 catch (Exception)
                 {
@@ -82,7 +86,7 @@ namespace KreativerName.Networking
         {
             if (tcp.Connected)
             {
-                Send(new byte[] { 0x00, 0xFF});
+                Send(new Packet(PacketCode.Disconnect, PacketInfo.None));
                 tcp.Close();
             }
         }

@@ -20,13 +20,10 @@ namespace KreativerName.Scenes
 
             if (SceneManager.Client?.Connected == true)
             {
-                SceneManager.Client.BytesRecieved += HandleRequest;
+                SceneManager.Client.PacketRecieved += HandleRequest;
 
-                List<byte> bytes = new List<byte>() { 0x10, 0x02 };
-                bytes.AddRange(BitConverter.GetBytes(10));
-
-                SceneManager.Client.Send(bytes.ToArray());
-                SceneManager.Client.Send(new byte[] { 0x30, 0x02 });
+                SceneManager.Client.Send(new Packet(PacketCode.GetIDs, BitConverter.GetBytes(10)));
+                SceneManager.Client.Send(new Packet(PacketCode.GetWeeklyWorld, PacketInfo.None));
             }
             else
             {
@@ -55,7 +52,7 @@ namespace KreativerName.Scenes
         public override void Exit()
         {
             if (SceneManager.Client != null)
-                SceneManager.Client.BytesRecieved -= HandleRequest;
+                SceneManager.Client.PacketRecieved -= HandleRequest;
         }
 
         #region UI
@@ -144,30 +141,33 @@ namespace KreativerName.Scenes
         #endregion
 
         #region Handle Request
-
-        public const byte ErrorCode = 0xFF;
-        public const byte SuccessCode = 0x80;
-
-        void HandleRequest(Client client, byte[] msg)
+        
+        void HandleRequest(Client client, Packet p)
         {
-            uint code = (uint)(BitConverter.ToUInt16(msg, 0) << 8);
-            code |= msg[2];
-            switch (code)
+            switch (p.Code)
             {
-                case 0x020000 | SuccessCode: GetWorldSuccess(client, msg); break;
-                case 0x020000 | ErrorCode: Notification.Show("Konnte Welt nicht herunterladen"); break;
-                case 0x021000 | SuccessCode: GetIDsSuccess(client, msg); break;
-                case 0x021000 | ErrorCode: Notification.Show("Konnte IDs nicht herunterladen"); break;
-                case 0x022000 | SuccessCode: UploadWorldSuccess(client, msg); break;
-                case 0x022000 | ErrorCode: Notification.Show("Konnte Welt nicht hochladen"); break;
-                case 0x023000 | SuccessCode: GetWeeklySuccess(client, msg); break;
-                case 0x023000 | ErrorCode: Notification.Show("Konnte wöchentliche Welt nicht herunterladen"); break;
+                case PacketCode.GetWorldByID when p.Info == PacketInfo.Success:
+                    GetWorldSuccess(client, p); break;
+                case PacketCode.GetWorldByID when p.Info == PacketInfo.Error:
+                    Notification.Show("Konnte Welt nicht herunterladen"); break;
+                case PacketCode.GetIDs when p.Info == PacketInfo.Success:
+                    GetIDsSuccess(client, p); break;
+                case PacketCode.GetIDs when p.Info == PacketInfo.Error:
+                    Notification.Show("Konnte IDs nicht herunterladen"); break;
+                case PacketCode.UploadWorld when p.Info == PacketInfo.Success:
+                    UploadWorldSuccess(client, p); break;
+                case PacketCode.UploadWorld when p.Info == PacketInfo.Error: 
+                    Notification.Show("Konnte Welt nicht hochladen"); break;
+                case PacketCode.GetWeeklyWorld when p.Info == PacketInfo.Success:
+                    GetWeeklySuccess(client, p); break;
+                case PacketCode.GetWeeklyWorld when p.Info == PacketInfo.Error:
+                    Notification.Show("Konnte wöchentliche Welt nicht herunterladen"); break;
             }
         }
 
-        void GetWorldSuccess(Client client, byte[] msg)
+        void GetWorldSuccess(Client client, Packet msg)
         {
-            World world = World.LoadFromBytes(msg.Skip(3).ToArray());
+            World world = msg.World;
 
             if (!worlds.Contains(world))
             {
@@ -176,33 +176,30 @@ namespace KreativerName.Scenes
             }
         }
 
-        void GetIDsSuccess(Client client, byte[] msg)
+        void GetIDsSuccess(Client client, Packet p)
         {
             List<uint> ids = new List<uint>();
 
-            int count = BitConverter.ToInt32(msg, 3);
+            int count = BitConverter.ToInt32(p.Bytes, 0);
             for (int i = 0; i < count; i++)
             {
-                ids.Add(BitConverter.ToUInt32(msg, 7 + i * 4));
+                ids.Add(BitConverter.ToUInt32(p.Bytes, 4 + i * 4));
             }
 
             foreach (uint id in ids)
             {
-                List<byte> bytes = new List<byte>() { 0x00, 0x02 };
-                bytes.AddRange(BitConverter.GetBytes(id));
-
-                client.Send(bytes.ToArray());
+                client.Send(new Packet(PacketCode.GetWorldByID, PacketInfo.None, BitConverter.GetBytes(id)));
             }
         }
 
-        void UploadWorldSuccess(Client client, byte[] msg)
+        void UploadWorldSuccess(Client client, Packet msg)
         {
-            Notification.Show($"Welt hochgeladen\nID: {BitConverter.ToUInt32(msg, 3)}");
+            Notification.Show($"Welt hochgeladen\nID: {BitConverter.ToUInt32(msg.Bytes, 0)}");
         }
 
-        void GetWeeklySuccess(Client client, byte[] msg)
+        void GetWeeklySuccess(Client client, Packet msg)
         {
-            World world = World.LoadFromBytes(msg.Skip(3).ToArray());
+            World world = msg.World;
 
             weekly = world;
         }

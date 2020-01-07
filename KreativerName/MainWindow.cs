@@ -77,10 +77,7 @@ namespace KreativerName
 
             if (FrameCounter % 600 == 0 && SceneManager.Client?.Connected == true)
             {
-                List<byte> bytes = new List<byte>() { 0x00, 0x03 };
-                bytes.AddRange(Stats.Current.ToBytes());
-
-                SceneManager.Client.Send(bytes.ToArray());
+                SceneManager.Client.Send(new Packet(PacketCode.UploadStats, PacketInfo.None, Stats.Current.ToBytes()));
             }
 
             input.Update();
@@ -135,7 +132,7 @@ namespace KreativerName
             SceneManager.ConnectClient();
             if (SceneManager.Client != null)
             {
-                SceneManager.Client.BytesRecieved += HandleRequest;
+                SceneManager.Client.PacketRecieved += HandleRequest;
                 Login();
                 CompareVersion();
             }
@@ -160,63 +157,54 @@ namespace KreativerName
             if (!Settings.Current.LoggedIn)
                 return;
 
-            byte[] msg = new byte[10];
-            new byte[] { 0x10, 0x01 }.CopyTo(msg, 0);
-            BitConverter.GetBytes(Settings.Current.UserID).CopyTo(msg, 2);
-            BitConverter.GetBytes(Settings.Current.LoginInfo).CopyTo(msg, 6);
+            byte[] msg = new byte[8];
+            BitConverter.GetBytes(Settings.Current.UserID).CopyTo(msg, 0);
+            BitConverter.GetBytes(Settings.Current.LoginInfo).CopyTo(msg, 4);
 
-            static void handle(Client c, byte[] b)
+            static void handle(Client c, Packet p)
             {
-                ushort code = BitConverter.ToUInt16(b, 0);
-                if (code == 0x0110 && b[2] == 0x80)
+                if (p.Code == PacketCode.LogIn && p.Info == PacketInfo.Success)
                 {
                     Notification.Show($"Eingeloggt unter {Settings.Current.UserName} ({Settings.Current.UserID.ToID()})");
-                    SceneManager.Client.BytesRecieved -= handle;
+                    SceneManager.Client.PacketRecieved -= handle;
                 }
             }
-            SceneManager.Client.BytesRecieved += handle;
+            SceneManager.Client.PacketRecieved += handle;
 
-            SceneManager.Client.Send(msg);
+            SceneManager.Client.Send(new Packet(PacketCode.LogIn, PacketInfo.None, msg));
         }
 
         private void CompareVersion()
         {
             if (SceneManager.Client == null)
                 return;
-
-            List<byte> msg = new List<byte>() { 0x00, 0x05 };
-
-            msg.AddRange(version.ToBytes());
-
-            static void handle(Client client, byte[] msg)
+            
+            static void handle(Client client, Packet p)
             {
-                ushort code = BitConverter.ToUInt16(msg, 0);
-                if (code == 0x0500)
+                if (p.Code == PacketCode.CompareVersion)
                 {
-                    if (msg[2] == 0x40)
+                    if (p.Info == PacketInfo.New)
                         Notification.Show("Eine neue Version ist verfügbar!");
-                    else if (msg[2] == 0xFF)
+                    else if (p.Info == PacketInfo.Error)
                         Notification.Show("Fehler beim Überprüfen der Version");
 
-                    SceneManager.Client.BytesRecieved -= handle;
+                    SceneManager.Client.PacketRecieved -= handle;
                 }
             }
 
-            SceneManager.Client.BytesRecieved += handle;
+            SceneManager.Client.PacketRecieved += handle;
 
-            SceneManager.Client.Send(msg.ToArray());
+            SceneManager.Client.Send(new Packet(PacketCode.CompareVersion, PacketInfo.None, version.ToBytes()));
         }
 
-        private void HandleRequest(Client client, byte[] msg)
+        private void HandleRequest(Client client, Packet msg)
         {
-            ushort code = BitConverter.ToUInt16(msg, 0);
-
-            switch (code)
+            switch (msg.Code)
             {
-                case 0x0400:
-                    float size = BitConverter.ToSingle(msg, 2);
-                    int sLength = BitConverter.ToInt32(msg, 6);
-                    string s = Encoding.UTF8.GetString(msg, 10, sLength);
+                case PacketCode.RecieveNotification:
+                    float size = BitConverter.ToSingle(msg.Bytes, 0);
+                    int sLength = BitConverter.ToInt32(msg.Bytes, 4);
+                    string s = Encoding.UTF8.GetString(msg.Bytes, 8, sLength);
 
                     Notification.Show(s, size);
                     break;

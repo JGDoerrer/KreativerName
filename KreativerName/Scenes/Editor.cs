@@ -248,30 +248,25 @@ namespace KreativerName.Scenes
                 return;
             }
 
-            List<byte> bytes = new List<byte>() { 0x20, 0x02 };
-
-            bytes.AddRange(world.ToCompressed());
-
-            void uploaded(Client client, byte[] bytes)
+            void uploaded(Client client, Packet p)
             {
-                ushort code = BitConverter.ToUInt16(bytes, 0);
-                if (code == 0x0220 && bytes[2] == 0x80)
+                if (p.Code == PacketCode.UploadWorld && p.Info == PacketInfo.Success)
                 {
-                    uint id = BitConverter.ToUInt32(bytes, 3);
+                    uint id = BitConverter.ToUInt32(p.Bytes, 0);
 
                     Notification.Show($"Hochgeladen unter {id.ToString("x")}");
 
-                    SceneManager.Client.BytesRecieved -= uploaded;
+                    SceneManager.Client.PacketRecieved -= uploaded;
                 }
-                else if (code == 0x0220 && bytes[2] == 0xFF)
+                else if (p.Code == PacketCode.UploadWorld && p.Info == PacketInfo.Error)
                 {
                     Notification.Show($"Fehler beim Hochladen");
-                    SceneManager.Client.BytesRecieved -= uploaded;
+                    SceneManager.Client.PacketRecieved -= uploaded;
                 }
             }
 
-            SceneManager.Client.BytesRecieved += uploaded;
-            SceneManager.Client.Send(bytes.ToArray());
+            SceneManager.Client.PacketRecieved += uploaded;
+            SceneManager.Client.Send(new Packet(PacketCode.UploadWorld, PacketInfo.None, world.ToCompressed()));
 
         }
 
@@ -418,6 +413,7 @@ namespace KreativerName.Scenes
                 Input = input
             };
 
+            // Hexagons
             {
                 const int size = 42;
                 const int rowSize = 8;
@@ -432,27 +428,21 @@ namespace KreativerName.Scenes
                    new PixelConstraint((values.Length / rowSize + 1) * (size + margin) + (40 - margin)));
 
                 buttonFrame = new Frame();
-                buttonFrame.SetConstraints(
-                    new PixelConstraint(20),
-                    new PixelConstraint(20),
-                    new PixelConstraint(0),
-                    new PixelConstraint(0));
-
-                // Hexagons
+                buttonFrame.Constraints = new UIConstraints(20, 20, 0, 0);
+                    
                 for (int i = 0; i < values.Length; i++)
                 {
                     Button button = new Button((i % rowSize) * (size + margin), (i / rowSize) * (size + margin), size, size);
-
+                    
                     UI.Image image = new UI.Image(Textures.Get("Hex"), new RectangleF(32 * values[i], 0, 32, 32));
                     image.SetConstraints(new UIConstraints(6, 5, size - 10, size - 10));
                     button.AddChild(image);
-                    button.Shortcut = (Key)(110 + i);
+
+                    if (i < 10)
+                        button.Shortcut = (Key)(110 + i);
 
                     int copy = i;
-                    button.OnLeftClick += () =>
-                    {
-                        drawType = values[copy];
-                    };
+                    button.OnLeftClick += () => drawType = values[copy];
 
                     buttonFrame.AddChild(button);
                 }

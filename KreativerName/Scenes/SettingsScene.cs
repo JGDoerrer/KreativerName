@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Threading;
+using KreativerName.Networking;
 using KreativerName.Rendering;
 using KreativerName.UI;
 using KreativerName.UI.Constraints;
@@ -116,7 +117,7 @@ namespace KreativerName.Scenes
             if (s == string.Empty)
                 return;
 
-            List<byte> bytes = new List<byte>() { 0x00, 0x01 };
+            List<byte> bytes = new List<byte>();
 
             byte[] name = Encoding.UTF8.GetBytes(s);
 
@@ -125,30 +126,29 @@ namespace KreativerName.Scenes
 
             Thread thread = null;
 
-            void Handle(Networking.Client c, byte[] b)
+            void Handle(Client c, Packet p)
             {
-                ushort code = BitConverter.ToUInt16(b, 0);
-                if (code == 0x0100 && b[2] == 0x80)
+                if (p.Code == PacketCode.SignUp && p.Info == PacketInfo.Success)
                 {
-                    Settings.Current.UserID = BitConverter.ToUInt32(b, 3);
-                    Settings.Current.LoginInfo = BitConverter.ToUInt32(b, 7);
+                    Settings.Current.UserID = BitConverter.ToUInt32(p.Bytes, 0);
+                    Settings.Current.LoginInfo = BitConverter.ToUInt32(p.Bytes, 4);
                     Settings.Current.LoggedIn = true;
-                    SceneManager.Client.BytesRecieved -= Handle;
+                    SceneManager.Client.PacketRecieved -= Handle;
                     thread.Abort();
                 }
-                else if (code == 0x0100 && b[2] == 0xFF)
+                else if (p.Code == PacketCode.SignUp && p.Info == PacketInfo.Error)
                 {
                     Settings.Current.LoggedIn = false;
-                    SceneManager.Client.BytesRecieved -= Handle;
+                    SceneManager.Client.PacketRecieved -= Handle;
                     thread.Abort();
                 }
             }
-            SceneManager.Client.BytesRecieved += Handle;
+            SceneManager.Client.PacketRecieved += Handle;
 
             thread = new Thread(SceneManager.Client.StartRecieve);
             thread.Start();
 
-            SceneManager.Client.Send(bytes.ToArray());
+            SceneManager.Client.Send(new Packet(PacketCode.SignUp, bytes.ToArray()));
         }
 
         public override void Update()

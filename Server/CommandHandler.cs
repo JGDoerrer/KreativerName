@@ -76,6 +76,10 @@ namespace Server
                     }
                     break;
                 }
+
+                default:
+                    Console.WriteLine("Command not found.");
+                    break;
             }
         }
 
@@ -101,14 +105,13 @@ namespace Server
 
             foreach (var client in Program.clients)
             {
-                List<byte> bytes = new List<byte>() { 0x00, 0x04 };
+                List<byte> bytes = new List<byte>();
 
                 bytes.AddRange(BitConverter.GetBytes(size));
-
                 bytes.AddRange(BitConverter.GetBytes(msg.Length));
                 bytes.AddRange(msg);
 
-                client.Send(bytes.ToArray());
+                client.Send(new Packet(PacketCode.RecieveNotification, bytes.ToArray()));
             }
         }
 

@@ -37,7 +37,7 @@ namespace Server
             {
                 TcpClient tcpClient = listener.AcceptTcpClient();
                 Client client = new Client(tcpClient);
-                client.BytesRecieved += ClientBytesRecieved;
+                client.PacketRecieved += ClientBytesRecieved;
                 new Thread(client.StartRecieve).Start();
 
                 clients.Add(client);
@@ -59,9 +59,9 @@ namespace Server
             }
         }
 
-        private static void ClientBytesRecieved(Client client, byte[] bytes)
+        private static void ClientBytesRecieved(Client client, Packet packet)
         {
-            RequestHandler.HandleRequest(client, bytes);
+            RequestHandler.HandleRequest(client, packet);
         }
     }
 }

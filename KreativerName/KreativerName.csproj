@@ -87,6 +87,7 @@
     <Compile Include="Grid\HexData.cs" />
     <Compile Include="Grid\LevelSolver.cs" />
     <Compile Include="Networking\Client.cs" />
+    <Compile Include="Networking\Packet.cs" />
     <Compile Include="Networking\User.cs" />
     <Compile Include="Rendering\GridRenderer.cs" />
     <Compile Include="Rendering\TextRenderer.cs" />

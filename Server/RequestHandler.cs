@@ -10,40 +10,34 @@ namespace Server
 {
     static class RequestHandler
     {
-        public const byte ErrorCode = 0xFF;
-        public const byte SuccessCode = 0x80;
-
         static Random random = new Random();
 
-        public static void HandleRequest(Client client, byte[] msg)
+        public static void HandleRequest(Client client, Packet p)
         {
-            ushort code = BitConverter.ToUInt16(msg, 0);
-            switch (code)
+            switch (p.Code)
             {
-                case 0x0100: SignUp(client, msg); break;
-                case 0x0110: LogIn(client, msg); break;
-                case 0x0200: GetWorldByID(client, msg); break;
-                case 0x0210: GetIDs(client, msg); break;
-                case 0x0220: UploadWorld(client, msg); break;
-                case 0x0230: GetWeeklyWorld(client, msg); break;
-                case 0x0300: UploadStats(client, msg); break;
-                // 0x0400: Send Message
-                case 0x0410: Message(client, msg); break;
-                case 0x0500: CompareVersion(client, msg); break;
-                case 0xFF00: Disconnect(client, msg); break;
+                case PacketCode.SignUp: SignUp(client, p); break;
+                case PacketCode.LogIn: LogIn(client, p); break;
+                case PacketCode.GetWorldByID: GetWorldByID(client, p); break;
+                case PacketCode.GetIDs: GetIDs(client, p); break;
+                case PacketCode.UploadWorld: UploadWorld(client, p); break;
+                case PacketCode.GetWeeklyWorld: GetWeeklyWorld(client, p); break;
+                case PacketCode.UploadStats: UploadStats(client, p); break;
+                case PacketCode.SendNotification: Message(client, p); break;
+                case PacketCode.CompareVersion: CompareVersion(client, p); break;
+                case PacketCode.Disconnect: Disconnect(client, p); break;
             }
         }
 
-        // 0x0100
-        static void SignUp(Client client, byte[] msg)
+        static void SignUp(Client client, Packet msg)
         {
             try
             {
-                int index = 2;
+                int index = 0;
 
-                int nameLength = BitConverter.ToInt32(msg, index);
+                int nameLength = BitConverter.ToInt32(msg.Bytes, index);
                 index += 4;
-                string name = Encoding.UTF8.GetString(msg, index, nameLength);
+                string name = Encoding.UTF8.GetString(msg.Bytes, index, nameLength);
                 index += nameLength;
 
                 uint id;
@@ -61,25 +55,24 @@ namespace Server
                 client.LoggedIn = true;
                 client.UserID = id;
 
-                List<byte> bytes = new List<byte>() { 0x00, 0x01, SuccessCode };
+                List<byte> bytes = new List<byte>();
                 bytes.AddRange(BitConverter.GetBytes(id));
                 bytes.AddRange(BitConverter.GetBytes(loginInfo));
 
-                client.Send(bytes.ToArray());
+                client.Send(new Packet(PacketCode.SignUp, PacketInfo.Success, bytes.ToArray()));
             }
             catch (Exception)
             {
-                client.Send(new byte[] { 0x00, 0x01, ErrorCode });
+                client.Send(new Packet(PacketCode.SignUp, PacketInfo.Error));
             }
         }
 
-        // 0x0110
-        static void LogIn(Client client, byte[] msg)
+        static void LogIn(Client client, Packet msg)
         {
             try
             {
-                uint id = BitConverter.ToUInt32(msg, 2);
-                uint loginInfo = BitConverter.ToUInt32(msg, 6);
+                uint id = BitConverter.ToUInt32(msg.Bytes, 0);
+                uint loginInfo = BitConverter.ToUInt32(msg.Bytes, 4);
 
                 if (DataBase.GetUser(id)?.LoginInfo == loginInfo)
                 {
@@ -87,46 +80,40 @@ namespace Server
                     client.UserID = id;
                 }
 
-                client.Send(new byte[] { 0x10, 0x01, SuccessCode });
+                client.Send(new Packet(PacketCode.LogIn, PacketInfo.Success));
             }
             catch (Exception)
             {
-                client.Send(new byte[] { 0x10, 0x01, ErrorCode });
+                client.Send(new Packet(PacketCode.LogIn, PacketInfo.Error));
             }
         }
 
-        // 0x0200
-        static void GetWorldByID(Client client, byte[] msg)
+        static void GetWorldByID(Client client, Packet msg)
         {
             try
             {
-                uint id = BitConverter.ToUInt32(msg, 2);
+                uint id = BitConverter.ToUInt32(msg.Bytes, 0);
 
                 World world = DataBase.GetWorld(id).Value;
-
-                byte[] bytes = new byte[] { 0x00, 0x02, SuccessCode };
-                bytes = bytes.Concat(world.ToCompressed()).ToArray();
-
-                client.Send(bytes);
+                
+                client.Send(new Packet(PacketCode.GetWorldByID, PacketInfo.Success, world.ToCompressed()));
             }
             catch (Exception)
             {
-                client.Send(new byte[] { 0x00, 0x02, ErrorCode });
+                client.Send(new Packet(PacketCode.GetWorldByID, PacketInfo.Error));
             }
         }
 
-        // 0x0210
-        static void GetIDs(Client client, byte[] msg)
+        static void GetIDs(Client client, Packet msg)
         {
             try
             {
-                int count = BitConverter.ToInt32(msg, 2);
+                int count = BitConverter.ToInt32(msg.Bytes, 0);
 
                 // Get random IDs
                 List<uint> ids = DataBase.GetWorldIDs().OrderBy(x => random.Next()).Take(count).ToList();
 
                 List<byte> bytes = new List<byte>();
-                bytes.AddRange(new byte[] { 0x10, 0x02, SuccessCode });
                 bytes.AddRange(BitConverter.GetBytes(ids.Count));
 
                 foreach (uint id in ids)
@@ -134,21 +121,23 @@ namespace Server
                     bytes.AddRange(BitConverter.GetBytes(id));
                 }
 
-                client.Send(bytes.ToArray());
+                client.Send(new Packet(PacketCode.GetIDs, PacketInfo.Success, bytes.ToArray()));
             }
             catch (Exception)
             {
-                client.Send(new byte[] { 0x10, 0x02, ErrorCode });
+                client.Send(new Packet(PacketCode.GetIDs, PacketInfo.Error));
             }
         }
 
-        // 0x0220
-        static void UploadWorld(Client client, byte[] msg)
+        static void UploadWorld(Client client, Packet msg)
         {
             try
             {
                 if (!client.LoggedIn)
-                    throw new Exception();
+                {
+                    client.Send(new Packet(PacketCode.UploadWorld, PacketInfo.NotLoggedIn));
+                    return;
+                }
 
                 uint id;
                 do
@@ -157,7 +146,7 @@ namespace Server
                 }
                 while (DataBase.ExistsWorld(id));
 
-                World world = World.LoadFromBytes(msg.Skip(2).ToArray());
+                World world = msg.World;
                 world.AllCompleted = false;
                 world.AllPerfect = false;
                 world.ID = id;
@@ -165,40 +154,32 @@ namespace Server
                 world.UploadTime = DateTime.Now;
 
                 DataBase.AddWorld(id, world);
-
-                List<byte> bytes = new List<byte>() { 0x20, 0x02, SuccessCode };
-                bytes.AddRange(BitConverter.GetBytes(id));
-
-                client.Send(bytes.ToArray());
+                
+                client.Send(new Packet(PacketCode.UploadWorld, PacketInfo.Success, BitConverter.GetBytes(id)));
             }
             catch (Exception)
             {
-                client.Send(new byte[] { 0x20, 0x02, ErrorCode });
+                client.Send(new Packet(PacketCode.UploadWorld, PacketInfo.Error));
             }
         }
 
-        // 0x0230
-        static void GetWeeklyWorld(Client client, byte[] msg)
+        static void GetWeeklyWorld(Client client, Packet msg)
         {
             try
             {
                 int week = DateTime.Now.Subtract(new DateTime(2020, 1, 1, 0, 0, 0)).Days / 7;
 
                 World world = DataBase.GetWeekly(week).Value;
-
-                byte[] bytes = new byte[] { 0x30, 0x02, SuccessCode };
-                bytes = bytes.Concat(world.ToCompressed()).ToArray();
-
-                client.Send(bytes);
+                
+                client.Send(new Packet(PacketCode.GetWeeklyWorld, PacketInfo.Success, world.ToCompressed()));
             }
             catch (Exception)
             {
-                client.Send(new byte[] { 0x30, 0x02, ErrorCode });
+                client.Send(new Packet(PacketCode.GetWeeklyWorld, PacketInfo.Error));
             }
         }
 
-        // 0x0300
-        static void UploadStats(Client client, byte[] msg)
+        static void UploadStats(Client client, Packet msg)
         {
             try
             {
@@ -206,7 +187,7 @@ namespace Server
                     throw new Exception();
 
                 Stats stats = new Stats();
-                stats.FromBytes(msg, 2);
+                stats.FromBytes(msg.Bytes, 0);
 
                 User user = DataBase.GetUser(client.UserID).Value;
                 user.Statistics = stats;
@@ -214,48 +195,45 @@ namespace Server
             }
             catch (Exception)
             {
-                client.Send(new byte[] { 0x00, 0x03, ErrorCode });
+                client.Send(new Packet(PacketCode.UploadStats, PacketInfo.Error));
             }
         }
 
-        // 0x0410
-        static void Message(Client client, byte[] msg)
+        static void Message(Client client, Packet msg)
         {
             try
             {
-                int length = BitConverter.ToInt32(msg, 2);
-                string s = Encoding.UTF8.GetString(msg, 6, length);
-
-
-                client.Send(new byte[] { 0x10, 0x04, SuccessCode });
+                int length = BitConverter.ToInt32(msg.Bytes, 0);
+                string s = Encoding.UTF8.GetString(msg.Bytes, 4, length);
+                
+                client.Send(new Packet(PacketCode.SendNotification, PacketInfo.Success));
             }
             catch (Exception)
             {
-                client.Send(new byte[] { 0x10, 0x04, ErrorCode });
+                client.Send(new Packet(PacketCode.SendNotification, PacketInfo.Error));
             }
         }
 
-        // 0x0500
-        static void CompareVersion(Client client, byte[] msg)
+        static void CompareVersion(Client client, Packet msg)
         {
             try
             {
                 KreativerName.Version version = new KreativerName.Version();
-                version.FromBytes(msg, 2);
+                version.FromBytes(msg.Bytes, 0);
 
                 if (Program.version.IsBiggerThan(version))
-                    client.Send(new byte[] { 0x00, 0x05, 0x40 });
+                    client.Send(new Packet(PacketCode.CompareVersion, PacketInfo.New));
                 else
-                    client.Send(new byte[] { 0x00, 0x05, SuccessCode });
+                    client.Send(new Packet(PacketCode.CompareVersion, PacketInfo.Success));
             }
             catch (Exception)
             {
-                client.Send(new byte[] { 0x00, 0x05, ErrorCode });
+                client.Send(new Packet(PacketCode.CompareVersion, PacketInfo.Error));
             }
         }
 
         // 0xFF00
-        static void Disconnect(Client client, byte[] msg)
+        static void Disconnect(Client client, Packet msg)
         {
             client.Disconnect();
         }
