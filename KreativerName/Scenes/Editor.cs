@@ -434,7 +434,7 @@ namespace KreativerName.Scenes
                 {
                     Button button = new Button((i % rowSize) * (size + margin), (i / rowSize) * (size + margin), size, size);
                     
-                    UI.Image image = new UI.Image(Textures.Get("Hex"), new RectangleF(32 * values[i], 0, 32, 32));
+                    UI.Image image = new UI.Image(Textures.Get($"Hex\\{i}"), new RectangleF(0, 0, 32, 32));
                     image.SetConstraints(new UIConstraints(6, 5, size - 10, size - 10));
                     button.AddChild(image);
 

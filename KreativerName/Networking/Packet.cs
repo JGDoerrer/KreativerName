@@ -44,8 +44,9 @@ namespace KreativerName.Networking
 
             bytes.AddRange(BitConverter.GetBytes((ushort)Code));
             bytes.Add((byte)Info);
-            bytes.AddRange(BitConverter.GetBytes(Bytes.Length));
-            bytes.AddRange(Bytes);
+
+            bytes.AddRange(BitConverter.GetBytes(Bytes?.Length??0));
+            bytes.AddRange(Bytes??new byte[0]);
 
             return bytes.ToArray();
         }

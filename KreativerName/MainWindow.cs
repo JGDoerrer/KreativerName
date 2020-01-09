@@ -227,7 +227,8 @@ namespace KreativerName
 
         protected override void OnClosed(EventArgs e)
         {
-            SceneManager.Client?.StopRecieve();
+            SceneManager.Client?.Send(new Packet(PacketCode.Disconnect, PacketInfo.None));
+
             SceneManager.Client?.Disconnect();
         }
     }

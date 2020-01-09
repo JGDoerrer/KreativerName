@@ -42,8 +42,10 @@ namespace KreativerName.Networking
                     stream.Write(bytes, 0, bytes.Length);
                     stream.Flush();
                 }
-                catch
-                { }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"[Client]: Error while sending: {e.Message}");
+                }
             }
         }
 
@@ -86,7 +88,7 @@ namespace KreativerName.Networking
         {
             if (tcp.Connected)
             {
-                Send(new Packet(PacketCode.Disconnect, PacketInfo.None));
+                StopRecieve();
                 tcp.Close();
             }
         }

@@ -232,7 +232,6 @@ namespace Server
             }
         }
 
-        // 0xFF00
         static void Disconnect(Client client, Packet msg)
         {
             client.Disconnect();
