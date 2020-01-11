@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Text;
 
 namespace KreativerName.Grid
 {
@@ -35,6 +36,11 @@ namespace KreativerName.Grid
         /// Stores if the level has been completed perfectly.
         /// </summary>
         public bool Perfect;
+
+        /// <summary>
+        /// Stores a hint for solving the level.
+        /// </summary>
+        public string Hint;
 
         HexPoint lastPlayer;
         bool updated;
@@ -222,6 +228,10 @@ namespace KreativerName.Grid
             byte flags = (byte)((Completed ? 1 : 0) << 0 | (Perfect ? 1 : 0) << 1);
             bytes.Add(flags);
 
+            byte[] hint = Encoding.UTF8.GetBytes(Hint ?? "");
+            bytes.AddRange(hint.Length.ToBytes());
+            bytes.AddRange(hint);
+
             return bytes.ToArray();
         }
 
@@ -229,15 +239,27 @@ namespace KreativerName.Grid
         {
             int count = 0;
 
-            Grid = new HexGrid<Hex>();
-            count += Grid.FromBytes(bytes, startIndex + count);
-            StartPos = new HexPoint();
-            count += StartPos.FromBytes(bytes, startIndex + count);
-            MinMoves = BitConverter.ToInt32(bytes, startIndex + count);
-            count += 4;
-            Completed = (bytes[startIndex + count] & (1 << 0)) > 0;
-            Perfect = (bytes[startIndex + count] & (1 << 1)) > 0;
-            count += 1;
+            try
+            {
+                Grid = new HexGrid<Hex>();
+                count += Grid.FromBytes(bytes, startIndex + count);
+                StartPos = new HexPoint();
+                count += StartPos.FromBytes(bytes, startIndex + count);
+                MinMoves = BitConverter.ToInt32(bytes, startIndex + count);
+                count += 4;
+                Completed = (bytes[startIndex + count] & (1 << 0)) > 0;
+                Perfect = (bytes[startIndex + count] & (1 << 1)) > 0;
+                count += 1;
+
+                int hintLength = 0;
+                count += hintLength.FromBytes(bytes, startIndex + count);
+                Hint = Encoding.UTF8.GetString(bytes, startIndex + count, hintLength);
+                count += hintLength;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"[Level]: Error while loading: {e.Message}");
+            }
 
             return count;
         }

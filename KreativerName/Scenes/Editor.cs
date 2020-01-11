@@ -456,19 +456,18 @@ namespace KreativerName.Scenes
             }
             // Level
             {
-                leftFrame = new Frame();
-                leftFrame.SetConstraints(new UIConstraints(0, 0, 260, 300));
+                leftFrame = new Frame
+                { Constraints = new UIConstraints(0, 0, 260, 320) };
 
                 Button exitButton = new Button(20, 20, 40, 40)
-                {
-                    Shortcut = Key.Escape
-                };
+                { Shortcut = Key.Escape };
+
                 exitButton.OnLeftClick += () =>
                 {
                     SceneManager.LoadScene(new Transition(new MainMenu(), 10));
                 };
-                UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black);
-                exitImage.SetConstraints(new UIConstraints(10, 10, 20, 20));
+                UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black)
+                { Constraints = new UIConstraints(10, 10, 20, 20) };
 
                 exitButton.AddChild(exitImage);
                 leftFrame.AddChild(exitButton);
@@ -476,9 +475,9 @@ namespace KreativerName.Scenes
 
                 void AddButton1(int x, int y, int w, int h, string s, int tx, int ty, ClickEvent ev, Key shortcut)
                 {
-                    Button button = new Button(x, y, w, h);
+                    Button button = new Button(x, y, w, h)
+                    { Shortcut = shortcut };
                     button.OnLeftClick += ev;
-                    button.Shortcut = shortcut;
 
                     TextBlock text = new TextBlock(s, 2, tx, ty);
 
@@ -489,9 +488,9 @@ namespace KreativerName.Scenes
                 {
                     TextBlock text = new TextBlock(s, 2, 10, 10);
 
-                    Button button = new Button(x, y, (int)text.TextWidth + 18, (int)text.TextHeight + 18);
+                    Button button = new Button(x, y, (int)text.TextWidth + 18, (int)text.TextHeight + 18)
+                    { Shortcut = shortcut };
                     button.OnLeftClick += ev;
-                    button.Shortcut = shortcut;
 
                     button.AddChild(text);
                     leftFrame.AddChild(button);
@@ -536,7 +535,9 @@ namespace KreativerName.Scenes
                 AddButton2(20, 200, "Lösen", SolveLevel, new Key());
                 AddButton2(110, 200, "Upload", UploadLevel, new Key());
 
-                boxWorldName = new TextBox(20, 250, 200, 30)
+                leftFrame.AddChild(new TextBlock("Weltname:", 2, 20, 250));
+
+                boxWorldName = new TextBox(20, 270, 200, 30)
                 {
                     Text = world.Title ?? "",
                     MaxTextSize = 15

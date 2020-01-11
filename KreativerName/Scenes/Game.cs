@@ -360,13 +360,33 @@ namespace KreativerName.Scenes
                 Input = SceneManager.Input
             };
 
-            int size = 4;
-            title = new TextBlock("Level 000/000", size);
-            title.SetConstraints(new CenterConstraint(), new PixelConstraint(40), new PixelConstraint((int)title.TextWidth), new PixelConstraint(size * 6));
-            UpdateTitle();
-            title.Color = Color.LightGray;
-
+            title = new TextBlock("Level 000/000", 4, 0, 50)
+            { Color = Color.LightGray };
+            title.Constraints.xCon = new CenterConstraint();
+            
             ui.Add(title);
+            
+            Button exitButton = new Button(20, 20, 40, 40)
+            { Shortcut = Key.Escape };
+            exitButton.OnLeftClick += () => SceneManager.LoadScene(new Transition(new MainMenu(), 10));
+
+            UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black)
+            { Constraints = new UIConstraints(10, 10, 20, 20) };
+
+            exitButton.AddChild(exitImage);
+            ui.Add(exitButton);
+
+
+            Button hintButton = new Button(20, 80, 40, 40);
+            hintButton.OnLeftClick += () => Notification.Show("Hinweis: ");
+
+            UI.Image hintImage = new UI.Image(Textures.Get("Icons"), new RectangleF(50, 10, 10, 10), Color.Black)
+            { Constraints = new UIConstraints(10, 10, 20, 20) };
+
+            hintButton.AddChild(hintImage);
+            ui.Add(hintButton);
+
+            UpdateTitle();
         }
 
         /// <summary>

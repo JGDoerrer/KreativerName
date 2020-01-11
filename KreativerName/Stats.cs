@@ -68,9 +68,9 @@ namespace KreativerName
                 count += minesweeperWon.FromBytes(bytes, startIndex + count);
                 count += minesweeperLost.FromBytes(bytes, startIndex + count);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                Console.WriteLine($"[Stats]: Error while loading: {e.Message}");
             }
 
             return count;
