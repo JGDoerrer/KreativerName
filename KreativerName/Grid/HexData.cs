@@ -72,7 +72,7 @@ namespace KreativerName.Grid
 
             return count;
         }
-        
+
         public static HexData[] Data;
 
         public static void LoadData(string directory)

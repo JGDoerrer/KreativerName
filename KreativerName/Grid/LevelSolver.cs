@@ -19,7 +19,7 @@ namespace KreativerName.Grid
         public event EmptyEvent Solved;
         public int MinMoves { get; private set; }
         public List<List<HexPoint>> Solutions { get; private set; }
-        
+
         public void Solve()
         {
             List<List<HexPoint>> results = new List<List<HexPoint>>();
@@ -50,7 +50,7 @@ namespace KreativerName.Grid
                 logMoves = true;
                 possibleMoves = new int[moves];
                 results = Solve(level.GetPossibleMoves(level.StartPos), level.Copy(), moves, new List<HexPoint>());
-                
+
                 if (results.Count > 0)
                 {
                     List<List<HexPoint>> prevResults = results;
@@ -77,7 +77,7 @@ namespace KreativerName.Grid
                 moves += 2;
                 worker.ReportProgress(moves);
             }
-            
+
 
             MinMoves = results.Min(x => x.Count);
             Solutions = results.Where(x => x.Count == MinMoves).ToList();
@@ -91,7 +91,7 @@ namespace KreativerName.Grid
 
             if (logMoves)
                 possibleMoves[movesLeft - 1]++;
-                        
+
             foreach (var move in moves)
             {
                 Level copy = level;//.Copy();

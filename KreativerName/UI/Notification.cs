@@ -56,7 +56,7 @@ namespace KreativerName.UI
 
             public float Width => TextRenderer.GetWidth(Text, TextSize) + 16;
             public float Height => TextRenderer.GetHeight(Text, TextSize) + 16;
-            public float Y => Height * -QuadraticInOut((float)AnimationIn / maxAnimation);
+            public float Y => Height * -QuadraticInOut((float)(AnimationIn + 1) / maxAnimation);
 
             public bool AnimationDone => AnimationIn < 0 && AnimationOut < 0 && AnimationStay < 0;
 

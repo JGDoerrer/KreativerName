@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using KreativerName.Grid;
 using KreativerName.Networking;
 using KreativerName.Rendering;
@@ -142,7 +141,7 @@ namespace KreativerName.Scenes
         #endregion
 
         #region Handle Request
-        
+
         void HandleRequest(Client client, Packet p)
         {
             switch (p.Code)
@@ -157,7 +156,7 @@ namespace KreativerName.Scenes
                     Notification.Show("Konnte IDs nicht herunterladen"); break;
                 case PacketCode.UploadWorld when p.Info == PacketInfo.Success:
                     UploadWorldSuccess(client, p); break;
-                case PacketCode.UploadWorld when p.Info == PacketInfo.Error: 
+                case PacketCode.UploadWorld when p.Info == PacketInfo.Error:
                     Notification.Show("Konnte Welt nicht hochladen"); break;
                 case PacketCode.GetWeeklyWorld when p.Info == PacketInfo.Success:
                     GetWeeklySuccess(client, p); break;

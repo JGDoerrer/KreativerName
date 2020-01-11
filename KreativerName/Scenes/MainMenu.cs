@@ -43,12 +43,12 @@ namespace KreativerName.Scenes
             ui.Input = SceneManager.Input;
 
             TextBlock title = new TextBlock("KREATIVER NAME", 5, 0, 50);
-            title.Constraints.xCon = new  CenterConstraint();
+            title.Constraints.xCon = new CenterConstraint();
             title.Color = Color.White;
             ui.Add(title);
 
             TextBlock splash = new TextBlock(File.ReadAllLines(@"Resources\Splash.txt").Random(), 2, 0, 90);
-            splash.Constraints.xCon = new  CenterConstraint();
+            splash.Constraints.xCon = new CenterConstraint();
             splash.Color = Color.White;
             ui.Add(splash);
 

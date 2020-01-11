@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
-using System.Threading;
 using KreativerName.Networking;
 using KreativerName.Rendering;
 using KreativerName.UI;

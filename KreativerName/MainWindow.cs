@@ -38,23 +38,13 @@ namespace KreativerName
         Input input;
         public int FrameCounter;
         double fps;
-        public static readonly Version version = new Version(0, 2, 0, 0);
+        public static readonly Version version = new Version(0, 2, 1, 0);
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             if (FrameCounter % 10 == 0)
             {
                 fps = RenderFrequency;
-            }
-
-            if (input.KeyPress(Key.F11))
-            {
-                if (WindowState != WindowState.Fullscreen)
-                    WindowState = WindowState.Fullscreen;
-                else
-                    WindowState = WindowState.Normal;
-
-                Settings.Current.Fullscreen = WindowState == WindowState.Fullscreen;
             }
 
             if (input.KeyDown(Key.AltLeft) && input.KeyDown(Key.F4))

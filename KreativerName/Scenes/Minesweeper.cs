@@ -162,13 +162,13 @@ namespace KreativerName.Scenes
                 Color color = tiles[x, y].Neighbours switch
                 {
                     1 => Color.Blue,
-                    2 => Color.FromArgb(0,222,0),
+                    2 => Color.FromArgb(0, 222, 0),
                     3 => Color.Red,
                     4 => Color.Purple,
                     5 => Color.Yellow,
                     _ => Color.Black,
                 };
-                tiles[x, y].Button.AddChild(new TextBlock(tiles[x, y].Neighbours.ToString(), 3, 6, 4) {Color =  color});
+                tiles[x, y].Button.AddChild(new TextBlock(tiles[x, y].Neighbours.ToString(), 3, 6, 4) { Color = color });
             }
             else if (tiles[x, y].Neighbours == 0 && !tiles[x, y].IsMine)
             {

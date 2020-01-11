@@ -110,7 +110,7 @@ namespace KreativerName.Scenes
         public int Moves => moves;
 
         private int Levels => world.Levels.Count;
-        
+
         /// <summary>
         /// Updates the scene.
         /// </summary>

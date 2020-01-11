@@ -55,7 +55,7 @@ namespace KreativerName
         }
 
         #endregion
-        
+
         public static int Clamp(this int i, int min, int max)
         {
             if (i < min)
@@ -91,7 +91,7 @@ namespace KreativerName
 
             return result;
         }
-        
+
         public static float Pow(this float b, int exp)
         {
             float result = 1;
@@ -129,13 +129,13 @@ namespace KreativerName
             List<int> factors = new List<int>();
 
             for (int factor = 1; factor * factor <= x; ++factor)
-            { 
+            {
                 //test from 1 to the square root, or the int below it, inclusive.
                 if (x % factor == 0)
                 {
                     factors.Add(factor);
                     if (factor * factor != x)
-                    { 
+                    {
                         // Don't add the square root twice!
                         factors.Add(x / factor);
                     }
@@ -147,7 +147,7 @@ namespace KreativerName
 
         static Random random = new Random();
 
-        public static T Random<T>(this IList<T> e) 
+        public static T Random<T>(this IList<T> e)
             => e[random.Next(0, e.Count)];
 
         public static string ToRoman(this int i)

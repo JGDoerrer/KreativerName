@@ -403,7 +403,7 @@ namespace KreativerName.Scenes
             }
         }
 
-        private bool Fits(int piece, int rotation, int x, int y) 
+        private bool Fits(int piece, int rotation, int x, int y)
         {
             for (int py = 0; py < 4; py++)
                 for (int px = 0; px < 4; px++)
@@ -474,7 +474,7 @@ namespace KreativerName.Scenes
                 for (int px = 0; px < 4; px++)
                 {
                     if ((pieces[currentPiece, currentRot % 4] & (1 << (py * 4 + px))) > 0)
-                        field[currentX + px, currentY + py] = (byte)(currentPiece % 3 + 1);                        
+                        field[currentX + px, currentY + py] = (byte)(currentPiece % 3 + 1);
                 }
 
             nextPieceIn = 10 + (Height - currentY) / 4;

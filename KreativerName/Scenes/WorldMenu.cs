@@ -85,7 +85,7 @@ namespace KreativerName.Scenes
                 worldcount++;
             }
 
-            const int starsPerWorld = 2;            
+            const int starsPerWorld = 2;
             bool[,] stars = new bool[worldcount, starsPerWorld];
             int totalStars = 0;
             bool[] showWorld = new bool[worldcount];
@@ -97,7 +97,7 @@ namespace KreativerName.Scenes
                 stars[i, 1] = worlds[i].AllPerfect;
                 totalStars += worlds[i].AllPerfect ? 1 : 0;
             }
-            
+
             for (int i = 0; i < worldcount; i++)
             {
                 if (i > 1)

@@ -172,7 +172,7 @@ namespace KreativerName.Scenes
                             do
                             {
                                 next = (byte)random.Next(0, 10);
-                            } 
+                            }
                             while (next == number.Values[i]);
 
                             number.Values[i] = next;

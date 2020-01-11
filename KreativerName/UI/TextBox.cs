@@ -52,7 +52,7 @@ namespace KreativerName.UI
 
                 if (Text.Length > MaxTextSize)
                     Text = Text.Remove(MaxTextSize, Text.Length - MaxTextSize);
-                
+
                 if (ui.Input.KeyPress(OpenTK.Input.Key.BackSpace) && Cursor > 0 && Text.Length > 0)
                 {
                     Cursor--;

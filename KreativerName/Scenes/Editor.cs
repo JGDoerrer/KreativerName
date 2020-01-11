@@ -429,11 +429,11 @@ namespace KreativerName.Scenes
 
                 buttonFrame = new Frame();
                 buttonFrame.Constraints = new UIConstraints(20, 20, 0, 0);
-                    
+
                 for (int i = 0; i < values.Length; i++)
                 {
                     Button button = new Button((i % rowSize) * (size + margin), (i / rowSize) * (size + margin), size, size);
-                    
+
                     UI.Image image = new UI.Image(Textures.Get($"Hex\\{i}"), new RectangleF(0, 0, 32, 32));
                     image.SetConstraints(new UIConstraints(6, 5, size - 10, size - 10));
                     button.AddChild(image);

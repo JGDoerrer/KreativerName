@@ -27,7 +27,7 @@ namespace KreativerName
             LoginInfo = 0,
             UserName = "",
         };
-        
+
         public int FromBytes(byte[] bytes, int startIndex)
         {
             int count = 0;

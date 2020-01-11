@@ -21,7 +21,7 @@ namespace KreativerName.Grid
         {
             FromBytes(Decompress(compressed), 0);
         }
-        
+
         /// <summary>
         /// Stores all levels of the world.
         /// </summary>
