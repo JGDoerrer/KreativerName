@@ -13,9 +13,12 @@ namespace KreativerName.UI
 
         public static void Update()
         {
-            for (int i = 0; i < notifications.Count; i++)
+            for (int i = notifications.Count - 1; i >= 0; i--)
             {
                 notifications[i] = notifications[i].Update();
+
+                if (notifications[i].AnimationDone)
+                    notifications.RemoveAt(i);
             }
         }
 
@@ -54,6 +57,8 @@ namespace KreativerName.UI
             public float Width => TextRenderer.GetWidth(Text, TextSize) + 16;
             public float Height => TextRenderer.GetHeight(Text, TextSize) + 16;
             public float Y => Height * -QuadraticInOut((float)AnimationIn / maxAnimation);
+
+            public bool AnimationDone => AnimationIn < 0 && AnimationOut < 0 && AnimationStay < 0;
 
             public Note Update()
             {

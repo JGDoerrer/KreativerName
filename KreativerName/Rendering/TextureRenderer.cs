@@ -73,8 +73,8 @@ namespace KreativerName.Rendering
                     GL.TexCoord2(vertecies[i]);
                 else
                 {
-                    GL.TexCoord2(Math.Round(sourceRect.Value.Left + vertecies[i].X * sourceRect.Value.Width) / texture.Width,
-                                Math.Round(sourceRect.Value.Top + vertecies[i].Y * sourceRect.Value.Height) / texture.Height);
+                    GL.TexCoord2(Math.Round((sourceRect.Value.Left + vertecies[i].X * sourceRect.Value.Width) * scale.X) / (texture.Width * scale.X),
+                                Math.Round((sourceRect.Value.Top + vertecies[i].Y * sourceRect.Value.Height) * scale.Y) / (texture.Height * scale.Y));
                 }
 
                 vertecies[i] = layout.HexCorner(hex, i);

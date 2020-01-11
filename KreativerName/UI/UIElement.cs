@@ -123,7 +123,6 @@ namespace KreativerName.UI
             {
                 if (disposing)
                 {
-                    constraints?.Dispose();
                     parent?.Dispose();
                 }
 

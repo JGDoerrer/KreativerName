@@ -28,7 +28,7 @@ namespace KreativerName.Rendering
                     position.X = startX;
                 }
 
-                if (c <= 255 && c >= 32)
+                if (c <= 287 && c >= 32)
                 {
                     if (!char.IsUpper(c))
                         position.X -= 1 * size;

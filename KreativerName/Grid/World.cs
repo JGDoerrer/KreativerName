@@ -14,6 +14,15 @@ namespace KreativerName.Grid
     public struct World : IBytes
     {
         /// <summary>
+        /// Creates a new World from a byte array.
+        /// </summary>
+        /// <param name="compressed">The byte array.</param>
+        public World(byte[] compressed) : this()
+        {
+            FromBytes(Decompress(compressed), 0);
+        }
+        
+        /// <summary>
         /// Stores all levels of the world.
         /// </summary>
         public List<Level> Levels;

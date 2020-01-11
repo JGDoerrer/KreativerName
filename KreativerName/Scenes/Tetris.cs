@@ -120,9 +120,9 @@ namespace KreativerName.Scenes
         uint score = 0;
         uint linesCleared = 0;
 
-        int left = 0;
-        int right = 0;
-        int down = 0;
+        int left = -1;
+        int right = -1;
+        int down = -1;
 
         int rngSeed = 0x1234;
         int lastPiece = 0;
@@ -161,7 +161,7 @@ namespace KreativerName.Scenes
 
             HandleInput();
 
-            if (frameCount % speed == 0 && nextPieceIn == 0)
+            if ((frameCount % speed == 0) && down <= 0 && nextPieceIn == 0)
             {
                 if (Fits(currentPiece, currentRot, currentX, currentY + 1))
                 {
@@ -302,7 +302,7 @@ namespace KreativerName.Scenes
         {
             if (SceneManager.Input.KeyDown(Key.Down))
             {
-                if (down == 0)
+                if (down <= 0)
                 {
                     if (Fits(currentPiece, currentRot, currentX, currentY + 1))
                         currentY += 1;
@@ -324,6 +324,9 @@ namespace KreativerName.Scenes
                 }
                 down--;
             }
+            else
+                down = 0;
+
 
             if (SceneManager.Input.KeyPress(Key.Right))
             {
@@ -471,10 +474,10 @@ namespace KreativerName.Scenes
                 for (int px = 0; px < 4; px++)
                 {
                     if ((pieces[currentPiece, currentRot % 4] & (1 << (py * 4 + px))) > 0)
-                        field[currentX + px, currentY + py] = (byte)(currentPiece % 3 + 1);
+                        field[currentX + px, currentY + py] = (byte)(currentPiece % 3 + 1);                        
                 }
 
-            nextPieceIn = 15;
+            nextPieceIn = 10 + (Height - currentY) / 4;
         }
 
         private int Rng(int value) => ((((value >> 9) & 1) ^ ((value >> 1) & 1)) << 15) | (value >> 1);

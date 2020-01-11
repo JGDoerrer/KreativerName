@@ -91,23 +91,23 @@ namespace KreativerName
 
             return result;
         }
-
-        public static string ToRoman(this int i)
+        
+        public static float Pow(this float b, int exp)
         {
-            if (i >= 1000) return "M" + (i - 1000).ToRoman();
-            if (i >= 900) return "CM" + (i - 900).ToRoman();
-            if (i >= 500) return "D" + (i - 500).ToRoman();
-            if (i >= 400) return "CD" + (i - 400).ToRoman();
-            if (i >= 100) return "C" + (i - 100).ToRoman();
-            if (i >= 90) return "XC" + (i - 90).ToRoman();
-            if (i >= 50) return "L" + (i - 50).ToRoman();
-            if (i >= 40) return "XL" + (i - 40).ToRoman();
-            if (i >= 10) return "X" + (i - 10).ToRoman();
-            if (i >= 9) return "IX" + (i - 9).ToRoman();
-            if (i >= 5) return "V" + (i - 5).ToRoman();
-            if (i >= 4) return "IV" + (i - 4).ToRoman();
-            if (i >= 1) return "I" + (i - 1).ToRoman();
-            return "";
+            float result = 1;
+
+            if (exp > 0)
+            {
+                for (int i = 0; i < exp; i++)
+                    result *= b;
+            }
+            else
+            {
+                for (int i = 0; i < -exp; i++)
+                    result /= b;
+            }
+
+            return result;
         }
 
         public static bool IsPrime(this int i)
@@ -143,6 +143,29 @@ namespace KreativerName
             }
 
             return factors;
+        }
+
+        static Random random = new Random();
+
+        public static T Random<T>(this IList<T> e) 
+            => e[random.Next(0, e.Count)];
+
+        public static string ToRoman(this int i)
+        {
+            if (i >= 1000) return "M" + (i - 1000).ToRoman();
+            if (i >= 900) return "CM" + (i - 900).ToRoman();
+            if (i >= 500) return "D" + (i - 500).ToRoman();
+            if (i >= 400) return "CD" + (i - 400).ToRoman();
+            if (i >= 100) return "C" + (i - 100).ToRoman();
+            if (i >= 90) return "XC" + (i - 90).ToRoman();
+            if (i >= 50) return "L" + (i - 50).ToRoman();
+            if (i >= 40) return "XL" + (i - 40).ToRoman();
+            if (i >= 10) return "X" + (i - 10).ToRoman();
+            if (i >= 9) return "IX" + (i - 9).ToRoman();
+            if (i >= 5) return "V" + (i - 5).ToRoman();
+            if (i >= 4) return "IV" + (i - 4).ToRoman();
+            if (i >= 1) return "I" + (i - 1).ToRoman();
+            return "";
         }
 
         public static string ToID(this uint i)

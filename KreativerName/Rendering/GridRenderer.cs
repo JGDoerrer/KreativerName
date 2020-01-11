@@ -38,24 +38,27 @@ namespace KreativerName.Rendering
                 renderPos.X = (float)Math.Floor(renderPos.X);
                 renderPos.Y = (float)Math.Floor(renderPos.Y);
 
-                Color color;
+                Color mask;
 
                 if (selectedHex == hex.Position)
                 {
                     if (moves != null && moves.Contains(hex.Position))
-                        color = Color.FromArgb(255, 100, 200, 100);
+                        mask = Color.FromArgb(80, 0, 100, 0);
                     else
-                        color = Color.FromArgb(255, 200, 200, 200);
+                        mask = Color.FromArgb(50, Color.Black);
                 }
                 else if (moves != null && moves.Contains(hex.Position))
-                    color = Color.FromArgb(255, 150, 250, 150);
+                    mask = Color.FromArgb(80, 0, 200, 0);
                 else
-                    color = Color.White;
+                    mask = Color.Transparent;
 
-                RenderHex(hex.Position, hex.Types, Layout, color, frameCount, Grid);
+                RenderHex(hex.Position, hex.Types, Layout, Color.White, frameCount, Grid);
 
+                if (mask.A > 0)
+                    TextureRenderer.DrawHex(Textures.Get("Hex\\Mask"), hex.Position, Layout, Vector2.One * Layout.size, mask, null);
+                
                 if (hex.Position == player)
-                    TextureRenderer.DrawHex(Textures.Get("Player"), hex.Position, Layout, Vector2.One * Layout.size, color, null);
+                    TextureRenderer.DrawHex(Textures.Get("Player"), hex.Position, Layout, Vector2.One * Layout.size, Color.White, null);
             }
 
             frameCount++;

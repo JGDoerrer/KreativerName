@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using KreativerName.Grid;
 using KreativerName.Rendering;
 using KreativerName.UI;
@@ -41,25 +42,30 @@ namespace KreativerName.Scenes
 
             ui.Input = SceneManager.Input;
 
-            TextBlock title = new TextBlock("KREATIVER NAME", 5);
-            title.Constraints = new UIConstraints(new CenterConstraint(), new PixelConstraint(50), new PixelConstraint((int)title.TextWidth), new PixelConstraint((int)title.TextHeight));
+            TextBlock title = new TextBlock("KREATIVER NAME", 5, 0, 50);
+            title.Constraints.xCon = new  CenterConstraint();
             title.Color = Color.White;
             ui.Add(title);
 
-            TextBlock version = new TextBlock($"version {MainWindow.version}", 2);
-            version.Constraints = new UIConstraints(new PixelConstraint(10), new PixelConstraint(6, RelativeTo.Window, Direction.Bottom), new PixelConstraint((int)version.TextWidth), new PixelConstraint((int)version.TextHeight));
+            TextBlock splash = new TextBlock(File.ReadAllLines(@"Resources\Splash.txt").Random(), 2, 0, 90);
+            splash.Constraints.xCon = new  CenterConstraint();
+            splash.Color = Color.White;
+            ui.Add(splash);
+
+            TextBlock version = new TextBlock($"version {MainWindow.version}", 2, 10, 0);
+            version.Constraints.yCon = new PixelConstraint(6, RelativeTo.Window, Direction.Bottom);
             version.Color = Color.White;
             ui.Add(version);
 
             Frame mainFrame = new Frame();
+            mainFrame.Constraints = new UIConstraints(new CenterConstraint(), new CenterConstraint(-50), new PixelConstraint(300), new PixelConstraint(200));
             mainFrame.Color = Color.Transparent;
-            mainFrame.SetConstraints(new CenterConstraint(), new CenterConstraint(-50), new PixelConstraint(300), new PixelConstraint(200));
 
             {
                 Button button = new Button();
                 button.Color = Color.FromArgb(100, 255, 100);
                 button.Shortcut = OpenTK.Input.Key.S;
-                button.SetConstraints(new CenterConstraint(), new PixelConstraint(0), new PixelConstraint(300), new PixelConstraint(60));
+                button.Constraints = new UIConstraints(new CenterConstraint(), new PixelConstraint(0), new PixelConstraint(300), new PixelConstraint(60));
                 button.OnLeftClick += () => { SceneManager.LoadScene(new Transition(new WorldMenu(), 10)); };
 
                 TextBlock startText = new TextBlock("Spiel starten", 3);
@@ -71,7 +77,7 @@ namespace KreativerName.Scenes
             {
                 Frame frame = new Frame();
                 frame.Color = Color.Transparent;
-                frame.SetConstraints(new CenterConstraint(), new PixelConstraint(100), new PixelConstraint(300), new PixelConstraint(60));
+                frame.Constraints = new UIConstraints(new CenterConstraint(), new PixelConstraint(100), new PixelConstraint(300), new PixelConstraint(60));
 
                 void AddButton(int x, int icon, ClickEvent click)
                 {
@@ -80,7 +86,7 @@ namespace KreativerName.Scenes
 
                     UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(icon * 10, 10, 10, 10));
                     image.Color = Color.Black;
-                    image.SetConstraints(new UIConstraints(10, 10, 40, 40));
+                    image.Constraints = new UIConstraints(10, 10, 40, 40);
 
                     button.AddChild(image);
                     frame.AddChild(button);
@@ -96,11 +102,11 @@ namespace KreativerName.Scenes
             {
                 Button button = new Button();
                 button.Color = Color.FromArgb(255, 100, 100);
-                button.SetConstraints(new CenterConstraint(), new PixelConstraint(200), new PixelConstraint(300), new PixelConstraint(60));
+                button.Constraints = new UIConstraints(new CenterConstraint(), new PixelConstraint(200), new PixelConstraint(300), new PixelConstraint(60));
                 button.OnLeftClick += () => { SceneManager.CloseWindow(); };
 
                 TextBlock exitText = new TextBlock("Schliessen", 3);
-                exitText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)exitText.TextWidth), new PixelConstraint((int)exitText.TextHeight));
+                exitText.Constraints = new UIConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)exitText.TextWidth), new PixelConstraint((int)exitText.TextHeight));
                 button.AddChild(exitText);
 
                 mainFrame.AddChild(button);
@@ -138,7 +144,7 @@ namespace KreativerName.Scenes
             {
                 for (int x = -(y / 2) - 4; x < w - (y + 1) / 2; x++)
                 {
-                    TextureRenderer.DrawHex(Textures.Get("Hex"), new HexPoint(x, y), layout, Vector2.One, Color.FromArgb(10, 10, 10), new RectangleF(0, 0, 32, 32));
+                    TextureRenderer.DrawHex(Textures.Get("Hex\\0"), new HexPoint(x, y), layout, Vector2.One, Color.FromArgb(10, 10, 10), new RectangleF(0, 0, 32, 32));
                 }
             }
 

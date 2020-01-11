@@ -159,7 +159,14 @@ namespace KreativerName.Grid
         /// <returns>Returns a string describing the hex.</returns>
         public override string ToString()
         {
-            return $"{Position}; {IDs}";
+            string s = $"{Position};";
+
+            foreach (var id in IDs)
+            {
+                s += $" {id},";
+            }
+
+            return s;
         }
     }
 }
