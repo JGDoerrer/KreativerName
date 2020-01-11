@@ -57,7 +57,7 @@ namespace KreativerName.Grid
             {
                 Hex hex = Grid.Values.ElementAt(i);
 
-                UpdateHex(hex, player, nextGrid);
+                UpdateHex(hex, player, ref nextGrid);
             }
 
             Grid = nextGrid;
@@ -65,12 +65,13 @@ namespace KreativerName.Grid
             lastPlayer = player;
         }
 
-        private void UpdateHex(Hex hex, HexPoint player, HexGrid<Hex> nextGrid)
+        private void UpdateHex(Hex hex, HexPoint player, ref HexGrid<Hex> nextGrid)
         {
-            HexPoint position = hex.Position;
 
             foreach (HexData type in hex.Types)
             {
+                HexPoint position = hex.Position;
+
                 foreach (HexAction action in type.Changes)
                 {
                     bool conditionMet = false;
@@ -117,10 +118,11 @@ namespace KreativerName.Grid
                         {
                             Hex temp = nextGrid[position].Value;
                             temp.IDs.Remove(type.ID);
-                            nextGrid[position] = temp;
 
                             Hex next = nextGrid[nextPos].Value;
                             next.IDs.Add(action.ChangeTo);
+
+                            nextGrid[position] = temp;
                             nextGrid[nextPos] = next;
 
                             position = nextPos;
