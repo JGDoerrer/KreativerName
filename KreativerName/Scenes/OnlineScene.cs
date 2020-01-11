@@ -128,8 +128,9 @@ namespace KreativerName.Scenes
                     SceneManager.LoadScene(new Transition(game, 10));
                 };
 
-                TextBlock text = new TextBlock($"{world.Title}: {world.Levels.Count} Level ID: {world.ID.ToID()}", 3, 10, 10);
+                TextBlock text = new TextBlock($"{world.Title}: {world.Levels.Count} Level", 3, 10, 10);
                 text.Constraints.xCon = new CenterConstraint();
+                text.Constraints.yCon = new CenterConstraint();
                 text.Color = Color.Black;
                 button.AddChild(text);
 

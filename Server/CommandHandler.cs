@@ -158,9 +158,9 @@ namespace Server
             foreach (User user in DataBase.GetUsers())
             {
                 Console.WriteLine($"User {++count}:");
-                Console.WriteLine($"  ID:        {user.ID.ToID()}");
+                Console.WriteLine($"  ID:        {user.ID.ToID().ToUpper()}");
                 Console.WriteLine($"  Name:      {user.Name}");
-                Console.WriteLine($"  LoginInfo: {user.LoginInfo.ToString("X")}");
+                Console.WriteLine($"  LoginInfo: {user.LoginInfo.ToID().ToUpper()}");
                 Console.WriteLine("  Statistics:");
 
                 foreach (var property in user.Statistics.GetType().GetProperties())
@@ -198,9 +198,7 @@ namespace Server
                     object v = property.GetValue(user.Statistics);
                     object vHighest = property.GetValue(highest.Statistics);
                     object vLowest = property.GetValue(lowest.Statistics);
-
-
-
+                                       
                     if (Comparer<object>.Default.Compare(v, vHighest) > 0)
                         highest = user;
                     if (Comparer<object>.Default.Compare(v, vLowest) < 0)
@@ -208,8 +206,8 @@ namespace Server
                 }
 
                 Console.WriteLine($"{property.Name}:");
-                Console.WriteLine($"  Best:  {highest.ID.ToID()} with {property.GetValue(highest.Statistics)}");
-                Console.WriteLine($"  Worst: {lowest.ID.ToID()} with {property.GetValue(lowest.Statistics)}");
+                Console.WriteLine($"  Highest: {highest.ID.ToID()} with {property.GetValue(highest.Statistics)}");
+                Console.WriteLine($"  Lowest:  {lowest.ID.ToID()} with {property.GetValue(lowest.Statistics)}");
             }
         }
     }

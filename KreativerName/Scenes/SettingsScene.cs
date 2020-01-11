@@ -107,7 +107,7 @@ namespace KreativerName.Scenes
             AddText($"LoginInfo: {Settings.Current.LoginInfo.ToString("x")}", 390);
         }
 
-        private static void SignUp(TextBox textBox)
+        private void SignUp(TextBox textBox)
         {
             if (SceneManager.Client?.Connected != true)
                 return;
@@ -124,29 +124,30 @@ namespace KreativerName.Scenes
             bytes.AddRange(name.Length.ToBytes());
             bytes.AddRange(name);
 
-            Thread thread = null;
-
             void Handle(Client c, Packet p)
             {
                 if (p.Code == PacketCode.SignUp && p.Info == PacketInfo.Success)
                 {
                     Settings.Current.UserID = BitConverter.ToUInt32(p.Bytes, 0);
                     Settings.Current.LoginInfo = BitConverter.ToUInt32(p.Bytes, 4);
+                    Settings.Current.UserName = s;
                     Settings.Current.LoggedIn = true;
+
+                    Notification.Show("Erfolgreich angemeldet!");
+
+                    InitUI();
+
                     SceneManager.Client.PacketRecieved -= Handle;
-                    thread.Abort();
                 }
                 else if (p.Code == PacketCode.SignUp && p.Info == PacketInfo.Error)
                 {
                     Settings.Current.LoggedIn = false;
+                    Notification.Show("Fehler beim Anmelden");
                     SceneManager.Client.PacketRecieved -= Handle;
-                    thread.Abort();
                 }
             }
             SceneManager.Client.PacketRecieved += Handle;
 
-            thread = new Thread(SceneManager.Client.StartRecieve);
-            thread.Start();
 
             SceneManager.Client.Send(new Packet(PacketCode.SignUp, bytes.ToArray()));
         }

@@ -168,7 +168,14 @@ namespace KreativerName.Scenes
                             clickedNums[0] = number.Values[i];
                             numsClicked++;
 
-                            number.Values[i] = (byte)random.Next(0, 10);
+                            byte next;
+                            do
+                            {
+                                next = (byte)random.Next(0, 10);
+                            } 
+                            while (next == number.Values[i]);
+
+                            number.Values[i] = next;
                         }
                     }
                 }
@@ -221,7 +228,7 @@ namespace KreativerName.Scenes
 
         private void UpdateBackground(Vector2 windowSize)
         {
-            if (random.NextDouble() < .15)
+            if (random.NextDouble() < .1)
             {
                 int length = random.Next(3, 10);
                 List<byte> values = new List<byte>();

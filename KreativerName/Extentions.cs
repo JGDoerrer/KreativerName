@@ -91,6 +91,24 @@ namespace KreativerName
 
             return result;
         }
+        
+        public static float Pow(this float b, int exp)
+        {
+            float result = 1;
+
+            if (exp > 0)
+            {
+                for (int i = 0; i < exp; i++)
+                    result *= b;
+            }
+            else
+            {
+                for (int i = 0; i < -exp; i++)
+                    result /= b;
+            }
+
+            return result;
+        }
 
         public static bool IsPrime(this int i)
         {

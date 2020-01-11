@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
@@ -27,7 +26,7 @@ namespace KreativerName
 
             if (File.Exists(@"Resources\Icon.ico"))
                 Icon = new Icon(@"Resources\Icon.ico");
-            
+
             SceneManager.SetWindow(this);
             SceneManager.LoadScene(new LoadingScene(LoadStuff, new Transition(new MainMenu(), 30)));
 
@@ -39,7 +38,7 @@ namespace KreativerName
         Input input;
         public int FrameCounter;
         double fps;
-        public static readonly Version version = new Version(0,1,1,0);
+        public static readonly Version version = new Version(0, 2, 0, 0);
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
@@ -178,7 +177,7 @@ namespace KreativerName
         {
             if (SceneManager.Client == null)
                 return;
-            
+
             static void handle(Client client, Packet p)
             {
                 if (p.Code == PacketCode.CompareVersion)
