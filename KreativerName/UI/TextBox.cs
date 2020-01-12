@@ -3,6 +3,7 @@ using System.Text;
 using KreativerName.Rendering;
 using KreativerName.UI.Constraints;
 using OpenTK;
+using OpenTK.Input;
 
 namespace KreativerName.UI
 {
@@ -24,7 +25,9 @@ namespace KreativerName.UI
         public int MaxTextSize { get; set; } = 5;
         public bool Enabled { get; set; } = true;
 
-        private int cursorAnim;
+        int cursorAnim;
+        int frameCount = 0;
+        const int repeatSpeed = 3;
 
         public override void Update(Vector2 windowSize)
         {
@@ -53,33 +56,44 @@ namespace KreativerName.UI
                 if (Text.Length > MaxTextSize)
                     Text = Text.Remove(MaxTextSize, Text.Length - MaxTextSize);
 
-                if (ui.Input.KeyPress(OpenTK.Input.Key.BackSpace) && Cursor > 0 && Text.Length > 0)
+                if (KeyDownOrRepeat(Key.BackSpace) && Cursor > 0 && Text.Length > 0)
                 {
                     Cursor--;
                     Text = Text.Remove(Cursor, 1);
                 }
-                if (ui.Input.KeyPress(OpenTK.Input.Key.Delete) && Cursor < Text.Length && Text.Length > 0)
+                if (KeyDownOrRepeat(Key.Delete) && Cursor < Text.Length && Text.Length > 0)
                 {
                     Text = Text.Remove(Cursor, 1);
                 }
 
-                if (ui.Input.KeyPress(OpenTK.Input.Key.Left) && Cursor > 0)
+                if (KeyDownOrRepeat(Key.Left) && Cursor > 0)
                 {
                     Cursor--;
                     cursorAnim = 0;
                 }
-                if (ui.Input.KeyPress(OpenTK.Input.Key.Right) && Cursor < Text.Length)
+                if (KeyDownOrRepeat(Key.Right) && Cursor < Text.Length)
                 {
                     Cursor++;
                     cursorAnim = 0;
                 }
 
-                if (ui.Input.KeyPress(OpenTK.Input.Key.Escape))
+                if (ui.Input.KeyPress(Key.Escape))
                 {
                     ui.ignoreShortcuts = Focused = false;
-                    ui.Input.ReleaseKey(OpenTK.Input.Key.Escape);
+                    ui.Input.ReleaseKey(Key.Escape);
                 }
+
+                if (Cursor > Text.Length)
+                    Cursor = Text.Length;
+
+                if (Cursor > MaxTextSize - 1)
+                    Cursor = MaxTextSize - 1;
+
+                if (Cursor < 0)
+                    Cursor = 0;
             }
+
+            frameCount++;
         }
 
         public override void Render(Vector2 windowSize)
@@ -93,7 +107,7 @@ namespace KreativerName.UI
             float h = GetHeight(windowSize);
 
             float offset = 0;
-            Color color = Color.White;
+            Color color;
             Texture2D tex = Textures.Get("TextBox");
 
             if (MouseOver(windowSize) || Focused)
@@ -111,33 +125,27 @@ namespace KreativerName.UI
                 color = Color.FromArgb(color.R / 2, color.B / 2, color.G / 2);
             }
 
-            // corner top left
-            TextureRenderer.Draw(tex, new Vector2(x, y), Vector2.One * scale, color, new RectangleF(offset, 0, a, a));
-            // corner top right
-            TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y), Vector2.One * scale, color, new RectangleF(offset + a * 2, 0, a, a));
-            // corner bottom left
-            TextureRenderer.Draw(tex, new Vector2(x, y + h - a * scale), Vector2.One * scale, color, new RectangleF(offset, a * 2, a, a));
-            // corner bottom right
-            TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y + h - a * scale), Vector2.One * scale, color, new RectangleF(offset + a * 2, a * 2, a, a));
-            // left
-            TextureRenderer.Draw(tex, new Vector2(x, y + a * scale), new Vector2(1, h / (a * scale) - 2) * scale, color, new RectangleF(offset, a, a, a));
-            // top
-            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y), new Vector2(w / (a * scale) - 2, 1) * scale, color, new RectangleF(offset + a, 0, a, a));
-            // right
-            TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y + a * scale), new Vector2(1, h / (a * scale) - 2) * scale, color, new RectangleF(offset + a * 2, a, a, a));
-            // bottom
-            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + h - a * scale), new Vector2(w / (a * scale) - 2, 1) * scale, color, new RectangleF(offset + a, a * 2, a, a));
-            // center
-            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + a * scale), new Vector2(w / (a * scale) - 2, h / (a * scale) - 2) * scale, color, new RectangleF(offset + a, a, a, a));
+            for (int i = 0; i <= 2; i++)
+                for (int j = 0; j <= 2; j++)
+                {
+                    float x1 = x + new[] { 0, 1, -1 }[i] * a * scale + (i == 2 ? w : 0);
+                    float y1 = y + new[] { 0, 1, -1 }[j] * a * scale + (j == 2 ? h : 0);
+
+                    Vector2 scl = new Vector2(i == 1 ? w / (a * scale) - 2 : 1, j == 1 ? h / (a * scale) - 2 : 1) * scale;
+
+                    TextureRenderer.Draw(tex, new Vector2(x1, y1), scl, color, new RectangleF(offset + a * (i), a * (j), a, a));
+                }
 
             StringBuilder text = new StringBuilder(Text.PadRight(MaxTextSize));
             if ((cursorAnim / 30) % 2 == 0 && Focused)
                 text[Cursor] = '_';
 
-            TextRenderer.RenderString(text.ToString(), new Vector2(GetX(windowSize), GetY(windowSize)) + TextOffset, TextColor, TextSize);
+            TextRenderer.RenderString(text.ToString(), new Vector2(GetX(windowSize), GetY(windowSize)) + TextOffset, TextColor, w, TextSize);
 
             RenderChildren(windowSize);
             cursorAnim++;
         }
+
+        private bool KeyDownOrRepeat(Key key) => ui.Input.KeyPress(key) || (ui.Input.KeyRepeat(key) && frameCount % repeatSpeed == 0);
     }
 }

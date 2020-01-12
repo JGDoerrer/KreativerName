@@ -178,7 +178,7 @@ namespace KreativerName.Grid
         public void SaveToFile(string name)
         {
             byte[] bytes = Compress(ToBytes());
-            Console.WriteLine($"Level {name}: {bytes.Length}/{ToBytes().Length} ");
+
             File.WriteAllBytes($@"Resources\Levels\{name}.lvl", bytes);
         }
 

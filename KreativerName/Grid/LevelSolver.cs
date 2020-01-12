@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using KreativerName.Scenes;
@@ -69,15 +70,14 @@ namespace KreativerName.Grid
                     }
                 }
 
-                for (int i = 1; i < possibleMoves.Length; i++)
-                {
-                    System.Console.WriteLine($"Possible Moves after {i} moves: {possibleMoves[possibleMoves.Length - i - 1]}");
-                }
-
                 moves += 2;
                 worker.ReportProgress(moves);
             }
 
+            for (int i = 1; i < possibleMoves.Length; i++)
+            {
+                Console.WriteLine($"[LevelSolver]: Possible moves with {i} moves: {possibleMoves[possibleMoves.Length - i - 1]}");
+            }
 
             MinMoves = results.Min(x => x.Count);
             Solutions = results.Where(x => x.Count == MinMoves).ToList();

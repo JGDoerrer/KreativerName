@@ -38,8 +38,8 @@ namespace KreativerName.UI
         {
             UpdateChildren(windowSize);
 
-            if (Enabled && !clicked && MouseOver(windowSize) && MouseLeftClick ||
-                (ui.Input.KeyDown(Shortcut) && !ui.ignoreShortcuts))
+            if (Enabled && (!clicked && MouseOver(windowSize) && MouseLeftDown && !mouseDown ||
+                (ui.Input.KeyPress(Shortcut) && !ui.ignoreShortcuts)))
             {
                 OnLeftClick?.Invoke();
             }
@@ -61,7 +61,7 @@ namespace KreativerName.UI
                     State = 0;
             }
 
-            clicked = (MouseOver(windowSize) && !mouseDown && MouseLeftDown) || (ui.Input.KeyDown(Shortcut) && !ui.ignoreShortcuts);
+            clicked = (MouseOver(windowSize) && !mouseDown && MouseLeftDown) || (ui.Input.KeyPress(Shortcut) && !ui.ignoreShortcuts);
 
             mouseDown = MouseLeftDown;
         }

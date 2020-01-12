@@ -56,10 +56,13 @@ namespace KreativerName.Scenes
                 Client = new Client(tcp);
                 Client.StartRecieve();
 
+                Console.WriteLine($"[Client]: Connected to server");
+
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine($"[Client]: Error while connecting: {e.Message}");
                 return false;
             }
         }

@@ -39,6 +39,32 @@ namespace KreativerName.Rendering
             }
         }
 
+        public static void RenderString(string s, Vector2 position, Color color, float maxWidth, float size = 2)
+        {
+            if (s == null)
+                return;
+
+            float startX = position.X;
+
+            foreach (char c in s)
+            {
+                if (c == '\n' || position.X > maxWidth)
+                {
+                    position.Y += 8 * size;
+                    position.X = startX;
+                }
+
+                if (c <= 287 && c >= 32)
+                {
+                    if (!char.IsUpper(c))
+                        position.X -= 1 * size;
+
+                    RenderChar(c, position, color, size);
+                    position.X += 7 * size;
+                }
+            }
+        }
+
         public static float GetWidth(string s, float size = 2)
         {
             float x = 0;
