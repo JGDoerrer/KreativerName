@@ -38,6 +38,7 @@ namespace KreativerName
         Input input;
         public int FrameCounter;
         double fps;
+        double ups;
         public static readonly Version version = new Version(0, 2, 1, 0);
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -45,6 +46,7 @@ namespace KreativerName
             if (FrameCounter % 10 == 0)
             {
                 fps = RenderFrequency;
+                ups = UpdateFrequency;
             }
 
             if (input.KeyDown(Key.AltLeft) && input.KeyDown(Key.F4))
@@ -100,7 +102,7 @@ namespace KreativerName
 
             // Render Fps
             if (Settings.Current.ShowFps)
-                TextRenderer.RenderString($"{fps:00} fps", new Vector2(Width - 80, Height - 20), Color.White);
+                TextRenderer.RenderString($"{fps:00}/{ups:00}", new Vector2(Width - 68, Height - 20), Color.White);
 
             SwapBuffers();
         }
