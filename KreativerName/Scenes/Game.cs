@@ -180,10 +180,6 @@ namespace KreativerName.Scenes
                     UpdatePlayer();
                 }
             }
-            if (input.KeyPress(Key.Escape))
-            {
-                Exit?.Invoke();
-            }
 
             float scrollSpeed = 4 * (4 + (float)Math.Log(scale, 2));
 
@@ -378,7 +374,7 @@ namespace KreativerName.Scenes
 
 
             Button hintButton = new Button(20, 80, 40, 40);
-            hintButton.OnLeftClick += () => Notification.Show("Hinweis: ");
+            hintButton.OnLeftClick += () => Notification.Show($"Hinweis: {level.Hint}");
 
             UI.Image hintImage = new UI.Image(Textures.Get("Icons"), new RectangleF(50, 10, 10, 10), Color.Black)
             { Constraints = new UIConstraints(10, 10, 20, 20) };

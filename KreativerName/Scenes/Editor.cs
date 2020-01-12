@@ -138,10 +138,6 @@ namespace KreativerName.Scenes
                     //if (GetPlayerMoves().Contains(mouse))
                     player = mouse;
                 }
-                if (input.KeyPress(Key.Escape))
-                {
-                    OnExit?.Invoke();
-                }
                 if (input.KeyDown(Key.Left))
                 {
                     scrolling.X += scrollSpeed;
@@ -329,6 +325,7 @@ namespace KreativerName.Scenes
             renderer.Grid = level.Grid;
             scrolling = new Vector2(0, 0);
 
+            boxLevelHint.Text = level.Hint ?? "";
             textLevel.Text = $"Level {levelIndex + 1:000}";
             textMoves.Text = $"Min. Züge: {level.MinMoves:00}";
         }
@@ -347,6 +344,7 @@ namespace KreativerName.Scenes
 
             level.StartPos = player;
             level.Completed = false;
+            level.Hint = boxLevelHint.Text;
 
             if (world.Levels == null)
                 world.Levels = new List<Level>();
@@ -402,6 +400,7 @@ namespace KreativerName.Scenes
         TextBlock textMoves;
         TextBlock textHexDesc;
         TextBox boxWorldName;
+        TextBox boxLevelHint;
         Frame buttonFrame;
         Frame lowerFrame;
         Frame leftFrame;
@@ -457,7 +456,7 @@ namespace KreativerName.Scenes
             // Level
             {
                 leftFrame = new Frame
-                { Constraints = new UIConstraints(0, 0, 260, 320) };
+                { Constraints = new UIConstraints(0, 0, 260, 450) };
 
                 Button exitButton = new Button(20, 20, 40, 40)
                 { Shortcut = Key.Escape };
@@ -543,6 +542,15 @@ namespace KreativerName.Scenes
                     MaxTextSize = 15
                 };
                 leftFrame.AddChild(boxWorldName);
+
+                leftFrame.AddChild(new TextBlock("Level Hinweis:", 2, 20, 320));
+
+                boxLevelHint = new TextBox(20, 340, 200, 90)
+                {
+                    Text = level.Hint ?? "",
+                    MaxTextSize = 75
+                };
+                leftFrame.AddChild(boxLevelHint);
 
                 ui.Add(leftFrame);
             }
