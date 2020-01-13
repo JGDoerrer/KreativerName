@@ -144,7 +144,8 @@ namespace KreativerName.Scenes
 
             HexFlags flags = Grid[player].Value.Flags;
 
-            if (flags.HasFlag(HexFlags.Deadly))
+            // If player is on a deadly or solid tile, reset
+            if (flags.HasFlag(HexFlags.Deadly) || flags.HasFlag(HexFlags.Solid))
             {
                 if (!singleLevel)
                     Stats.Current.Fails++;

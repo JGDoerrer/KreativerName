@@ -33,13 +33,24 @@ namespace KreativerName.UI
         {
             if (MouseLeftClick && Enabled)
             {
-                ui.ignoreShortcuts = Focused = MouseOver(windowSize);
+                if (MouseOver(windowSize))
+                {
+                    Focused = true;
+                }
+                else if (Focused)
+                {
+                    ui.ignoreShortcuts = false;
+                    Focused = false;
+                }
+
                 if (Focused)
                     cursorAnim = 0;
             }
 
             if (Focused && Enabled)
             {
+                ui.ignoreShortcuts = true;
+
                 if (Cursor > Text.Length)
                     Cursor = Text.Length;
 

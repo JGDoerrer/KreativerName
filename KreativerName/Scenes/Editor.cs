@@ -29,6 +29,9 @@ namespace KreativerName.Scenes
 
             InitUI();
 
+            worldIndex = Settings.Current.EditorWorld;
+            levelIndex = Settings.Current.EditorLevel;
+
             LoadWorld();
             LoadLevel();
         }
@@ -44,7 +47,6 @@ namespace KreativerName.Scenes
         UI.UI ui;
         Input input;
         HexPoint selectedHex;
-        HexPoint player;
 
         const float sqrt3 = 1.732050807568877293527446341505872366942805253810380628055f;
 
@@ -135,8 +137,7 @@ namespace KreativerName.Scenes
             {
                 if (input.KeyPress(Key.A))
                 {
-                    //if (GetPlayerMoves().Contains(mouse))
-                    player = mouse;
+                   level.StartPos = mouse;
                 }
                 if (input.KeyDown(Key.Left))
                 {
@@ -210,7 +211,7 @@ namespace KreativerName.Scenes
                 renderer.Layout = layout;
             }
 
-            renderer.Render(player, selectedHex, level.GetPossibleMoves(player));
+            renderer.Render(level.StartPos, selectedHex, level.GetPossibleMoves(level.StartPos));
 
             ui.Render(windowSize);
         }
@@ -321,7 +322,6 @@ namespace KreativerName.Scenes
             else
                 level = new Level();
 
-            player = level.StartPos;
             renderer.Grid = level.Grid;
             scrolling = new Vector2(0, 0);
 
@@ -342,7 +342,6 @@ namespace KreativerName.Scenes
             if (level.Grid == null)
                 return;
 
-            level.StartPos = player;
             level.Completed = false;
             level.Hint = boxLevelHint.Text;
 
@@ -463,6 +462,9 @@ namespace KreativerName.Scenes
 
                 exitButton.OnLeftClick += () =>
                 {
+                    Settings.Current.EditorWorld = worldIndex;
+                    Settings.Current.EditorLevel = levelIndex;
+
                     SceneManager.LoadScene(new Transition(new MainMenu(), 10));
                 };
                 UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black)
