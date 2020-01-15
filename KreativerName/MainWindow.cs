@@ -66,9 +66,9 @@ namespace KreativerName
             // Update TimePlaying
             Stats.Current.TimePlaying = Stats.Current.TimePlaying.Add(TimeSpan.FromSeconds(e.Time));
 
-            if (FrameCounter % 600 == 0 && SceneManager.Client?.Connected == true)
+            if (FrameCounter % 600 == 0)
             {
-                SceneManager.Client.Send(new Packet(PacketCode.UploadStats, PacketInfo.None, Stats.Current.ToBytes()));
+                ClientManager.Send(new Packet(PacketCode.UploadStats, PacketInfo.None, Stats.Current.ToBytes()));
             }
 
             input.Update();
@@ -120,12 +120,10 @@ namespace KreativerName
             HexData.LoadData(@"Resources\HexData");
             worker.ReportProgress(60);
 
-            SceneManager.ConnectClient();
-            if (SceneManager.Client != null)
+            if (ClientManager.Connect())
             {
-                SceneManager.Client.PacketRecieved += HandleRequest;
-                Login();
-                CompareVersion();
+                ClientManager.Login();
+                ClientManager.CompareVersion();
             }
             else
             {
@@ -140,74 +138,13 @@ namespace KreativerName
 
             worker.ReportProgress(100);
         }
-
-        private void Login()
-        {
-            if (SceneManager.Client == null)
-                return;
-            if (!Settings.Current.LoggedIn)
-                return;
-
-            byte[] msg = new byte[8];
-            BitConverter.GetBytes(Settings.Current.UserID).CopyTo(msg, 0);
-            BitConverter.GetBytes(Settings.Current.LoginInfo).CopyTo(msg, 4);
-
-            static void handle(Client c, Packet p)
-            {
-                if (p.Code == PacketCode.LogIn && p.Info == PacketInfo.Success)
-                {
-                    Notification.Show($"Eingeloggt unter {Settings.Current.UserName} ({Settings.Current.UserID.ToID()})");
-                    SceneManager.Client.PacketRecieved -= handle;
-                }
-            }
-            SceneManager.Client.PacketRecieved += handle;
-
-            SceneManager.Client.Send(new Packet(PacketCode.LogIn, PacketInfo.None, msg));
-        }
-
-        private void CompareVersion()
-        {
-            if (SceneManager.Client == null)
-                return;
-
-            static void handle(Client client, Packet p)
-            {
-                if (p.Code == PacketCode.CompareVersion)
-                {
-                    if (p.Info == PacketInfo.New)
-                        Notification.Show("Eine neue Version ist verfügbar!");
-                    else if (p.Info == PacketInfo.Error)
-                        Notification.Show("Fehler beim Überprüfen der Version");
-
-                    SceneManager.Client.PacketRecieved -= handle;
-                }
-            }
-
-            SceneManager.Client.PacketRecieved += handle;
-
-            SceneManager.Client.Send(new Packet(PacketCode.CompareVersion, PacketInfo.None, version.ToBytes()));
-        }
-
-        private void HandleRequest(Client client, Packet msg)
-        {
-            switch (msg.Code)
-            {
-                case PacketCode.RecieveNotification:
-                    float size = BitConverter.ToSingle(msg.Bytes, 0);
-                    int sLength = BitConverter.ToInt32(msg.Bytes, 4);
-                    string s = Encoding.UTF8.GetString(msg.Bytes, 8, sLength);
-
-                    Notification.Show(s, size);
-                    break;
-            }
-        }
-
+        
         protected override void OnFileDrop(FileDropEventArgs e)
         {
             if (World.IsValidFile(e.FileName))
             {
                 Game game = new Game(World.LoadFromFile(e.FileName, false));
-                game.Exit += () =>
+                game.OnExit += () =>
                 {
                     game.World.SaveToFile(e.FileName, false);
                     SceneManager.LoadScene(new Transition(new MainMenu(), 10));
@@ -218,9 +155,9 @@ namespace KreativerName
 
         protected override void OnClosed(EventArgs e)
         {
-            SceneManager.Client?.Send(new Packet(PacketCode.Disconnect, PacketInfo.None));
+            ClientManager.Send(new Packet(PacketCode.Disconnect, PacketInfo.None));
 
-            SceneManager.Client?.Disconnect();
+            ClientManager.Disconnect();
         }
     }
 }

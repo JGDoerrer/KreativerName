@@ -17,12 +17,12 @@ namespace KreativerName.Scenes
         {
             InitUI();
 
-            if (SceneManager.Client?.Connected == true)
+            if (ClientManager.Connected)
             {
-                SceneManager.Client.PacketRecieved += HandleRequest;
+                ClientManager.PacketRecieved += HandleRequest;
 
-                SceneManager.Client.Send(new Packet(PacketCode.GetIDs, BitConverter.GetBytes(10)));
-                SceneManager.Client.Send(new Packet(PacketCode.GetWeeklyWorld, PacketInfo.None));
+                ClientManager.Send(new Packet(PacketCode.GetIDs, BitConverter.GetBytes(10)));
+                ClientManager.Send(new Packet(PacketCode.GetWeeklyWorld, PacketInfo.None));
             }
             else
             {
@@ -50,8 +50,7 @@ namespace KreativerName.Scenes
 
         public override void Exit()
         {
-            if (SceneManager.Client != null)
-                SceneManager.Client.PacketRecieved -= HandleRequest;
+            ClientManager.PacketRecieved -= HandleRequest;
         }
 
         #region UI
@@ -90,7 +89,7 @@ namespace KreativerName.Scenes
                 }
 
                 Game game = new Game(weekly.Value);
-                game.Exit += () => { SceneManager.LoadScene(new Transition(this, 10)); };
+                game.OnExit += () => { SceneManager.LoadScene(new Transition(this, 10)); };
                 SceneManager.LoadScene(new Transition(game, 10));
             };
 
@@ -123,7 +122,7 @@ namespace KreativerName.Scenes
                 button.OnLeftClick += () =>
                 {
                     Game game = new Game(world);
-                    game.Exit += () => { SceneManager.LoadScene(new Transition(this, 10)); };
+                    game.OnExit += () => { SceneManager.LoadScene(new Transition(this, 10)); };
                     SceneManager.LoadScene(new Transition(game, 10));
                 };
 

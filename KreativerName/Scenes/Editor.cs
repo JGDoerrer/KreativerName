@@ -197,7 +197,7 @@ namespace KreativerName.Scenes
                 layout.size = Math.Min((width - margin - leftFrame.GetWidth(windowSize)) / (sqrt3 * (maxX - minX + 1)), (height - margin - lowerFrame.GetHeight(windowSize)) / (1.5f * (maxY - minY + 1.25f)));
                 // Round to multiples of 16
                 layout.size = (float)Math.Floor(layout.size / 16) * 16;
-                layout.size = Math.Min(layout.size, 48) * scale;
+                layout.size = layout.size.Clamp(16,48) * scale;
 
                 int centerX = (int)(layout.size * sqrt3 * (maxX + minX));
                 int centerY = (int)(layout.size * 1.5f * (maxY + minY));
@@ -239,7 +239,7 @@ namespace KreativerName.Scenes
 
         private void UploadLevel()
         {
-            if (SceneManager.Client?.Connected != true)
+            if (!ClientManager.Connected)
             {
                 Notification.Show("Nicht mit Server verbunden");
                 return;
@@ -253,17 +253,17 @@ namespace KreativerName.Scenes
 
                     Notification.Show($"Hochgeladen unter {id.ToString("x")}");
 
-                    SceneManager.Client.PacketRecieved -= uploaded;
+                    ClientManager.PacketRecieved -= uploaded;
                 }
                 else if (p.Code == PacketCode.UploadWorld && p.Info == PacketInfo.Error)
                 {
                     Notification.Show($"Fehler beim Hochladen");
-                    SceneManager.Client.PacketRecieved -= uploaded;
+                    ClientManager.PacketRecieved -= uploaded;
                 }
             }
 
-            SceneManager.Client.PacketRecieved += uploaded;
-            SceneManager.Client.Send(new Packet(PacketCode.UploadWorld, PacketInfo.None, world.ToCompressed()));
+            ClientManager.PacketRecieved += uploaded;
+            ClientManager.Send(new Packet(PacketCode.UploadWorld, PacketInfo.None, world.ToCompressed()));
 
         }
 
@@ -271,7 +271,7 @@ namespace KreativerName.Scenes
         {
             testGame = new Game();
             testGame.LoadLevel(level);
-            testGame.Exit += () => SceneManager.LoadScene(new Transition(this, 10));
+            testGame.OnExit += () => SceneManager.LoadScene(new Transition(this, 10));
             testGame.LevelCompleted += (a) => Notification.Show($"{testGame.Moves} Züge");
 
             SceneManager.LoadScene(new Transition(testGame, 10));

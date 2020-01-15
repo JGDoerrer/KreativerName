@@ -218,7 +218,7 @@ namespace KreativerName.Scenes
             LevelCompleted?.Invoke(levelIndex);
 
             if (singleLevel)
-                Exit?.Invoke();
+                OnExit?.Invoke();
             else
             {
                 Level level = world.Levels[levelIndex];
@@ -243,7 +243,7 @@ namespace KreativerName.Scenes
 
                     worldIndex++;
                     levelIndex = 0;
-                    Exit?.Invoke();
+                    OnExit?.Invoke();
                 }
 
                 UpdateTitle();
@@ -342,7 +342,7 @@ namespace KreativerName.Scenes
 
         #region Events
 
-        public event EmptyEvent Exit;
+        public event EmptyEvent OnExit;
         public event LevelEvent LevelCompleted;
         public event WorldEvent WorldCompleted;
 
@@ -365,7 +365,7 @@ namespace KreativerName.Scenes
             
             Button exitButton = new Button(20, 20, 40, 40)
             { Shortcut = Key.Escape };
-            exitButton.OnLeftClick += () => SceneManager.LoadScene(new Transition(new MainMenu(), 10));
+            exitButton.OnLeftClick += () => OnExit?.Invoke();
 
             UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black)
             { Constraints = new UIConstraints(10, 10, 20, 20) };
@@ -406,7 +406,7 @@ namespace KreativerName.Scenes
             if (world.Levels != null && levelIndex < world.Levels.Count)
                 level = world.Levels[levelIndex].Copy();
             else
-                Exit?.Invoke();
+                OnExit?.Invoke();
 
             player = level.StartPos;
             moves = 0;

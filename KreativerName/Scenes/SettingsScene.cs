@@ -108,7 +108,7 @@ namespace KreativerName.Scenes
 
         private void SignUp(TextBox textBox)
         {
-            if (SceneManager.Client?.Connected != true)
+            if (!ClientManager.Connected)
                 return;
 
             string s = textBox.Text.Trim();
@@ -136,19 +136,19 @@ namespace KreativerName.Scenes
 
                     InitUI();
 
-                    SceneManager.Client.PacketRecieved -= Handle;
+                    ClientManager.PacketRecieved -= Handle;
                 }
                 else if (p.Code == PacketCode.SignUp && p.Info == PacketInfo.Error)
                 {
                     Settings.Current.LoggedIn = false;
                     Notification.Show("Fehler beim Anmelden");
-                    SceneManager.Client.PacketRecieved -= Handle;
+                    ClientManager.PacketRecieved -= Handle;
                 }
             }
-            SceneManager.Client.PacketRecieved += Handle;
+            ClientManager.PacketRecieved += Handle;
 
 
-            SceneManager.Client.Send(new Packet(PacketCode.SignUp, bytes.ToArray()));
+            ClientManager.Send(new Packet(PacketCode.SignUp, bytes.ToArray()));
         }
 
         public override void Update()
