@@ -383,8 +383,6 @@ namespace KreativerName.Scenes
 
             hintButton.AddChild(hintImage);
             ui.Add(hintButton);
-
-            UpdateTitle();
         }
 
         /// <summary>
@@ -425,6 +423,8 @@ namespace KreativerName.Scenes
         {
             levelIndex = index;
             LoadLevel();
+
+            UpdateTitle();
         }
 
         /// <summary>

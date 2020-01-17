@@ -48,7 +48,7 @@ namespace KreativerName.Rendering
 
             foreach (char c in s)
             {
-                if (c == '\n' || position.X > maxWidth)
+                if (c == '\n' || position.X > startX + maxWidth)
                 {
                     position.Y += 8 * size;
                     position.X = startX;

@@ -547,7 +547,7 @@ namespace KreativerName.Scenes
 
                 leftFrame.AddChild(new TextBlock("Level Hinweis:", 2, 20, 320));
 
-                boxLevelHint = new TextBox(20, 340, 200, 90)
+                boxLevelHint = new TextBox(20, 340, 200, 94)
                 {
                     Text = level.Hint ?? "",
                     MaxTextSize = 75

@@ -151,7 +151,7 @@ namespace KreativerName.UI
             if ((cursorAnim / 30) % 2 == 0 && Focused)
                 text[Cursor] = '_';
 
-            TextRenderer.RenderString(text.ToString(), new Vector2(GetX(windowSize), GetY(windowSize)) + TextOffset, TextColor, w, TextSize);
+            TextRenderer.RenderString(text.ToString(), new Vector2(GetX(windowSize), GetY(windowSize)) + TextOffset, TextColor, w - TextOffset.X * 3, TextSize);
 
             RenderChildren(windowSize);
             cursorAnim++;

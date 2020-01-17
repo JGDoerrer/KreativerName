@@ -20,7 +20,7 @@ namespace KreativerName.Scenes
             InitUI();
         }
 
-        bool normalMode;
+        bool normalMode = true;
         int worldIndex;
         World world;
         UI.UI ui;
