@@ -92,8 +92,8 @@ namespace KreativerName.Networking
 
         public static void Disconnect()
         {
-            client.StopRecieve();
-            client.Disconnect();
+            client?.StopRecieve();
+            client?.Disconnect();
         }
 
         private static void HandleRequest(Client client, Packet msg)

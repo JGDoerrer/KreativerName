@@ -21,43 +21,16 @@ namespace KreativerName.Scenes
 
         UI.UI ui;
 
-        bool normalMode = true;
-
         private void InitUI()
         {
             ui = new UI.UI();
             ui.Input = new Input(SceneManager.Window);
 
-            TextBlock title = new TextBlock("Welten", 4);
-            title.Color = Color.White;
-            title.SetConstraints(
-                new CenterConstraint(),
-                new PixelConstraint(50),
-                new PixelConstraint((int)title.TextWidth),
-                new PixelConstraint((int)title.TextHeight));
+            TextBlock title = new TextBlock("Welten", 4, 0, 50)
+            { Color = Color.White };
+            title.Constraints.xCon = new CenterConstraint();
             ui.Add(title);
 
-            Button modeButton = new Button();
-            modeButton.Shortcut = Key.Tab;
-            modeButton.Color = Color.FromArgb(100, 255, 100);
-            modeButton.SetConstraints(new PixelConstraint(40, RelativeTo.Window, Direction.Left),
-                new PixelConstraint(40, RelativeTo.Window, Direction.Bottom),
-                new PixelConstraint(300),
-                new PixelConstraint(60));
-
-            TextBlock modeText = new TextBlock("Normal", 3);
-            modeText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)modeText.TextWidth), new PixelConstraint((int)modeText.TextHeight));
-            modeButton.AddChild(modeText);
-
-            modeButton.OnLeftClick += () =>
-            {
-                normalMode = !normalMode;
-
-                modeText.Text = normalMode ? "Normal" : "Perfekt";
-                modeButton.Color = normalMode ? Color.FromArgb(100, 255, 100) : Color.FromArgb(255, 100, 100);
-                modeText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)modeText.TextWidth), new PixelConstraint((int)modeText.TextHeight));
-            };
-            ui.Add(modeButton);
 
             Button exitButton = new Button(40, 40, 40, 40);
             exitButton.Shortcut = Key.Escape;
@@ -103,16 +76,12 @@ namespace KreativerName.Scenes
                 if (i > 1)
                 {
                     for (int j = 0; j < 3; j++)
-                    {
                         for (int k = 0; k < starsPerWorld; k++)
-                        {
                             if (stars[i - j, k])
                             {
                                 showWorld[i] = true;
                                 break;
                             }
-                        }
-                    }
                 }
                 else
                     showWorld[i] = true;
@@ -152,10 +121,7 @@ namespace KreativerName.Scenes
                         button.Enabled = worlds[i - 1].AllCompleted || worlds[i - 1].AllPerfect;
 
                     int world = i;
-                    button.OnLeftClick += () =>
-                    {
-                        NewGame(world);
-                    };
+                    button.OnLeftClick += () => { NewGame(world); };
 
                     TextBlock text = new TextBlock((i + 1).ToRoman().ToLower(), 3);
                     text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)text.TextWidth), new PixelConstraint((int)text.TextHeight));
@@ -185,14 +151,8 @@ namespace KreativerName.Scenes
 
         private void NewGame(int world)
         {
-            Game game = new Game(world, !normalMode);
-            game.OnExit += () =>
-            {
-                game.World.SaveToFile($"{world:000}");
-                SceneManager.LoadScene(new Transition(new WorldMenu(), 10));
-            };
-
-            SceneManager.LoadScene(new Transition(game, 10));
+            LevelMenu menu = new LevelMenu(world);
+            SceneManager.LoadScene(new Transition(menu, 10));
         }
 
         #region IDisposable Support

@@ -46,6 +46,11 @@ namespace KreativerName.Grid
         /// Stores the time when the world was uploaded.
         /// </summary>
         public DateTime UploadTime;
+        
+        ///// <summary>
+        ///// Stores the connections between levels.
+        ///// </summary>
+        //public List<List<int>> LevelConnections;
 
         /// <summary>
         /// Defines if all levels have been completed.

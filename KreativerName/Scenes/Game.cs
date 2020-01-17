@@ -222,6 +222,7 @@ namespace KreativerName.Scenes
             else
             {
                 Level level = world.Levels[levelIndex];
+
                 level.Completed = true;
                 if (perfect)
                     level.Perfect = true;
@@ -360,9 +361,9 @@ namespace KreativerName.Scenes
             title = new TextBlock("Level 000/000", 4, 0, 50)
             { Color = Color.LightGray };
             title.Constraints.xCon = new CenterConstraint();
-            
+
             ui.Add(title);
-            
+
             Button exitButton = new Button(20, 20, 40, 40)
             { Shortcut = Key.Escape };
             exitButton.OnLeftClick += () => OnExit?.Invoke();
