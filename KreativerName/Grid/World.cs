@@ -46,11 +46,11 @@ namespace KreativerName.Grid
         /// Stores the time when the world was uploaded.
         /// </summary>
         public DateTime UploadTime;
-        
-        ///// <summary>
-        ///// Stores the connections between levels.
-        ///// </summary>
-        //public List<List<int>> LevelConnections;
+
+        /// <summary>
+        /// Stores the connections between levels.
+        /// </summary>
+        public List<int>[] LevelConnections;
 
         /// <summary>
         /// Defines if all levels have been completed.
@@ -238,21 +238,37 @@ namespace KreativerName.Grid
         {
             List<byte> bytes = new List<byte>();
 
-            // Write title
-            byte[] title = Encoding.UTF8.GetBytes(Title ?? "");
-            bytes.AddRange(title.Length.ToBytes());
-            bytes.AddRange(title);
-
-            bytes.AddRange(BitConverter.GetBytes(ID));
-            bytes.AddRange(BitConverter.GetBytes(Uploader));
-            bytes.AddRange(BitConverter.GetBytes(UploadTime.ToBinary()));
-
-            // Write levels
-            bytes.AddRange(Levels.Count.ToBytes());
-
-            for (int i = 0; i < Levels.Count; i++)
+            try
             {
-                bytes.AddRange(Levels[i].ToBytes());
+                // Write title
+                byte[] title = Encoding.UTF8.GetBytes(Title ?? "");
+                bytes.AddRange(title.Length.ToBytes());
+                bytes.AddRange(title);
+
+                bytes.AddRange(BitConverter.GetBytes(ID));
+                bytes.AddRange(BitConverter.GetBytes(Uploader));
+                bytes.AddRange(BitConverter.GetBytes(UploadTime.ToBinary()));
+
+                // Write levels
+                bytes.AddRange(Levels.Count.ToBytes());
+
+                for (int i = 0; i < Levels.Count; i++)
+                {
+                    bytes.AddRange(Levels[i].ToBytes());
+                }
+
+                // Write level connections
+                for (int i = 0; i < Levels.Count; i++)
+                {
+                    bytes.AddRange((LevelConnections[i]?.Count ?? 0).ToBytes());
+
+                    for (int j = 0; j < (LevelConnections[i]?.Count ?? 0); j++)
+                        bytes.AddRange(LevelConnections[i][j].ToBytes());
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"[World]: Error while converting to bytes: {e.Message}");
             }
 
             return bytes.ToArray();
@@ -270,28 +286,53 @@ namespace KreativerName.Grid
 
             int total = 0;
 
-            // Read title
-            int titleCount = 0;
-            total += titleCount.FromBytes(bytes, startIndex + total);
-            Title = Encoding.UTF8.GetString(bytes, startIndex + total, titleCount);
-            total += titleCount;
-
-            ID = BitConverter.ToUInt32(bytes, startIndex + total);
-            total += 4;
-            Uploader = BitConverter.ToUInt32(bytes, startIndex + total);
-            total += 4;
-            UploadTime = DateTime.FromBinary(BitConverter.ToInt64(bytes, startIndex + total));
-            total += 8;
-
-            // Read levels
-            int count = BitConverter.ToInt32(bytes, startIndex + total);
-            total += 4;
-
-            for (int i = 0; i < count; i++)
+            try
             {
-                Level level = new Level();
-                total += level.FromBytes(bytes, startIndex + total);
-                Levels.Add(level);
+                // Read title
+                int titleCount = 0;
+                total += titleCount.FromBytes(bytes, startIndex + total);
+                Title = Encoding.UTF8.GetString(bytes, startIndex + total, titleCount);
+                total += titleCount;
+
+                ID = BitConverter.ToUInt32(bytes, startIndex + total);
+                total += 4;
+                Uploader = BitConverter.ToUInt32(bytes, startIndex + total);
+                total += 4;
+                UploadTime = DateTime.FromBinary(BitConverter.ToInt64(bytes, startIndex + total));
+                total += 8;
+
+                // Read levels
+                int levelCount = BitConverter.ToInt32(bytes, startIndex + total);
+                total += 4;
+
+                for (int i = 0; i < levelCount; i++)
+                {
+                    Level level = new Level();
+                    total += level.FromBytes(bytes, startIndex + total);
+                    Levels.Add(level);
+                }
+
+                LevelConnections = new List<int>[levelCount];
+
+                for (int i = 0; i < levelCount; i++)
+                {
+                    int count = 0;
+                    total += count.FromBytes(bytes, startIndex + total);
+
+                    LevelConnections[i] = new List<int>();
+
+                    for (int j = 0; j < count; j++)
+                    {
+                        int connection = 0;
+                        total += connection.FromBytes(bytes, startIndex + total);
+
+                        LevelConnections[i].Add(connection);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"[World]: Error while converting from bytes: {e.Message}");
             }
 
             return total;

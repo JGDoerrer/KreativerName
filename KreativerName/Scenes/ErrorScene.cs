@@ -41,7 +41,7 @@ namespace KreativerName.Scenes
             string[] stack = e.StackTrace.Split('\n');
             for (int i = 0; i < stack.Length; i++)
             {
-                stack[i] = stack[i].Trim().Replace(@"D:\Programmieren\Source\KreativerName\KreativerName\", "");
+                stack[i] = stack[i].Trim().Replace(@"D:\Programmieren\Projekte\KreativerName\KreativerName\", "");
                 AddText($"{stack[i]}", 1, 150 + i * 10);
             }
 

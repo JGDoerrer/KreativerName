@@ -1,5 +1,7 @@
-﻿using System.Drawing;
+﻿using System.Linq;
+using System.Drawing;
 using System.Text;
+using System.Windows.Forms;
 using KreativerName.Rendering;
 using KreativerName.UI.Constraints;
 using OpenTK;
@@ -17,13 +19,14 @@ namespace KreativerName.UI
         }
 
         public bool Focused { get; set; }
+        public bool Enabled { get; set; } = true;
+        public bool OnlyNumbers { get; set; }
         public string Text { get; set; } = "";
         public int Cursor { get; set; } = 0;
         public Color TextColor { get; set; } = Color.Black;
         public Vector2 TextOffset { get; set; } = new Vector2(8, 8);
         public float TextSize { get; set; } = 2;
         public int MaxTextSize { get; set; } = 5;
-        public bool Enabled { get; set; } = true;
 
         int cursorAnim;
         int frameCount = 0;
@@ -51,60 +54,85 @@ namespace KreativerName.UI
             {
                 ui.ignoreShortcuts = true;
 
-                if (Cursor > Text.Length)
-                    Cursor = Text.Length;
-
-                if (Cursor > MaxTextSize - 1)
-                    Cursor = MaxTextSize - 1;
-
-                if (Cursor < 0)
-                    Cursor = 0;
-
-                Text = Text.Insert(Cursor, ui.Input.KeyString);
-
-                Cursor += ui.Input.KeyString.Length;
-
-                if (Text.Length > MaxTextSize)
-                    Text = Text.Remove(MaxTextSize, Text.Length - MaxTextSize);
-
-                if (KeyDownOrRepeat(Key.BackSpace) && Cursor > 0 && Text.Length > 0)
-                {
-                    Cursor--;
-                    Text = Text.Remove(Cursor, 1);
-                }
-                if (KeyDownOrRepeat(Key.Delete) && Cursor < Text.Length && Text.Length > 0)
-                {
-                    Text = Text.Remove(Cursor, 1);
-                }
-
-                if (KeyDownOrRepeat(Key.Left) && Cursor > 0)
-                {
-                    Cursor--;
-                    cursorAnim = 0;
-                }
-                if (KeyDownOrRepeat(Key.Right) && Cursor < Text.Length)
-                {
-                    Cursor++;
-                    cursorAnim = 0;
-                }
-
-                if (ui.Input.KeyPress(Key.Escape))
-                {
-                    ui.ignoreShortcuts = Focused = false;
-                    ui.Input.ReleaseKey(Key.Escape);
-                }
-
-                if (Cursor > Text.Length)
-                    Cursor = Text.Length;
-
-                if (Cursor > MaxTextSize - 1)
-                    Cursor = MaxTextSize - 1;
-
-                if (Cursor < 0)
-                    Cursor = 0;
+                HandleInput();
             }
 
             frameCount++;
+        }
+
+        private void HandleInput()
+        {
+            if (Cursor > Text.Length)
+                Cursor = Text.Length;
+
+            if (Cursor > MaxTextSize - 1)
+                Cursor = MaxTextSize - 1;
+
+            if (Cursor < 0)
+                Cursor = 0;
+
+            // Add text
+            char[] toAdd = ui.Input.KeyString.ToCharArray();
+
+            if (OnlyNumbers)
+            {
+                toAdd = toAdd.Where(x => char.IsDigit(x)).ToArray();
+            }
+
+            Text = Text.Insert(Cursor, new string(toAdd));
+            Cursor += ui.Input.KeyString.Length;
+
+            if (Text.Length > MaxTextSize)
+                Text = Text.Remove(MaxTextSize, Text.Length - MaxTextSize);
+
+            // Deleting characters
+            if (KeyDownOrRepeat(Key.BackSpace) && Cursor > 0 && Text.Length > 0)
+            {
+                Cursor--;
+                Text = Text.Remove(Cursor, 1);
+            }
+            if (KeyDownOrRepeat(Key.Delete) && Cursor < Text.Length && Text.Length > 0)
+            {
+                Text = Text.Remove(Cursor, 1);
+            }
+
+            // Moving cursor
+            if (KeyDownOrRepeat(Key.Left) && Cursor > 0)
+            {
+                Cursor--;
+                cursorAnim = 0;
+            }
+            if (KeyDownOrRepeat(Key.Right) && Cursor < Text.Length)
+            {
+                Cursor++;
+                cursorAnim = 0;
+            }
+
+            // Unfocus
+            if (ui.Input.KeyPress(Key.Escape))
+            {
+                ui.ignoreShortcuts = Focused = false;
+                ui.Input.ReleaseKey(Key.Escape);
+            }
+
+            // Clipboard
+            if (ui.Input.KeyPress(Key.C) && ui.Input.KeyDown(Key.ControlLeft))
+            {
+                Clipboard.SetText(Text);
+            }
+            if (ui.Input.KeyPress(Key.V) && ui.Input.KeyDown(Key.ControlLeft))
+            {
+                Text = Clipboard.GetText() ?? "";
+            }
+
+            if (Cursor > Text.Length)
+                Cursor = Text.Length;
+
+            if (Cursor > MaxTextSize - 1)
+                Cursor = MaxTextSize - 1;
+
+            if (Cursor < 0)
+                Cursor = 0;
         }
 
         public override void Render(Vector2 windowSize)
@@ -151,7 +179,7 @@ namespace KreativerName.UI
             if ((cursorAnim / 30) % 2 == 0 && Focused)
                 text[Cursor] = '_';
 
-            TextRenderer.RenderString(text.ToString(), new Vector2(GetX(windowSize), GetY(windowSize)) + TextOffset, TextColor, w - TextOffset.X * 3, TextSize);
+            Rendering.TextRenderer.RenderString(text.ToString(), new Vector2(GetX(windowSize), GetY(windowSize)) + TextOffset, TextColor, w - TextOffset.X * 3, TextSize);
 
             RenderChildren(windowSize);
             cursorAnim++;

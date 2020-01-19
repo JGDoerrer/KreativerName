@@ -88,7 +88,7 @@ namespace KreativerName.Networking
         {
             if (tcp.Connected)
             {
-                StopRecieve();
+                //StopRecieve();
                 tcp.Close();
             }
         }

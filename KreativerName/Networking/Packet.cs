@@ -67,6 +67,8 @@ namespace KreativerName.Networking
 
             return count;
         }
+
+        public override string ToString() => $"{Code}, {Info}, {BitConverter.ToString(Bytes)}";
     }
 
     public enum PacketCode : ushort

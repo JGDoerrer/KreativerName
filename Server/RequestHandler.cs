@@ -14,6 +14,8 @@ namespace Server
 
         public static void HandleRequest(Client client, Packet p)
         {
+            //Console.WriteLine($"[Packet]: {p.ToString()}");
+
             switch (p.Code)
             {
                 case PacketCode.SignUp: SignUp(client, p); break;

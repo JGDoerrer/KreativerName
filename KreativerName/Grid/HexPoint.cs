@@ -29,9 +29,7 @@ namespace KreativerName.Grid
             get => y;
             set => y = value;
         }
-
-        public int LengthSquared => x * x + y * y;
-
+        
         public override string ToString()
         {
             return $"({x}, {y})";

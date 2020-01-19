@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using KreativerName.Grid;
 using KreativerName.Rendering;
 using KreativerName.UI;
@@ -17,7 +17,14 @@ namespace KreativerName.Scenes
             worldIndex = world;
             this.world = World.LoadFromFile($"{world:000}");
 
+            for (int i = 0; i < this.world.Levels.Count; i++)
+            {
+                if (this.world.LevelConnections[i] == null)
+                    this.world.LevelConnections[i] = new List<int>();
+            }
+
             InitUI();
+            InitLevels();
         }
 
         bool normalMode = true;
@@ -41,8 +48,10 @@ namespace KreativerName.Scenes
 
         private void InitUI()
         {
-            ui = new UI.UI();
-            ui.Input = new Input(SceneManager.Window);
+            ui = new UI.UI
+            {
+                Input = new Input(SceneManager.Window)
+            };
 
             TextBlock title = new TextBlock("Level", 4, 0, 50) { Color = Color.White };
             title.Constraints.xCon = new CenterConstraint();
@@ -79,41 +88,25 @@ namespace KreativerName.Scenes
                 modeText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)modeText.TextWidth), new PixelConstraint((int)modeText.TextHeight));
             };
             ui.Add(modeButton);
-
-            InitLevel();
         }
 
-        private void InitLevel()
+        private void InitLevels()
         {
             const int ButtonSize = 60;
+            const int StarsPerLevel = 2;
 
-            const int starsPerLevel = 2;
-            bool[,] stars = new bool[world.Levels.Count, starsPerLevel];
+            int lvlCount = world.Levels.Count;
+
+            // Read stars
+            bool[,] stars = new bool[lvlCount, StarsPerLevel];
             int totalStars = 0;
-            bool[] showLevel = new bool[world.Levels.Count];
 
-            for (int i = 0; i < world.Levels.Count; i++)
+            for (int i = 0; i < lvlCount; i++)
             {
                 stars[i, 0] = world.Levels[i].Completed;
                 totalStars += world.Levels[i].Completed ? 1 : 0;
                 stars[i, 1] = world.Levels[i].Perfect;
                 totalStars += world.Levels[i].Perfect ? 1 : 0;
-            }
-
-            for (int i = 0; i < world.Levels.Count; i++)
-            {
-                if (i > 1)
-                {
-                    for (int j = 0; j < 3; j++)
-                        for (int k = 0; k < starsPerLevel; k++)
-                            if (stars[i - j, k])
-                            {
-                                showLevel[i] = true;
-                                break;
-                            }
-                }
-                else
-                    showLevel[i] = true;
             }
 
             Frame levelFrame = new Frame()
@@ -122,49 +115,86 @@ namespace KreativerName.Scenes
                 Constraints = new UIConstraints(
                     new CenterConstraint(),
                     new PixelConstraint(180),
-                    new PixelConstraint(showLevel.Count(x => x) * (ButtonSize + 20) + 20),
+                    new PixelConstraint(lvlCount * (ButtonSize + 20) + 20),
                     new PixelConstraint(ButtonSize + 40))
             };
 
-            int count = 0;
-            for (int i = 0; i < world.Levels.Count; i++)
+            List<Tuple<int, int>> connections = new List<Tuple<int, int>>();
+
+            for (int i = 0; i < lvlCount; i++)
             {
-                if (showLevel[i])
+                for (int j = 0; j < world.LevelConnections[i].Count; j++)
                 {
-                    Button button = new Button((ButtonSize + 20) * count + 20, 20, ButtonSize, ButtonSize);
+                    connections.Add(new Tuple<int, int>(i, world.LevelConnections[i][j]));
+                }
+            }
 
-                    for (int j = 0; j < starsPerLevel; j++)
+            Vector2[] positions = new Vector2[lvlCount];
+
+            void CalcPosition(int level, int index, int prev = 0, int count = 0)
+            {
+                int next = world.LevelConnections[level][index];
+
+                if (world.LevelConnections[next].Count > 0)
+                {
+                    for (int i = 0; i < world.LevelConnections[next].Count; i++)
                     {
-                        UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(stars[i, j] ? 10 : 0, 0, 10, 10));
-                        image.SetConstraints(new UIConstraints(
-                            ButtonSize * (j + 1) / (starsPerLevel + 1) - 10,
-                            ButtonSize - 15, 20, 20));
-
-                        button.AddChild(image);
+                        CalcPosition(next, i, level, count + 1);
                     }
+                }
+                else
+                    positions[next] = new Vector2(count + 1, index);
 
-                    if (i < 10)
-                        button.Shortcut = (Key)(110 + i);
+                positions[level] = new Vector2(count, index);
+            }
 
-                    if (i > 0)
-                        button.Enabled = world.Levels[i - 1].Completed || world.Levels[i - 1].Perfect;
+            CalcPosition(0, 0);
 
-                    int level = i;
-                    button.OnLeftClick += () =>
-                    {
-                        NewGame(level);
-                    };
+            // Create buttons
+            int count = 0;
+            for (int i = 0; i < lvlCount; i++)
+            {
+                Button button = new Button((ButtonSize + 20) * (int)positions[i].X + 20, (ButtonSize + 20) * (int)positions[i].Y + 20, ButtonSize, ButtonSize);
 
-                    TextBlock text = new TextBlock((i + 1).ToString(), 3);
-                    text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)text.TextWidth), new PixelConstraint((int)text.TextHeight));
-                    button.AddChild(text);
-                    levelFrame.AddChild(button);
+                // Create stars
+                for (int j = 0; j < StarsPerLevel; j++)
+                {
+                    UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(stars[i, j] ? 10 : 0, 0, 10, 10));
+                    image.SetConstraints(new UIConstraints(
+                        ButtonSize * (j + 1) / (StarsPerLevel + 1) - 10,
+                        ButtonSize - 15, 20, 20));
 
-                    count++;
+                    button.AddChild(image);
                 }
 
-                ui.Add(levelFrame);
+                if (i < 10)
+                    button.Shortcut = (Key)(110 + i);
+
+                if (i > 0)
+                {
+                    button.Enabled = false;
+                    for (int j = 0; j < world.LevelConnections.Length; j++)
+                    {
+                        if (world.Levels[j].Completed && world.LevelConnections[j].Contains(i))
+                        {
+                            button.Enabled = true;
+                            break;
+                        }
+                    }
+                }
+
+                int level = i;
+                button.OnLeftClick += () => NewGame(level);
+
+                TextBlock text = new TextBlock((i + 1).ToString(), 3);
+                text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)text.TextWidth), new PixelConstraint((int)text.TextHeight));
+                button.AddChild(text);
+                levelFrame.AddChild(button);
+
+                count++;
             }
+
+            ui.Add(levelFrame);
         }
 
         private void NewGame(int level)

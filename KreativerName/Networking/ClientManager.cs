@@ -9,7 +9,7 @@ namespace KreativerName.Networking
     {
         static Client client;
 
-        public static bool Connected => client.Connected;
+        public static bool Connected => client?.Connected == true;
 
         public static event PacketEvent PacketRecieved;
 
@@ -54,7 +54,7 @@ namespace KreativerName.Networking
             BitConverter.GetBytes(Settings.Current.UserID).CopyTo(msg, 0);
             BitConverter.GetBytes(Settings.Current.LoginInfo).CopyTo(msg, 4);
 
-            static void handle(Client c, Packet p)
+            void handle(Client c, Packet p)
             {
                 if (p.Code == PacketCode.LogIn && p.Info == PacketInfo.Success)
                 {
@@ -92,13 +92,17 @@ namespace KreativerName.Networking
 
         public static void Disconnect()
         {
-            client?.StopRecieve();
-            client?.Disconnect();
+            if (client == null)
+                return;
+
+            client.Send(new Packet(PacketCode.Disconnect, PacketInfo.None));
+            client.StopRecieve();
+            client.Disconnect();
         }
 
         private static void HandleRequest(Client client, Packet msg)
         {
-            PacketRecieved.Invoke(client, msg);
+            PacketRecieved?.Invoke(client, msg);
 
             switch (msg.Code)
             {

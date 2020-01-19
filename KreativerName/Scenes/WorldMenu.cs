@@ -50,6 +50,9 @@ namespace KreativerName.Scenes
         private void InitWorlds()
         {
             const int ButtonSize = 60;
+            const int StarsPerWorld = 2;
+            const int WorldsPerRow = 5;
+
             List<World> worlds = new List<World>();
             int worldcount = 0;
             while (File.Exists($@"Resources\Worlds\{worldcount:000}.wld"))
@@ -58,8 +61,7 @@ namespace KreativerName.Scenes
                 worldcount++;
             }
 
-            const int starsPerWorld = 2;
-            bool[,] stars = new bool[worldcount, starsPerWorld];
+            bool[,] stars = new bool[worldcount, StarsPerWorld];
             int totalStars = 0;
             bool[] showWorld = new bool[worldcount];
 
@@ -76,7 +78,7 @@ namespace KreativerName.Scenes
                 if (i > 1)
                 {
                     for (int j = 0; j < 3; j++)
-                        for (int k = 0; k < starsPerWorld; k++)
+                        for (int k = 0; k < StarsPerWorld; k++)
                             if (stars[i - j, k])
                             {
                                 showWorld[i] = true;
@@ -93,8 +95,8 @@ namespace KreativerName.Scenes
                 Constraints = new UIConstraints(
                     new CenterConstraint(),
                     new PixelConstraint(180),
-                    new PixelConstraint(showWorld.Count(x => x) * (ButtonSize + 20) + 20),
-                    new PixelConstraint(ButtonSize + 40))
+                    new PixelConstraint((showWorld.Count(x => x) / WorldsPerRow < 1 ? showWorld.Count(x => x) % WorldsPerRow : WorldsPerRow) * (ButtonSize + 20) + 20),
+                    new PixelConstraint((ButtonSize + 20) * (showWorld.Count(x => x) / WorldsPerRow + 1) + 20))
             };
 
             int count = 0;
@@ -102,13 +104,13 @@ namespace KreativerName.Scenes
             {
                 if (showWorld[i])
                 {
-                    Button button = new Button((ButtonSize + 20) * count + 20, 20, ButtonSize, ButtonSize);
+                    Button button = new Button((ButtonSize + 20) * (count % WorldsPerRow) + 20, (ButtonSize + 20) * (count / WorldsPerRow) + 20, ButtonSize, ButtonSize);
 
-                    for (int j = 0; j < starsPerWorld; j++)
+                    for (int j = 0; j < StarsPerWorld; j++)
                     {
                         UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(stars[i, j] ? 10 : 0, 0, 10, 10));
                         image.SetConstraints(new UIConstraints(
-                            ButtonSize * (j + 1) / (starsPerWorld + 1) - 10,
+                            ButtonSize * (j + 1) / (StarsPerWorld + 1) - 10,
                             ButtonSize - 15, 20, 20));
 
                         button.AddChild(image);

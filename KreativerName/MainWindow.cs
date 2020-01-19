@@ -39,7 +39,7 @@ namespace KreativerName
         public int FrameCounter;
         double fps;
         double ups;
-        public static readonly Version version = new Version(0, 2, 1, 0);
+        public static readonly Version version = new Version(0, 3, 0, 0);
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
@@ -155,8 +155,6 @@ namespace KreativerName
 
         protected override void OnClosed(EventArgs e)
         {
-            ClientManager.Send(new Packet(PacketCode.Disconnect, PacketInfo.None));
-
             ClientManager.Disconnect();
         }
     }
