@@ -424,15 +424,19 @@ namespace KreativerName.Scenes
             const int margin = 5;
             byte[] values = HexData.Data.Select(x => x.ID).OrderBy(x => x).ToArray();
 
-            lowerFrame = new Frame();
-            lowerFrame.SetConstraints(
-               new PixelConstraint(0),
-               new PixelConstraint(0, RelativeTo.Window, Direction.Bottom),
-               new RelativeConstraint(1, RelativeTo.Window),
-               new PixelConstraint((values.Length / rowSize + 1) * (size + margin) + (40 - margin)));
+            lowerFrame = new Frame
+            {
+                Constraints = new UIConstraints(
+                    new PixelConstraint(0),
+                    new PixelConstraint(0, RelativeTo.Window, Direction.Bottom),
+                    new RelativeConstraint(1, RelativeTo.Window),
+                    new PixelConstraint((values.Length / rowSize + 1) * (size + margin) + (40 - margin)))
+            };
 
-            buttonFrame = new Frame();
-            buttonFrame.Constraints = new UIConstraints(20, 20, 0, 0);
+            buttonFrame = new Frame
+            {
+                Constraints = new UIConstraints(20, 20, rowSize * (size + margin), (values.Length / rowSize) * (size + margin))
+            };
 
             for (int i = 0; i < values.Length; i++)
             {
@@ -451,9 +455,9 @@ namespace KreativerName.Scenes
                 buttonFrame.AddChild(button);
             }
 
-            textHexDesc = new TextBlock("", 2, rowSize * (size + margin) + 40, 20);
-
             lowerFrame.AddChild(buttonFrame);
+
+            textHexDesc = new TextBlock("", 2, rowSize * (size + margin) + 40, 20);
             lowerFrame.AddChild(textHexDesc);
 
             ui.Add(lowerFrame);

@@ -11,6 +11,7 @@ namespace KreativerName
         public bool Fullscreen;
         public bool ShowFps;
         public bool LoggedIn;
+        public bool ShowAnimations;
 
         public uint UserID;
         public uint LoginInfo;
@@ -26,6 +27,7 @@ namespace KreativerName
             Fullscreen = false,
             ShowFps = false,
             LoggedIn = false,
+            ShowAnimations = true,
             UserName = "",
         };
 
@@ -39,6 +41,7 @@ namespace KreativerName
                 Fullscreen = (bytes[startIndex + count] & (1 << 1)) > 0;
                 ShowFps = (bytes[startIndex + count] & (1 << 2)) > 0;
                 LoggedIn = (bytes[startIndex + count] & (1 << 3)) > 0;
+                ShowAnimations = (bytes[startIndex + count] & (1 << 4)) > 0;
 
                 count++;
 
@@ -68,7 +71,7 @@ namespace KreativerName
         {
             List<byte> bytes = new List<byte>();
 
-            byte b1 = (byte)((ShowMoves ? 1 : 0) << 0 | (Fullscreen ? 1 : 0) << 1 | (ShowFps ? 1 : 0) << 2 | (LoggedIn ? 1 : 0) << 3);
+            byte b1 = (byte)((ShowMoves ? 1 : 0) << 0 | (Fullscreen ? 1 : 0) << 1 | (ShowFps ? 1 : 0) << 2 | (LoggedIn ? 1 : 0) << 3 | (ShowAnimations ? 1 : 0) << 4);
             bytes.Add(b1);
 
             bytes.AddRange(BitConverter.GetBytes(UserID));

@@ -29,8 +29,8 @@ namespace KreativerName.Scenes
 
             void AddText(string s, float size, int y)
             {
-                TextBlock text = new TextBlock(s, size);
-                text.SetConstraints(new CenterConstraint(), new PixelConstraint(y), new PixelConstraint((int)text.TextWidth), new PixelConstraint((int)text.TextHeight));
+                TextBlock text = new TextBlock(s, size, 0, y);
+                text.Constraints.xCon = new CenterConstraint();
 
                 ui.Add(text);
             }

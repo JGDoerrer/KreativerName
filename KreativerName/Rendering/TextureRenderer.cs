@@ -77,7 +77,7 @@ namespace KreativerName.Rendering
                                 Math.Round((sourceRect.Value.Top + vertecies[i].Y * sourceRect.Value.Height) * scale.Y) / (texture.Height * scale.Y));
                 }
 
-                vertecies[i] = layout.HexCorner(hex, i);
+                vertecies[i] = layout.HexCorner((Vector2)hex * layout.spacing, i);
 
                 vertecies[i].X = (float)Math.Floor(vertecies[i].X);
                 vertecies[i].Y = (float)Math.Floor(vertecies[i].Y);

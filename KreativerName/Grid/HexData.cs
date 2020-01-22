@@ -18,17 +18,18 @@ namespace KreativerName.Grid
 
         public byte[] ToBytes()
         {
-            List<byte> bytes = new List<byte>();
+            List<byte> bytes = new List<byte>
+            {
+                ID,
+                (byte)HexFlags,
+                (byte)RenderFlags,
+                Texture,
+                AnimationLength,
+                AnimationSpeed,
+                AnimationPhase,
 
-            bytes.Add(ID);
-            bytes.Add((byte)HexFlags);
-            bytes.Add((byte)RenderFlags);
-            bytes.Add(Texture);
-            bytes.Add(AnimationLength);
-            bytes.Add(AnimationSpeed);
-            bytes.Add(AnimationPhase);
-
-            bytes.Add((byte)Changes.Count);
+                (byte)Changes.Count
+            };
 
             for (int i = 0; i < (byte)Changes.Count; i++)
             {
@@ -147,12 +148,13 @@ namespace KreativerName.Grid
 
         public byte[] ToBytes()
         {
-            List<byte> bytes = new List<byte>();
-
-            bytes.Add(ChangeTo);
-            bytes.Add((byte)MoveX);
-            bytes.Add((byte)MoveY);
-            bytes.Add((byte)Condition);
+            List<byte> bytes = new List<byte>
+            {
+                ChangeTo,
+                (byte)MoveX,
+                (byte)MoveY,
+                (byte)Condition
+            };
 
             return bytes.ToArray();
         }

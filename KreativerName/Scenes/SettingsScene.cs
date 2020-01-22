@@ -82,10 +82,14 @@ namespace KreativerName.Scenes
             {
                 Settings.Current.ShowFps = b;
             });
+            AddCheckBox("Animationen anzeigen", 250, Settings.Current.ShowAnimations, (b) =>
+            {
+                Settings.Current.ShowAnimations = b;
+            });
 
             TextBox textBox = new TextBox
             {
-                Constraints = new UIConstraints(new CenterConstraint(), new PixelConstraint(260), new PixelConstraint(180), new PixelConstraint(34)),
+                Constraints = new UIConstraints(new CenterConstraint(), new PixelConstraint(310), new PixelConstraint(180), new PixelConstraint(34)),
                 Enabled = !Settings.Current.LoggedIn,
                 TextColor = Color.Black,
                 MaxTextSize = 15,
@@ -94,7 +98,7 @@ namespace KreativerName.Scenes
             ui.Add(textBox);
 
             Button sendButton = new Button();
-            sendButton.SetConstraints(new CenterConstraint(), new PixelConstraint(300), new PixelConstraint(120), new PixelConstraint(34));
+            sendButton.SetConstraints(new CenterConstraint(), new PixelConstraint(350), new PixelConstraint(120), new PixelConstraint(34));
             sendButton.Enabled = !Settings.Current.LoggedIn;
             sendButton.OnLeftClick += () => SignUp(textBox);
 
@@ -102,8 +106,8 @@ namespace KreativerName.Scenes
             sendButton.AddChild(sendText);
             ui.Add(sendButton);
 
-            AddText($"ID: {Settings.Current.UserID.ToString("x")}", 350);
-            AddText($"LoginInfo: {Settings.Current.LoginInfo.ToString("x")}", 390);
+            AddText($"ID: {Settings.Current.UserID.ToString("x")}", 400);
+            AddText($"LoginInfo: {Settings.Current.LoginInfo.ToString("x")}", 440);
         }
 
         private void SignUp(TextBox textBox)

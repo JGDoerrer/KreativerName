@@ -11,6 +11,7 @@ namespace KreativerName.UI
         public Button()
         {
             constraints = new UIConstraints();
+
         }
         public Button(int x, int y, int w, int h)
         {
@@ -33,7 +34,7 @@ namespace KreativerName.UI
 
         public event ClickEvent OnLeftClick;
         public event ClickEvent OnRightClick;
-
+        
         public override void Update(Vector2 windowSize)
         {
             UpdateChildren(windowSize);
@@ -62,7 +63,7 @@ namespace KreativerName.UI
             }
 
             clicked = (MouseOver(windowSize) && !mouseDown && MouseLeftDown) || (ui.Input.KeyPress(Shortcut) && !ui.ignoreShortcuts);
-
+            
             mouseDown = MouseLeftDown;
         }
 

@@ -35,16 +35,13 @@ namespace KreativerName.Scenes
             ui = new UI.UI();
             ui.Input = SceneManager.Input;
 
-            {
-                TextBlock text = new TextBlock($"ID: {data.ID}", 2, 20, 20);
-                text.Color = Color.White;
-                ui.Add(text);
-            }
 
             void AddLine(string desc, int value, int y, ValueEvent e)
             {
-                TextBlock text = new TextBlock(desc, 2, 20, y);
-                text.Color = Color.White;
+                TextBlock text = new TextBlock(desc, 2, 20, y)
+                {
+                    Color = Color.White
+                };
 
                 NumberInput input = new NumberInput(20 + (int)text.TextWidth, y - 3, value)
                 {
@@ -58,6 +55,7 @@ namespace KreativerName.Scenes
                 ui.Add(text);
             }
 
+            AddLine("ID:           ", data.ID, 40, a => data.ID = (byte)a);
             AddLine("Textur:       ", data.Texture, 40, a => data.Texture = (byte)a);
             AddLine("Anim.länge:   ", data.AnimationLength, 60, a => data.AnimationLength = (byte)a);
             AddLine("Anim.phase:   ", data.AnimationPhase, 80, a => data.AnimationPhase = (byte)a);

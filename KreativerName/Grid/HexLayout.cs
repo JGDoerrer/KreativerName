@@ -23,6 +23,7 @@ namespace KreativerName.Grid
             this.origin = origin;
             this.size = size;
             this.startAngle = startAngle;
+            spacing = 1;
         }
 
         internal Matrix2 f;
@@ -30,6 +31,7 @@ namespace KreativerName.Grid
         internal Vector2 origin;
         internal float size;
         internal float startAngle;
+        internal float spacing;
 
         const float sqrt3 = 1.732050807568877293527446341505872366942805253810380628055f;
 
@@ -38,7 +40,7 @@ namespace KreativerName.Grid
         /// </summary>
         /// <param name="h">The hex position</param>
         /// <returns>Returns the pixel position</returns>
-        public Vector2 HexToPixel(HexPoint h)
+        public Vector2 HexToPixel(Vector2 h)
         {
             float x = (f.M11 * h.X + f.M12 * h.Y) * size;
             float y = (f.M21 * h.X + f.M22 * h.Y) * size;
@@ -83,7 +85,7 @@ namespace KreativerName.Grid
         /// <param name="h">The position of the hex</param>
         /// <param name="i">The index of the corner</param>
         /// <returns>Returns the pixel position of a corner of a hex.</returns>
-        public Vector2 HexCorner(HexPoint h, int i)
+        public Vector2 HexCorner(Vector2 h, int i)
         {
             double angle = 2 * Math.PI * (startAngle + i) / 6;
             float cos;

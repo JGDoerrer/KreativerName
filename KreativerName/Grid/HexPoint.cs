@@ -95,6 +95,11 @@ namespace KreativerName.Grid
             return !(left == right);
         }
 
+        public static implicit operator Vector2(HexPoint hexPoint)
+        {
+            return new Vector2(hexPoint.x, hexPoint.y);
+        }
+
         #endregion
 
         public byte[] ToBytes()
