@@ -9,9 +9,9 @@ using OpenTK;
 
 namespace KreativerName.Scenes
 {
-    public class Statistics : Scene
+    public class StatisticsScene : Scene
     {
-        public Statistics()
+        public StatisticsScene()
         {
             InitUI();
 
@@ -311,7 +311,7 @@ namespace KreativerName.Scenes
             }
         }
 
-        ~Statistics()
+        ~StatisticsScene()
         {
             // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
             Dispose(false);

@@ -92,7 +92,7 @@ namespace KreativerName.Scenes
                     frame.AddChild(button);
                 }
 
-                AddButton(0, 1, () => { SceneManager.LoadScene(new Transition(new Statistics(), 10)); });
+                AddButton(0, 1, () => { SceneManager.LoadScene(new Transition(new StatisticsScene(), 10)); });
                 AddButton(80, 2, () => { SceneManager.LoadScene(new Transition(new SettingsScene(), 10)); });
                 AddButton(160, 3, NewEditor);
                 AddButton(240, 4, () => { SceneManager.LoadScene(new Transition(new OnlineScene(), 10)); });
