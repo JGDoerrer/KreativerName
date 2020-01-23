@@ -11,8 +11,15 @@ namespace KreativerName.Networking
 
         public static bool Connected => client?.Connected == true;
 
+        /// <summary>
+        /// Gets invoked when a packet from the server is recieved.
+        /// </summary>
         public static event PacketEvent PacketRecieved;
 
+        /// <summary>
+        /// Connects the client to the server.
+        /// </summary>
+        /// <returns>Returns true when successfully connected, false if not.</returns>
         public static bool Connect()
         {
             try
@@ -38,11 +45,18 @@ namespace KreativerName.Networking
             }
         }
 
+        /// <summary>
+        /// Sends a packet to the server.
+        /// </summary>
+        /// <param name="packet">The packet to be sent.</param>
         public static void Send(Packet packet)
         {
             client?.Send(packet);
         }
 
+        /// <summary>
+        /// Logs in.
+        /// </summary>
         public static void Login()
         {
             if (client == null)
@@ -67,6 +81,9 @@ namespace KreativerName.Networking
             client.Send(new Packet(PacketCode.LogIn, PacketInfo.None, msg));
         }
 
+        /// <summary>
+        /// Compares the version of the server to the current one.
+        /// </summary>
         public static void CompareVersion()
         {
             if (client == null)
@@ -90,6 +107,9 @@ namespace KreativerName.Networking
             client.Send(new Packet(PacketCode.CompareVersion, PacketInfo.None, MainWindow.version.ToBytes()));
         }
 
+        /// <summary>
+        /// Disconnects from the server.
+        /// </summary>
         public static void Disconnect()
         {
             if (client == null)

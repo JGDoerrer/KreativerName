@@ -7,6 +7,9 @@ namespace KreativerName.Networking
 {
     public delegate void PacketEvent(Client client, Packet packet);
 
+    /// <summary>
+    /// A class for a connection between the game and the server.
+    /// </summary>
     public class Client
     {
         public Client(TcpClient client)
@@ -18,7 +21,9 @@ namespace KreativerName.Networking
         Thread threadRecieve;
         bool recieve = false;
 
-
+        /// <summary>
+        /// A event that gets invoked when a packet got recieved.
+        /// </summary>
         public event PacketEvent PacketRecieved;
         public bool Connected => tcp.Connected;
         public uint UserID;
@@ -27,6 +32,10 @@ namespace KreativerName.Networking
         public EndPoint LocalIP => tcp.Client.LocalEndPoint;
         public EndPoint RemoteIP => tcp.Client.RemoteEndPoint;
 
+        /// <summary>
+        /// Sends a packet.
+        /// </summary>
+        /// <param name="packet">The packet to be sent.</param>
         public void Send(Packet packet)
         {
             if (Connected)
@@ -49,6 +58,9 @@ namespace KreativerName.Networking
             }
         }
 
+        /// <summary>
+        /// Starts a thread for recieving packets.
+        /// </summary>
         public void StartRecieve()
         {
             recieve = true;
@@ -56,6 +68,9 @@ namespace KreativerName.Networking
             threadRecieve.Start();
         }
 
+        /// <summary>
+        /// Stops the thread for recieving packets.
+        /// </summary>
         public void StopRecieve()
         {
             recieve = false;
@@ -84,6 +99,9 @@ namespace KreativerName.Networking
             }
         }
 
+        /// <summary>
+        /// Closes the connection.
+        /// </summary>
         public void Disconnect()
         {
             if (tcp.Connected)

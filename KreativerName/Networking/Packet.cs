@@ -5,6 +5,9 @@ using KreativerName.Grid;
 
 namespace KreativerName.Networking
 {
+    /// <summary>
+    /// Stores data
+    /// </summary>
     public struct Packet : IBytes
     {
         public Packet(byte[] bytes) : this()
