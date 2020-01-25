@@ -4,7 +4,9 @@ using System.Drawing;
 using KreativerName.Grid;
 using KreativerName.Rendering;
 using KreativerName.UI;
+using KreativerName.UI.Constraints;
 using OpenTK;
+using OpenTK.Input;
 
 namespace KreativerName.Scenes
 {
@@ -30,13 +32,26 @@ namespace KreativerName.Scenes
             new Vector2(0, 0),
             32, 0.5f);
 
+        public event EmptyEvent OnExit;
+
         private void InitUI()
         {
-            ui = new UI.UI();
-            ui.Input = SceneManager.Input;
+            ui = new UI.UI
+            {
+                Input = SceneManager.Input
+            };
 
+            Button exitButton = new Button(20, 20, 40, 40)
+            { Shortcut = Key.Escape };
+            exitButton.OnLeftClick += () => OnExit?.Invoke();
 
-            void AddLine(string desc, int value, int y, ValueEvent e)
+            UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black)
+            { Constraints = new UIConstraints(10, 10, 20, 20) };
+
+            exitButton.AddChild(exitImage);
+            ui.Add(exitButton);
+
+            void AddLine(string desc, int value, int y, ValueEvent e, byte min = byte.MinValue, byte max = byte.MaxValue)
             {
                 TextBlock text = new TextBlock(desc, 2, 20, y)
                 {
@@ -45,8 +60,8 @@ namespace KreativerName.Scenes
 
                 NumberInput input = new NumberInput(20 + (int)text.TextWidth, y - 3, value)
                 {
-                    MinValue = byte.MinValue,
-                    MaxValue = byte.MaxValue,
+                    MinValue = min,
+                    MaxValue = max,
                 };
                 input.ValueChanged += e;
 
@@ -55,12 +70,11 @@ namespace KreativerName.Scenes
                 ui.Add(text);
             }
 
-            AddLine("ID:           ", data.ID, 40, a => data.ID = (byte)a);
-            AddLine("Textur:       ", data.Texture, 40, a => data.Texture = (byte)a);
-            AddLine("Anim.länge:   ", data.AnimationLength, 60, a => data.AnimationLength = (byte)a);
-            AddLine("Anim.phase:   ", data.AnimationPhase, 80, a => data.AnimationPhase = (byte)a);
-            AddLine("Anim.geschw.: ", data.AnimationSpeed, 100, a => data.AnimationSpeed = (byte)a);
-
+            AddLine("Id:           ", data.ID, 100, a => data.ID = (byte)a);
+            AddLine("Textur:       ", data.Texture, 120, a => data.Texture = (byte)a);
+            AddLine("Anim.länge:   ", data.AnimationLength, 140, a => data.AnimationLength = (byte)a);
+            AddLine("Anim.phase:   ", data.AnimationPhase, 160, a => data.AnimationPhase = (byte)a);
+            AddLine("Anim.geschw.: ", data.AnimationSpeed, 180, a => data.AnimationSpeed = (byte)a);
         }
 
         public override void Update()

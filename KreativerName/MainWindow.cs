@@ -63,8 +63,9 @@ namespace KreativerName
                 SceneManager.LoadScene(new Transition(new ErrorScene(ex), 10));
             }
 
-            // Update TimePlaying
+            // Update Stats
             Stats.Current.TimePlaying = Stats.Current.TimePlaying.Add(TimeSpan.FromSeconds(e.Time));
+            Stats.Current.LastUpdated = DateTime.Now;
 
             if (FrameCounter % 600 == 0)
             {

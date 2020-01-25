@@ -118,7 +118,7 @@
     <Compile Include="Scenes\Minesweeper.cs" />
     <Compile Include="Scenes\OnlineScene.cs" />
     <Compile Include="Scenes\SettingsScene.cs" />
-    <Compile Include="Scenes\Statistics.cs" />
+    <Compile Include="Scenes\StatisticsScene.cs" />
     <Compile Include="Scenes\Tetris.cs" />
     <Compile Include="Scenes\Transition.cs" />
     <Compile Include="Scenes\MainMenu.cs" />

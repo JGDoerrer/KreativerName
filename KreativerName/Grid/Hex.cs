@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace KreativerName.Grid
 {
@@ -78,39 +79,38 @@ namespace KreativerName.Grid
         /// <summary>
         /// The combined HexFlags of the types.
         /// </summary>
-        public HexFlags Flags
+        public HexFlags GetFlags(HexData[] data)
         {
-            get
+            HexFlags flags = 0;
+
+            foreach (HexData hexData in GetTypes(data))
             {
-                HexFlags flags = 0;
-
-                foreach (HexData hexData in Types)
-                {
-                    flags |= hexData.HexFlags;
-                }
-
-                return flags;
+                flags |= hexData.HexFlags;
             }
+
+            return flags;
         }
 
         /// <summary>
         /// The HexData of the IDs.
         /// </summary>
-        public List<HexData> Types
+        public List<HexData> GetTypes(HexData[] data)
         {
-            get
+            List<HexData> types = new List<HexData>();
+
+            foreach (byte id in IDs)
             {
-                List<HexData> types = new List<HexData>();
-
-                foreach (byte id in IDs)
+                foreach (HexData d in data)
                 {
-                    // Assume Hexdata.data is ordered by id
-                    if (HexData.Data.Length > id)
-                        types.Add(HexData.Data[id]);
+                    if (d.ID == id)
+                    {
+                        types.Add(d);
+                        break;
+                    }
                 }
-
-                return types;
             }
+
+            return types;
         }
 
         /// <summary>

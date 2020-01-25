@@ -29,10 +29,18 @@ namespace KreativerName.Grid
             get => y;
             set => y = value;
         }
-        
+
         public override string ToString()
         {
             return $"({x}, {y})";
+        }
+
+        public float DistanceTo(HexPoint b)
+           => DistanceTo(b.x, b.y);
+
+        public float DistanceTo(int x, int y)
+        {
+            return (Math.Abs(X - x) + Math.Abs(X + Y - x - y) + Math.Abs(Y - y)) / 2;
         }
 
         #region Operators

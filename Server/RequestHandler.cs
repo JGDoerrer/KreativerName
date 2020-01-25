@@ -192,7 +192,11 @@ namespace Server
                 stats.FromBytes(msg.Bytes, 0);
 
                 User user = DataBase.GetUser(client.UserID).Value;
-                user.Statistics = stats;
+
+                // If new stats are newer, update
+                if (stats.LastUpdated > user.Statistics.LastUpdated)
+                    user.Statistics = stats;
+
                 DataBase.SaveUser(user);
             }
             catch (Exception)

@@ -23,8 +23,9 @@ namespace KreativerName.UI
         {
             lock (Elements)
             {
-                foreach (UIElement element in Elements)
+                for (int i = 0; i < Elements.Count; i++)
                 {
+                    UIElement element = Elements[i];
                     element.Update(windowSize);
                 }
             }

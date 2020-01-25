@@ -93,7 +93,7 @@ namespace Server
             Console.WriteLine("Message: ");
             string s = "";
 
-            for (string line = ""; (line = Console.ReadLine()) != "";)
+            for (string line; (line = Console.ReadLine()) != "";)
             {
                 s += line + "\n";
             }

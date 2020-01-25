@@ -97,7 +97,7 @@ namespace KreativerName.Grid
                 Level copy = level;//.Copy();
                 copy.Update(move);
 
-                HexFlags flags = copy.Grid[move].Value.Flags;
+                HexFlags flags = copy.Grid[move].Value.GetFlags(level.Data);
 
                 if (flags.HasFlag(HexFlags.Deadly))
                     continue;
