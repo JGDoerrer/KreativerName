@@ -151,6 +151,7 @@ namespace KreativerName.Grid
             List<byte> bytes = new List<byte>
             {
                 ChangeTo,
+                Data,
                 (byte)MoveX,
                 (byte)MoveY,
                 (byte)Condition
