@@ -42,13 +42,14 @@ namespace KreativerName.Grid
         /// </summary>
         public string Hint;
 
+        public HexData[] Data;        
         HexPoint lastPlayer;
         bool updated;
 
         /// <summary>
         /// Updates the level.
         /// </summary>
-        /// <param name="player">The new position of the player</param>
+        /// <param name="player">The new position of the player.</param>
         public void Update(HexPoint player)
         {
             if (!updated)
@@ -73,8 +74,7 @@ namespace KreativerName.Grid
 
         private void UpdateHex(Hex hex, HexPoint player, ref HexGrid<Hex> nextGrid)
         {
-
-            foreach (HexData type in hex.Types)
+            foreach (HexData type in hex.GetTypes(Data))
             {
                 HexPoint position = hex.Position;
 
@@ -96,11 +96,11 @@ namespace KreativerName.Grid
                             conditionMet = position == lastPlayer;
                             break;
                         case HexCondition.NextFlag:
-                            conditionMet = Grid[nextPos] == null || (Grid[nextPos]?.Flags & (HexFlags)action.Data) != 0;
+                            conditionMet = Grid[nextPos] == null || (Grid[nextPos]?.GetFlags(Data) & (HexFlags)action.Data) != 0;
                             move = false;
                             break;
                         case HexCondition.NextNotFlag:
-                            conditionMet = Grid[nextPos] != null && (Grid[nextPos]?.Flags & (HexFlags)action.Data) == 0;
+                            conditionMet = Grid[nextPos] != null && (Grid[nextPos]?.GetFlags(Data) & (HexFlags)action.Data) == 0;
                             break;
                         case HexCondition.NextID:
                             conditionMet = Grid[nextPos] == null || Grid[nextPos]?.IDs.Contains(action.Data) == true;
@@ -163,7 +163,7 @@ namespace KreativerName.Grid
             {
                 int j = 1;
 
-                while (Grid[(directions[i] * j) + player].HasValue && !Grid[(directions[i] * j) + player].Value.Flags.HasFlag(HexFlags.Solid))
+                while (Grid[(directions[i] * j) + player].HasValue && !Grid[(directions[i] * j) + player].Value.GetFlags(Data).HasFlag(HexFlags.Solid))
                 {
                     moves.Add(directions[i] * j + player);
                     j++;
@@ -231,6 +231,14 @@ namespace KreativerName.Grid
             byte[] hint = Encoding.UTF8.GetBytes(Hint ?? "");
             bytes.AddRange(hint.Length.ToBytes());
             bytes.AddRange(hint);
+            
+            // Write hex data
+            bytes.AddRange(Data.Length.ToBytes());
+
+            for (int i = 0; i < Data.Length; i++)
+            {
+                bytes.AddRange(Data[i].ToBytes());
+            }
 
             return bytes.ToArray();
         }
@@ -255,6 +263,22 @@ namespace KreativerName.Grid
                 count += hintLength.FromBytes(bytes, startIndex + count);
                 Hint = Encoding.UTF8.GetString(bytes, startIndex + count, hintLength);
                 count += hintLength;
+
+                //Data = HexData.Data;
+                //return count;
+
+                // Read hex data
+                int dataCount = BitConverter.ToInt32(bytes, startIndex + count);
+                count += 4;
+
+                Data = new HexData[dataCount];
+
+                for (int i = 0; i < dataCount; i++)
+                {
+                    HexData hexData = new HexData();
+                    count += hexData.FromBytes(bytes, startIndex + count);
+                    Data[i] = hexData;
+                }
             }
             catch (Exception e)
             {

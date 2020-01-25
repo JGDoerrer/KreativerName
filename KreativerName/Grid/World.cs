@@ -51,7 +51,7 @@ namespace KreativerName.Grid
         /// Stores the connections between levels.
         /// </summary>
         public List<int>[] LevelConnections;
-
+        
         /// <summary>
         /// Defines if all levels have been completed.
         /// </summary>
@@ -312,6 +312,7 @@ namespace KreativerName.Grid
                     Levels.Add(level);
                 }
 
+                // Read level connections
                 LevelConnections = new List<int>[levelCount];
 
                 for (int i = 0; i < levelCount; i++)

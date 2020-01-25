@@ -320,11 +320,15 @@ namespace KreativerName.Scenes
                 level = new Level();
 
             renderer.Grid = level.Grid;
+            renderer.Data = level.Data;
+
             scrolling = new Vector2(0, 0);
+
+            InitHex();
 
             boxLevelHint.Text = level.Hint ?? "";
             textLevel.Text = $"Level {levelIndex + 1:000}";
-            textMoves.Text = $"Min. Züge: {level.MinMoves:00}";
+            textMoves.Text = $"Min. Züge: {level.MinMoves:00}";                       
         }
 
         private void LoadWorld()
@@ -385,13 +389,13 @@ namespace KreativerName.Scenes
             int h = 5;
 
             // make rectangle
-            for (int j = 0; j < h; j++)
-            {
-                for (int i = -(j / 2); i < w - (j + 1) / 2; i++)
-                {
-                    Grid[i, j] = new Hex(i, j, 0);
-                }
-            }
+            //for (int j = 0; j < h; j++)
+            //{
+            //    for (int i = -(j / 2); i < w - (j + 1) / 2; i++)
+            //    {
+            //        Grid[i, j] = new Hex(i, j, 0);
+            //    }
+            //}
 
             renderer.Grid = Grid;
         }
@@ -416,53 +420,6 @@ namespace KreativerName.Scenes
             {
                 Input = input
             };
-
-            #region Hex
-
-            const int size = 42;
-            const int rowSize = 8;
-            const int margin = 5;
-            byte[] values = HexData.Data.Select(x => x.ID).OrderBy(x => x).ToArray();
-
-            lowerFrame = new Frame
-            {
-                Constraints = new UIConstraints(
-                    new PixelConstraint(0),
-                    new PixelConstraint(0, RelativeTo.Window, Direction.Bottom),
-                    new RelativeConstraint(1, RelativeTo.Window),
-                    new PixelConstraint((values.Length / rowSize + 1) * (size + margin) + (40 - margin)))
-            };
-
-            buttonFrame = new Frame
-            {
-                Constraints = new UIConstraints(20, 20, rowSize * (size + margin), (values.Length / rowSize) * (size + margin))
-            };
-
-            for (int i = 0; i < values.Length; i++)
-            {
-                Button button = new Button((i % rowSize) * (size + margin), (i / rowSize) * (size + margin), size, size);
-
-                UI.Image image = new UI.Image(Textures.Get($"Hex\\{i}"), new RectangleF(0, 0, 32, 32));
-                image.SetConstraints(new UIConstraints(6, 5, size - 10, size - 10));
-                button.AddChild(image);
-
-                if (i < 10)
-                    button.Shortcut = (Key)(110 + i);
-
-                int copy = i;
-                button.OnLeftClick += () => drawType = values[copy];
-
-                buttonFrame.AddChild(button);
-            }
-
-            lowerFrame.AddChild(buttonFrame);
-
-            textHexDesc = new TextBlock("", 2, rowSize * (size + margin) + 40, 20);
-            lowerFrame.AddChild(textHexDesc);
-
-            ui.Add(lowerFrame);
-
-            #endregion
 
             // Level
 
@@ -567,6 +524,68 @@ namespace KreativerName.Scenes
             leftFrame.AddChild(boxLevelHint);
 
             ui.Add(leftFrame);
+        }
+
+        private void InitHex()
+        {
+            if (level.Data == null)
+                return;
+
+            const int size = 42;
+            const int rowSize = 8;
+            const int margin = 5;
+            byte[] values = level.Data.Select(x => x.ID).OrderBy(x => x).ToArray();
+
+            lowerFrame = new Frame
+            {
+                Constraints = new UIConstraints(
+                    new PixelConstraint(0),
+                    new PixelConstraint(0, RelativeTo.Window, Direction.Bottom),
+                    new RelativeConstraint(1, RelativeTo.Window),
+                    new PixelConstraint((values.Length / rowSize + 1) * (size + margin) + (40 - margin)))
+            };
+
+            buttonFrame = new Frame
+            {
+                Constraints = new UIConstraints(20, 20, rowSize * (size + margin), (values.Length / rowSize) * (size + margin))
+            };
+
+            for (int i = 0; i < values.Length; i++)
+            {
+                Button button = new Button((i % rowSize) * (size + margin), (i / rowSize) * (size + margin), size, size);
+
+                UI.Image image = new UI.Image(Textures.Get($"Hex\\{i}"), new RectangleF(0, 0, 32, 32));
+                image.SetConstraints(new UIConstraints(6, 5, size - 10, size - 10));
+                button.AddChild(image);
+
+                if (i < 10)
+                    button.Shortcut = (Key)(110 + i);
+
+                int copy = i;
+                button.OnLeftClick += () => drawType = values[copy];
+
+                buttonFrame.AddChild(button);
+            }
+
+            lowerFrame.AddChild(buttonFrame);
+
+            textHexDesc = new TextBlock("", 2, rowSize * (size + margin) + 40, 20);
+            lowerFrame.AddChild(textHexDesc);
+
+            Button button1 = new Button(rowSize * (size + margin) + 40, 20, 140, 40);
+            button1.OnLeftClick += () =>
+            {
+                if (drawType != null)
+                {
+                    HexEditor next = new HexEditor(level.Data[drawType ?? 0]);
+                    next.OnExit += () => SceneManager.LoadScene(new Transition(this, 10));
+                    SceneManager.LoadScene(new Transition(next, 10));
+                }
+            };
+            button1.AddChild(new TextBlock("Bearbeiten", 2, 10, 10));
+            lowerFrame.AddChild(button1);
+
+            ui.Add(lowerFrame);
         }
 
         /// <summary>

@@ -172,7 +172,7 @@ namespace KreativerName.Scenes
             if (!singleLevel)
                 Stats.Current.TotalMoves++;
 
-            HexFlags flags = Grid[player].Value.Flags;
+            HexFlags flags = Grid[player].Value.GetFlags(level.Data);
 
             // If player is on a deadly or solid tile, reset
             if (flags.HasFlag(HexFlags.Deadly) || flags.HasFlag(HexFlags.Solid))
@@ -330,10 +330,6 @@ namespace KreativerName.Scenes
                 // Center grid
                 layout.origin = new Vector2((windowSize.X - centerX) / 2, (windowSize.Y - centerY) / 2) + scrolling;
 
-                //int totalWidth = (int)(editor.layout.size * sqrt3 * (maxX - minX + 1));
-                //int totalHeight = (int)(editor.layout.size * 1.5f * (maxY - minY + 1.25f));
-
-
                 renderer.Layout = layout;
             }
 
@@ -349,14 +345,6 @@ namespace KreativerName.Scenes
             if (titleAnim >= 0)
             {
                 RenderTitle(width, height);
-            }
-            if (levelAnim >= 0 && titleAnim < 0)
-            {
-                float t = levelDone ? (levelAnim / (float)MAX_LEVEL_ANIM) : (1 - levelAnim / (float)MAX_LEVEL_ANIM);
-
-                int alpha = (int)((1 - QuarticOut(t)) * 300).Clamp(0, 255);
-
-                DrawBlackWindow(width, height, alpha);
             }
         }
 
@@ -462,6 +450,7 @@ namespace KreativerName.Scenes
             player = level.StartPos;
             Moves = 0;
             renderer.Grid = level.Grid;
+            renderer.Data = level.Data;
 
             scrolling = new Vector2();
             scale = 1;
