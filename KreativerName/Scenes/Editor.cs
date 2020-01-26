@@ -383,21 +383,11 @@ namespace KreativerName.Scenes
 
         private void NewLevel()
         {
-            Grid = new HexGrid<Hex>();
-
-            int w = 10;
-            int h = 5;
-
-            // make rectangle
-            //for (int j = 0; j < h; j++)
-            //{
-            //    for (int i = -(j / 2); i < w - (j + 1) / 2; i++)
-            //    {
-            //        Grid[i, j] = new Hex(i, j, 0);
-            //    }
-            //}
+            Grid = LevelGenerator.GenerateGrid();
+            level.Data = HexData.Data;
 
             renderer.Grid = Grid;
+            renderer.Data = level.Data;
         }
 
         #endregion

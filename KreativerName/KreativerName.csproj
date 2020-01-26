@@ -88,6 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Grid\HexData.cs" />
+    <Compile Include="Grid\LevelGenerator.cs" />
     <Compile Include="Grid\LevelSolver.cs" />
     <Compile Include="Networking\Client.cs" />
     <Compile Include="Networking\ClientManager.cs" />

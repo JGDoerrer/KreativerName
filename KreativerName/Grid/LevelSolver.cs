@@ -99,7 +99,7 @@ namespace KreativerName.Grid
 
                 HexFlags flags = copy.Grid[move].Value.GetFlags(level.Data);
 
-                if (flags.HasFlag(HexFlags.Deadly))
+                if (flags.HasFlag(HexFlags.Deadly) || flags.HasFlag(HexFlags.Solid))
                     continue;
 
                 if (flags.HasFlag(HexFlags.Goal))

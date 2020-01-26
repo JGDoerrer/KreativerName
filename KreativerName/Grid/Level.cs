@@ -263,10 +263,7 @@ namespace KreativerName.Grid
                 count += hintLength.FromBytes(bytes, startIndex + count);
                 Hint = Encoding.UTF8.GetString(bytes, startIndex + count, hintLength);
                 count += hintLength;
-
-                //Data = HexData.Data;
-                //return count;
-
+                
                 // Read hex data
                 int dataCount = BitConverter.ToInt32(bytes, startIndex + count);
                 count += 4;

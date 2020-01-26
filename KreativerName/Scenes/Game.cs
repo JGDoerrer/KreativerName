@@ -490,6 +490,9 @@ namespace KreativerName.Scenes
 
             UpdateTitle();
 
+            renderer.Grid = level.Grid;
+            renderer.Data = level.Data;
+
             player = level.StartPos;
             Moves = 0;
         }
