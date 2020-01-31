@@ -14,14 +14,14 @@ namespace KreativerName.Scenes
     {
         public HexEditor(HexData data)
         {
-            this.data = data;
+            this.Data = data;
 
             InitUI();
         }
 
         UI.UI ui;
 
-        HexData data;
+        public HexData Data;
 
         const float sqrt3 = 1.732050807568877293527446341505872366942805253810380628055f;
 
@@ -43,7 +43,7 @@ namespace KreativerName.Scenes
 
             Button exitButton = new Button(20, 20, 40, 40)
             { Shortcut = Key.Escape };
-            exitButton.OnLeftClick += () => OnExit?.Invoke();
+            exitButton.OnLeftClick += (sender) => OnExit?.Invoke();
 
             UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black)
             { Constraints = new UIConstraints(10, 10, 20, 20) };
@@ -70,11 +70,11 @@ namespace KreativerName.Scenes
                 ui.Add(text);
             }
 
-            AddLine("Id:           ", data.ID, 100, a => data.ID = (byte)a);
-            AddLine("Textur:       ", data.Texture, 120, a => data.Texture = (byte)a);
-            AddLine("Anim.länge:   ", data.AnimationLength, 140, a => data.AnimationLength = (byte)a);
-            AddLine("Anim.phase:   ", data.AnimationPhase, 160, a => data.AnimationPhase = (byte)a);
-            AddLine("Anim.geschw.: ", data.AnimationSpeed, 180, a => data.AnimationSpeed = (byte)a);
+            AddLine("Id:           ", Data.ID, 100, a => Data.ID = (byte)a);
+            AddLine("Textur:       ", Data.Texture, 120, a => Data.Texture = (byte)a);
+            AddLine("Anim.länge:   ", Data.AnimationLength, 140, a => Data.AnimationLength = (byte)a);
+            AddLine("Anim.phase:   ", Data.AnimationPhase, 160, a => Data.AnimationPhase = (byte)a);
+            AddLine("Anim.geschw.: ", Data.AnimationSpeed, 180, a => Data.AnimationSpeed = (byte)a);
         }
 
         public override void Update()
@@ -91,7 +91,7 @@ namespace KreativerName.Scenes
             ui.Render(windowSize);
 
             layout.origin = new Vector2(400, 400);
-            GridRenderer.RenderHex(new HexPoint(0, 0), new List<HexData> { data }, layout, Color.White, frameCount);
+            GridRenderer.RenderHex(new HexPoint(0, 0), new List<HexData> { Data }, layout, Color.White, frameCount);
 
             frameCount++;
         }
@@ -113,7 +113,7 @@ namespace KreativerName.Scenes
                 MaxValue = 9999;
                 MinValue = -999;
 
-                add.OnLeftClick += () =>
+                add.OnLeftClick += (sender) =>
                 {
                     if (add.ui.Input.KeyDown(OpenTK.Input.Key.LControl) ||
                         add.ui.Input.KeyDown(OpenTK.Input.Key.RControl))
@@ -129,7 +129,7 @@ namespace KreativerName.Scenes
                     text.Text = Value.ToString();
                     ValueChanged?.Invoke(Value);
                 };
-                sub.OnLeftClick += () =>
+                sub.OnLeftClick += (sender) =>
                 {
                     if (add.ui.Input.KeyDown(OpenTK.Input.Key.LControl) ||
                         add.ui.Input.KeyDown(OpenTK.Input.Key.RControl))

@@ -42,11 +42,11 @@ namespace KreativerName.UI
             if (Enabled && (!clicked && MouseOver(windowSize) && MouseLeftDown && !mouseDown ||
                 (ui.Input.KeyPress(Shortcut) && !ui.ignoreShortcuts)))
             {
-                OnLeftClick?.Invoke();
+                OnLeftClick?.Invoke(this);
             }
             if (Enabled && MouseOver(windowSize) && MouseRightClick)
             {
-                OnRightClick?.Invoke();
+                OnRightClick?.Invoke(this);
             }
 
             if (ChangeState)

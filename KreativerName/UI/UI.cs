@@ -21,13 +21,10 @@ namespace KreativerName.UI
 
         public void Update(Vector2 windowSize)
         {
-            lock (Elements)
+            for (int i = Elements.Count - 1; i >= 0; i--)
             {
-                for (int i = 0; i < Elements.Count; i++)
-                {
-                    UIElement element = Elements[i];
-                    element.Update(windowSize);
-                }
+                UIElement element = Elements[i];
+                element.Update(windowSize);
             }
 
             //Input.Update();
@@ -61,6 +58,11 @@ namespace KreativerName.UI
         {
             element.SetUI(this);
             Elements.Add(element);
+        }
+
+        public void Remove(UIElement element)
+        {
+            Elements.Remove(element);
         }
 
         public bool MouseOver(Vector2 windowSize)

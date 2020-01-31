@@ -32,7 +32,7 @@ namespace KreativerName.Scenes
             {
                 Button button = new Button(40, 40, 40, 40);
                 button.Shortcut = OpenTK.Input.Key.Escape;
-                button.OnLeftClick += () =>
+                button.OnLeftClick += (sender) =>
                 {
                     SceneManager.LoadScene(new Transition(new MainMenu(), 10));
                 };
@@ -100,14 +100,14 @@ namespace KreativerName.Scenes
             Button sendButton = new Button();
             sendButton.SetConstraints(new CenterConstraint(), new PixelConstraint(350), new PixelConstraint(120), new PixelConstraint(34));
             sendButton.Enabled = !Settings.Current.LoggedIn;
-            sendButton.OnLeftClick += () => SignUp(textBox);
+            sendButton.OnLeftClick += (sender) => SignUp(textBox);
 
             TextBlock sendText = new TextBlock("Anmelden", 2, 10, 10);
             sendButton.AddChild(sendText);
             ui.Add(sendButton);
 
-            AddText($"ID: {Settings.Current.UserID.ToString("x")}", 400);
-            AddText($"LoginInfo: {Settings.Current.LoginInfo.ToString("x")}", 440);
+            AddText($"ID: {Settings.Current.UserID.ToID()}", 400);
+            AddText($"LoginInfo: {Settings.Current.LoginInfo.ToID()}", 440);
         }
 
         private void SignUp(TextBox textBox)

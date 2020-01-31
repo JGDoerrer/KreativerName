@@ -92,7 +92,7 @@ namespace KreativerName.Scenes
             {
                 Shortcut = Key.Escape
             };
-            exitButton.OnLeftClick += () => SceneManager.LoadScene(new Transition(new MainMenu(), 10));
+            exitButton.OnLeftClick += (sender) => SceneManager.LoadScene(new Transition(new MainMenu(), 10));
 
             UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black);
             exitImage.SetConstraints(new UIConstraints(10, 10, 20, 20));
@@ -117,7 +117,7 @@ namespace KreativerName.Scenes
                     int copyX = x;
                     int copyY = y;
 
-                    button.OnLeftClick += () =>
+                    button.OnLeftClick += (sender) =>
                     {
                         if (firstClick)
                         {
@@ -127,7 +127,7 @@ namespace KreativerName.Scenes
 
                         RevealTile(copyX, copyY);
                     };
-                    button.OnRightClick += () => MarkTile(copyX, copyY);
+                    button.OnRightClick += (sender) => MarkTile(copyX, copyY);
 
                     tiles[x, y].Button = button;
 

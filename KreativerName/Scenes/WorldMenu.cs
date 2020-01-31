@@ -34,7 +34,7 @@ namespace KreativerName.Scenes
 
             Button exitButton = new Button(40, 40, 40, 40);
             exitButton.Shortcut = Key.Escape;
-            exitButton.OnLeftClick += () =>
+            exitButton.OnLeftClick += (sender) =>
             {
                 SceneManager.LoadScene(new Transition(new MainMenu(), 10));
             };
@@ -55,9 +55,11 @@ namespace KreativerName.Scenes
 
             List<World> worlds = new List<World>();
             int worldcount = 0;
-            while (File.Exists($@"Resources\Worlds\{worldcount:000}.wld"))
+
+            while (File.Exists($"{World.BasePath}{worldcount:000}.wld"))
             {
-                worlds.Add(World.LoadFromFile($"{worldcount:000}"));
+                World item = World.LoadFromFile($"{worldcount:000}");
+                worlds.Add(item);
                 worldcount++;
             }
 
@@ -123,7 +125,7 @@ namespace KreativerName.Scenes
                         button.Enabled = worlds[i - 1].AllCompleted || worlds[i - 1].AllPerfect;
 
                     int world = i;
-                    button.OnLeftClick += () => { NewGame(world); };
+                    button.OnLeftClick += (sender) => { NewGame(world); };
 
                     TextBlock text = new TextBlock((i + 1).ToRoman().ToLower(), 3);
                     text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)text.TextWidth), new PixelConstraint((int)text.TextHeight));

@@ -41,7 +41,7 @@ namespace KreativerName.Scenes
             ui.Add(title);
 
             Button button = new Button(40, 40, 40, 40) { Shortcut = OpenTK.Input.Key.Escape };
-            button.OnLeftClick += () =>
+            button.OnLeftClick += (sender) =>
             {
                 SceneManager.LoadScene(new Transition(new MainMenu(), 10));
             };

@@ -66,7 +66,7 @@ namespace KreativerName.Scenes
                 button.Color = Color.FromArgb(100, 255, 100);
                 button.Shortcut = OpenTK.Input.Key.S;
                 button.Constraints = new UIConstraints(new CenterConstraint(), new PixelConstraint(0), new PixelConstraint(300), new PixelConstraint(60));
-                button.OnLeftClick += () => { SceneManager.LoadScene(new Transition(new WorldMenu(), 10)); };
+                button.OnLeftClick += (sender) => { SceneManager.LoadScene(new Transition(new WorldMenu(), 10)); };
 
                 TextBlock startText = new TextBlock("Spiel starten", 3);
                 startText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)startText.TextWidth), new PixelConstraint((int)startText.TextHeight));
@@ -92,10 +92,10 @@ namespace KreativerName.Scenes
                     frame.AddChild(button);
                 }
 
-                AddButton(0, 1, () => { SceneManager.LoadScene(new Transition(new StatisticsScene(), 10)); });
-                AddButton(80, 2, () => { SceneManager.LoadScene(new Transition(new SettingsScene(), 10)); });
+                AddButton(0, 1, (sender) => { SceneManager.LoadScene(new Transition(new StatisticsScene(), 10)); });
+                AddButton(80, 2, (sender) => { SceneManager.LoadScene(new Transition(new SettingsScene(), 10)); });
                 AddButton(160, 3, NewEditor);
-                AddButton(240, 4, () => { SceneManager.LoadScene(new Transition(new OnlineScene(), 10)); });
+                AddButton(240, 4, (sender) => { SceneManager.LoadScene(new Transition(new OnlineScene(), 10)); });
 
                 mainFrame.AddChild(frame);
             }
@@ -103,7 +103,7 @@ namespace KreativerName.Scenes
                 Button button = new Button();
                 button.Color = Color.FromArgb(255, 100, 100);
                 button.Constraints = new UIConstraints(new CenterConstraint(), new PixelConstraint(200), new PixelConstraint(300), new PixelConstraint(60));
-                button.OnLeftClick += () => { SceneManager.CloseWindow(); };
+                button.OnLeftClick += (sender) => { SceneManager.CloseWindow(); };
 
                 TextBlock exitText = new TextBlock("Schliessen", 3);
                 exitText.Constraints = new UIConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)exitText.TextWidth), new PixelConstraint((int)exitText.TextHeight));
@@ -151,7 +151,7 @@ namespace KreativerName.Scenes
             ui.Render(windowSize);
         }
 
-        private void NewEditor()
+        private void NewEditor(UIElement sender)
         {
             Editor editor = new Editor();
             editor.OnExit += () =>

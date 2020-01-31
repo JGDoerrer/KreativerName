@@ -175,50 +175,6 @@ namespace KreativerName.Grid
 
         #region Load & Save
 
-        public void SaveToFile(string name)
-        {
-            byte[] bytes = Compress(ToBytes());
-
-            File.WriteAllBytes($@"Resources\Levels\{name}.lvl", bytes);
-        }
-
-        public static Level LoadFromFile(string name)
-        {
-            Level level = new Level();
-            string path = $@"Resources\Levels\{name}.lvl";
-
-            if (File.Exists(path))
-            {
-                byte[] bytes = Decompress(File.ReadAllBytes(path));
-                level.FromBytes(bytes, 0);
-            }
-
-            return level;
-        }
-
-
-        static byte[] Compress(byte[] data)
-        {
-            MemoryStream output = new MemoryStream();
-            using (DeflateStream dstream = new DeflateStream(output, CompressionLevel.Optimal))
-            {
-                dstream.Write(data, 0, data.Length);
-            }
-            return output.ToArray();
-        }
-
-        static byte[] Decompress(byte[] data)
-        {
-            MemoryStream input = new MemoryStream(data);
-            MemoryStream output = new MemoryStream();
-            using (DeflateStream dstream = new DeflateStream(input, CompressionMode.Decompress))
-            {
-                dstream.CopyTo(output);
-            }
-            return output.ToArray();
-        }
-
-
         public byte[] ToBytes()
         {
             List<byte> bytes = new List<byte>();

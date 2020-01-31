@@ -69,7 +69,7 @@ namespace KreativerName.Scenes
             {
                 Shortcut = Key.Escape
             };
-            exitButton.OnLeftClick += () =>
+            exitButton.OnLeftClick += (sender) =>
             {
                 SceneManager.LoadScene(new Transition(new MainMenu(), 10));
             };
@@ -80,7 +80,7 @@ namespace KreativerName.Scenes
             ui.Add(exitButton);
 
             Button weeklyButton = new Button(200, 40, 40, 40);
-            weeklyButton.OnLeftClick += () =>
+            weeklyButton.OnLeftClick += (sender) =>
             {
                 if (!weekly.HasValue)
                 {
@@ -119,7 +119,7 @@ namespace KreativerName.Scenes
             {
                 Button button = new Button(0, i * (ButtonHeight + Margin), 0, ButtonHeight);
                 button.Constraints.widthCon = new RelativeConstraint(1, RelativeTo.Parent);
-                button.OnLeftClick += () =>
+                button.OnLeftClick += (sender) =>
                 {
                     Game game = new Game(world);
                     game.OnExit += () => { SceneManager.LoadScene(new Transition(this, 10)); };

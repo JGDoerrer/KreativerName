@@ -59,7 +59,7 @@ namespace KreativerName.Scenes
 
 
             Button exitButton = new Button(20, 20, 40, 40) { Shortcut = Key.Escape };
-            exitButton.OnLeftClick += () => SceneManager.LoadScene(new Transition(new WorldMenu(), 10));
+            exitButton.OnLeftClick += (sender) => SceneManager.LoadScene(new Transition(new WorldMenu(), 10));
 
             UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black)
             { Constraints = new UIConstraints(10, 10, 20, 20) };
@@ -79,7 +79,7 @@ namespace KreativerName.Scenes
             modeText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)modeText.TextWidth), new PixelConstraint((int)modeText.TextHeight));
             modeButton.AddChild(modeText);
 
-            modeButton.OnLeftClick += () =>
+            modeButton.OnLeftClick += (sender) =>
             {
                 normalMode = !normalMode;
 
@@ -184,7 +184,7 @@ namespace KreativerName.Scenes
                 }
 
                 int level = i;
-                button.OnLeftClick += () => NewGame(level);
+                button.OnLeftClick += (sender) => NewGame(level);
 
                 TextBlock text = new TextBlock((i + 1).ToString(), 3);
                 text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)text.TextWidth), new PixelConstraint((int)text.TextHeight));

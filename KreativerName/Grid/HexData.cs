@@ -74,7 +74,7 @@ namespace KreativerName.Grid
             return count;
         }
 
-        public static HexData[] Data;
+        public static HexData[] StandardData;
 
         public static void LoadData(string directory)
         {
@@ -82,16 +82,16 @@ namespace KreativerName.Grid
             {
                 string[] files = Directory.GetFiles(directory);
 
-                Data = new HexData[files.Length];
+                StandardData = new HexData[files.Length];
 
                 for (int i = 0; i < files.Length; i++)
                 {
                     string file = files[i];
                     HexData hexData = LoadFromFile(file);
-                    Data[i] = hexData;
+                    StandardData[i] = hexData;
                 }
 
-                Data = Data.OrderBy(x => x.ID).ToArray();
+                StandardData = StandardData.OrderBy(x => x.ID).ToArray();
             }
         }
 
