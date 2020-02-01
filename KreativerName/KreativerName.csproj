@@ -282,6 +282,7 @@
     <None Include="Resources\Worlds\004.wld">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Resources\Worlds\005.wld" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
