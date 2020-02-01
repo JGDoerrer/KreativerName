@@ -59,7 +59,7 @@ namespace KreativerName.Rendering
                     TextureRenderer.DrawHex(Textures.Get("Hex\\Mask"), hex.Position, Layout, Vector2.One * Layout.size, mask, null);
 
                 if (hex.Position == player)
-                    TextureRenderer.DrawHex(Textures.Get("Player"), hex.Position, Layout, Vector2.One * Layout.size, Color.White, null);
+                    TextureRenderer.DrawHex(Textures.Get("Player"), hex.Position, Layout, Vector2.One * Layout.size, Color.FromArgb(255, 0, 255, 0), null);
             }
 
             frameCount++;
