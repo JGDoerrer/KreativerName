@@ -146,23 +146,26 @@ namespace KreativerName.Scenes
             {
                 levelAnim--;
             }
-            if (worldDone && levelAnim <= 0)
+            if (levelAnim <= 0)
             {
-                WorldCompleted?.Invoke(worldIndex);
+                if (worldDone)
+                {
+                    WorldCompleted?.Invoke(worldIndex);
 
-                worldIndex++;
-                levelIndex = 0;
-                OnExit?.Invoke();
+                    worldIndex++;
+                    levelIndex = 0;
+                    OnExit?.Invoke();
 
-                worldDone = true;
+                    worldDone = true;
+                }
+                if (levelDone)
+                {
+                    UpdateTitle();
+                    LoadLevel();
+                }
+
+                HandleInput();
             }
-            if (levelDone && levelAnim <= 0)
-            {
-                UpdateTitle();
-                LoadLevel();
-            }
-
-            HandleInput();
         }
 
         private void UpdatePlayer()

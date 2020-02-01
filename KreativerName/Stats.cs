@@ -32,6 +32,8 @@ namespace KreativerName
         public uint MinesweeperWon { get => minesweeperWon; set => minesweeperWon = value; }
         public uint MinesweeperLost { get => minesweeperLost; set => minesweeperLost = value; }
         public DateTime LastUpdated { get => lastUpdated; set => lastUpdated = value; }
+        
+        #region Load & Save
 
         public byte[] ToBytes()
         {
@@ -80,7 +82,6 @@ namespace KreativerName
             return count;
         }
 
-
         public void SaveToFile(string name)
         {
             string path = $@"Resources\{name}.sts";
@@ -102,5 +103,7 @@ namespace KreativerName
 
             return stats;
         }
+
+        #endregion
     }
 }

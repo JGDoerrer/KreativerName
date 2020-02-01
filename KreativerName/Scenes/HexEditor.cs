@@ -14,7 +14,7 @@ namespace KreativerName.Scenes
     {
         public HexEditor(HexData data)
         {
-            this.Data = data;
+            Data = data;
 
             InitUI();
         }
@@ -51,7 +51,7 @@ namespace KreativerName.Scenes
             exitButton.AddChild(exitImage);
             ui.Add(exitButton);
 
-            void AddLine(string desc, int value, int y, ValueEvent e, byte min = byte.MinValue, byte max = byte.MaxValue)
+            void AddNumber(string desc, int value, int y, ValueEvent e, byte min = byte.MinValue, byte max = byte.MaxValue)
             {
                 TextBlock text = new TextBlock(desc, 2, 20, y)
                 {
@@ -70,11 +70,35 @@ namespace KreativerName.Scenes
                 ui.Add(text);
             }
 
-            AddLine("Id:           ", Data.ID, 100, a => Data.ID = (byte)a);
-            AddLine("Textur:       ", Data.Texture, 120, a => Data.Texture = (byte)a);
-            AddLine("Anim.länge:   ", Data.AnimationLength, 140, a => Data.AnimationLength = (byte)a);
-            AddLine("Anim.phase:   ", Data.AnimationPhase, 160, a => Data.AnimationPhase = (byte)a);
-            AddLine("Anim.geschw.: ", Data.AnimationSpeed, 180, a => Data.AnimationSpeed = (byte)a);
+            void AddCheckBox(string desc, int y, bool check, CheckEvent e)
+            {
+                TextBlock text = new TextBlock(desc, 2, 20, y + 2)
+                {
+                    Color = Color.White
+                };
+
+                CheckBox checkBox = new CheckBox(20 + (int)text.TextWidth, y, 24, 24)
+                {
+                    Checked = check
+                };
+                checkBox.OnChecked += e;
+
+                ui.Add(text);
+                ui.Add(checkBox);
+            }
+
+            AddNumber("Id:           ", Data.ID, 100, a => Data.ID = (byte)a);
+            AddNumber("Textur:       ", Data.Texture, 120, a => Data.Texture = (byte)a);
+            AddNumber("Anim.länge:   ", Data.AnimationLength, 140, a => Data.AnimationLength = (byte)a);
+            AddNumber("Anim.phase:   ", Data.AnimationPhase, 160, a => Data.AnimationPhase = (byte)a);
+            AddNumber("Anim.geschw.: ", Data.AnimationSpeed, 180, a => Data.AnimationSpeed = (byte)a);
+
+            AddCheckBox("Solide:       ", 200, Data.HexFlags.HasFlag(HexFlags.Solid), a => { if (a) Data.HexFlags |= HexFlags.Solid; else Data.HexFlags &= ~HexFlags.Solid; });
+            AddCheckBox("Tödlich:      ", 224, Data.HexFlags.HasFlag(HexFlags.Deadly), a => { if (a) Data.HexFlags |= HexFlags.Deadly; else Data.HexFlags &= ~HexFlags.Deadly; });
+            AddCheckBox("Ziel:         ", 248, Data.HexFlags.HasFlag(HexFlags.Goal), a => { if (a) Data.HexFlags |= HexFlags.Goal; else Data.HexFlags &= ~HexFlags.Goal; });
+
+            AddCheckBox("Animiert:     ", 272, Data.RenderFlags.HasFlag(RenderFlags.Animated), a => { if (a) Data.RenderFlags |= RenderFlags.Animated; else Data.RenderFlags &= ~RenderFlags.Animated; });
+            AddCheckBox("Verbunden:    ", 296, Data.RenderFlags.HasFlag(RenderFlags.Connected), a => { if (a) Data.RenderFlags |= RenderFlags.Connected; else Data.RenderFlags &= ~RenderFlags.Connected; });
         }
 
         public override void Update()

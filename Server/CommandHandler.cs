@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using KreativerName;
@@ -190,24 +191,29 @@ namespace Server
             PropertyInfo[] properties = typeof(Stats).GetProperties();
             foreach (PropertyInfo property in properties)
             {
-                User highest = users[0];
-                User lowest = users[0];
-
-                foreach (User user in users)
-                {
-                    object v = property.GetValue(user.Statistics);
-                    object vHighest = property.GetValue(highest.Statistics);
-                    object vLowest = property.GetValue(lowest.Statistics);
-                                       
-                    if (Comparer<object>.Default.Compare(v, vHighest) > 0)
-                        highest = user;
-                    if (Comparer<object>.Default.Compare(v, vLowest) < 0)
-                        lowest = user;
-                }
+                object max = users.Max(x => property.GetValue(x.Statistics));
+                object min = users.Min(x => property.GetValue(x.Statistics));
 
                 Console.WriteLine($"{property.Name}:");
-                Console.WriteLine($"  Highest: {highest.ID.ToID()} with {property.GetValue(highest.Statistics)}");
-                Console.WriteLine($"  Lowest:  {lowest.ID.ToID()} with {property.GetValue(lowest.Statistics)}");
+                Console.WriteLine($"  Highest: {max}");
+
+                if (property.PropertyType == typeof(uint))
+                {
+                    object avg = users.Average(x => (uint)property.GetValue(x.Statistics));
+                    Console.WriteLine($"  Average: {avg}");
+                }
+                else if (property.PropertyType == typeof(DateTime))
+                {
+                    double avg = users.Average(x => ((DateTime)property.GetValue(x.Statistics)).Ticks);
+                    Console.WriteLine($"  Average: {new DateTime((long)avg)}");
+                }
+                else if (property.PropertyType == typeof(TimeSpan))
+                {
+                    double avg = users.Average(x => ((TimeSpan)property.GetValue(x.Statistics)).Ticks);
+                    Console.WriteLine($"  Average: {new TimeSpan((long)avg)}");
+                }
+                
+                Console.WriteLine($"  Lowest:  {min}");
             }
         }
     }
