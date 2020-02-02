@@ -47,16 +47,17 @@ namespace KreativerName.Scenes
 
         UI.UI ui;
         Input input;
+        HexPoint lastSelectedHex;
         HexPoint selectedHex;
 
-        const float sqrt3 = 1.732050807568877293527446341505872366942805253810380628055f;
+        const float SQRT3 = 1.732050807568877293527446341505872366942805253810380628055f;
 
-        const float hexSize = 16 * 2;
+        const float HEX_SIZE = 16 * 2;
         HexLayout layout = new HexLayout(
-            new Matrix2(sqrt3, sqrt3 / 2f, 0, 3f / 2f),
-            new Matrix2(sqrt3 / 3f, -1f / 3f, 0, 2f / 3f),
+            new Matrix2(SQRT3, SQRT3 / 2f, 0, 3f / 2f),
+            new Matrix2(SQRT3 / 3f, -1f / 3f, 0, 2f / 3f),
             new Vector2(0, 0),
-            hexSize, 0.5f);
+            HEX_SIZE, 0.5f);
         Vector2 scrolling;
         float scale = 1;
         GridRenderer renderer;
@@ -78,7 +79,6 @@ namespace KreativerName.Scenes
         /// </summary>
         public override void Update()
         {
-
             HandleInput();
 
             input.Update();
@@ -87,6 +87,8 @@ namespace KreativerName.Scenes
         private void HandleInput()
         {
             HexPoint mouse = layout.PixelToHex(input.MousePosition);
+
+            lastSelectedHex = selectedHex;
             selectedHex = mouse;
 
             float scrollSpeed = 2 * (4 + (float)Math.Log(scale, 2));
@@ -107,7 +109,7 @@ namespace KreativerName.Scenes
                         Grid[mouse] = hex;
                     }
                 }
-                if (input.MousePress(MouseButton.Right))
+                if (input.MousePress(MouseButton.Right) || (input.MouseDown(MouseButton.Right) && lastSelectedHex != selectedHex))
                 {
                     if (Grid != null)
                     {
@@ -171,7 +173,7 @@ namespace KreativerName.Scenes
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
 
-            if (Grid != null)
+            if (Grid != null && !input.MouseDown(MouseButton.Right))
             {
                 const int margin = 50;
 
@@ -180,12 +182,12 @@ namespace KreativerName.Scenes
                 int maxY = Grid.Max(x => x.Value.Y);
                 int minY = Grid.Min(x => x.Value.Y);
 
-                layout.size = Math.Min((width - margin - leftFrame.GetWidth(windowSize)) / (sqrt3 * (maxX - minX + 1)), (height - margin - lowerFrame.GetHeight(windowSize)) / (1.5f * (maxY - minY + 1.25f)));
+                layout.size = Math.Min((width - margin - leftFrame.GetWidth(windowSize)) / (SQRT3 * (maxX - minX + 1)), (height - margin - lowerFrame.GetHeight(windowSize)) / (1.5f * (maxY - minY + 1.25f)));
                 // Round to multiples of 16
                 layout.size = (float)Math.Floor(layout.size / 16) * 16;
                 layout.size = layout.size.Clamp(16, 48) * scale;
 
-                int centerX = (int)(layout.size * sqrt3 * (maxX + minX));
+                int centerX = (int)(layout.size * SQRT3 * (maxX + minX));
                 int centerY = (int)(layout.size * 1.5f * (maxY + minY));
 
                 // Center grid
@@ -380,11 +382,16 @@ namespace KreativerName.Scenes
 
         private void NewLevel(UIElement sender)
         {
-            Grid = LevelGenerator.GenerateGrid();
-            level.Data = HexData.StandardData;
+            level = new Level
+            {
+                Data = new HexData[0]
+            };
 
+            Grid = LevelGenerator.GenerateGrid();
             renderer.Grid = Grid;
-            renderer.Data = level.Data;
+
+            InitLowerFrame();
+            SetHexData(HexData.StandardData);
         }
 
         #endregion

@@ -7,28 +7,28 @@ namespace KreativerName.UI.Constraints
         public UIConstraints() { }
         public UIConstraints(Constraint x, Constraint y, Constraint width, Constraint height)
         {
-            xCon = x;
-            yCon = y;
-            widthCon = width;
-            heightCon = height;
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
         }
         public UIConstraints(int x, int y, int width, int height)
         {
-            xCon = new PixelConstraint(x);
-            yCon = new PixelConstraint(y);
-            widthCon = new PixelConstraint(width);
-            heightCon = new PixelConstraint(height);
+            this.x = new PixelConstraint(x);
+            this.y = new PixelConstraint(y);
+            this.width = new PixelConstraint(width);
+            this.height = new PixelConstraint(height);
         }
 
-        public Constraint xCon;
-        public Constraint yCon;
-        public Constraint widthCon;
-        public Constraint heightCon;
+        public Constraint x;
+        public Constraint y;
+        public Constraint width;
+        public Constraint height;
 
-        public float GetX(Vector2 windowSize, UIElement element) => xCon.GetX(windowSize, element);
-        public float GetY(Vector2 windowSize, UIElement element) => yCon.GetY(windowSize, element);
-        public float GetWidth(Vector2 windowSize, UIElement element) => widthCon.GetWidth(windowSize, element);
-        public float GetHeight(Vector2 windowSize, UIElement element) => heightCon.GetHeight(windowSize, element);
+        public float GetX(Vector2 windowSize, UIElement element) => x.GetX(windowSize, element);
+        public float GetY(Vector2 windowSize, UIElement element) => y.GetY(windowSize, element);
+        public float GetWidth(Vector2 windowSize, UIElement element) => width.GetWidth(windowSize, element);
+        public float GetHeight(Vector2 windowSize, UIElement element) => height.GetHeight(windowSize, element);
 
         public static UIConstraints FullWindow =>
             new UIConstraints(new PixelConstraint(0), new PixelConstraint(0), new RelativeConstraint(1, RelativeTo.Window), new RelativeConstraint(1, RelativeTo.Window));

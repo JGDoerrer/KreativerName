@@ -28,7 +28,7 @@ namespace KreativerName
                 Icon = new Icon(@"Resources\Icon.ico");
 
             SceneManager.SetWindow(this);
-            SceneManager.LoadScene(new LoadingScene(LoadStuff, new Transition(new MainMenu(), 30)));
+            SceneManager.LoadScene(new LoadingScene(LoadStuff, "Laden...", new Transition(new MainMenu(), 30)));
 
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);

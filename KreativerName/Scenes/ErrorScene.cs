@@ -30,7 +30,7 @@ namespace KreativerName.Scenes
             void AddText(string s, float size, int y)
             {
                 TextBlock text = new TextBlock(s, size, 0, y);
-                text.Constraints.xCon = new CenterConstraint();
+                text.Constraints.x = new CenterConstraint();
 
                 ui.Add(text);
             }

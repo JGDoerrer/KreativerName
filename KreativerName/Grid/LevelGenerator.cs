@@ -1,10 +1,27 @@
 ﻿using System;
+using System.Linq;
 
 namespace KreativerName.Grid
 {
     public static class LevelGenerator
     {
         static Random random = new Random();
+
+        public static Level GenerateLevel(HexData[] data)
+        {
+            Level level = new Level
+            {
+                Grid = GenerateGrid(),
+                Data = data
+            };
+
+            // Choose random start position
+            level.StartPos = level.Grid.Values.ToList().Random().Position;
+
+            MakePuzzle(ref level);
+
+            return level;
+        }
 
         public static HexGrid<Hex> GenerateGrid()
         {
@@ -64,6 +81,9 @@ namespace KreativerName.Grid
                     break;
             }
         }
-
+               
+        private static void MakePuzzle(ref Level level)
+        {
+        }
     }
 }

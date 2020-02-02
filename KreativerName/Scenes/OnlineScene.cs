@@ -118,7 +118,7 @@ namespace KreativerName.Scenes
             foreach (var world in worlds)
             {
                 Button button = new Button(0, i * (ButtonHeight + Margin), 0, ButtonHeight);
-                button.Constraints.widthCon = new RelativeConstraint(1, RelativeTo.Parent);
+                button.Constraints.width = new RelativeConstraint(1, RelativeTo.Parent);
                 button.OnLeftClick += (sender) =>
                 {
                     Game game = new Game(world);
@@ -127,8 +127,8 @@ namespace KreativerName.Scenes
                 };
 
                 TextBlock text = new TextBlock($"{world.Title}: {world.Levels.Count} Level", 3, 10, 10);
-                text.Constraints.xCon = new CenterConstraint();
-                text.Constraints.yCon = new CenterConstraint();
+                text.Constraints.x = new CenterConstraint();
+                text.Constraints.y = new CenterConstraint();
                 text.Color = Color.Black;
                 button.AddChild(text);
 

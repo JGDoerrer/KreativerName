@@ -10,7 +10,7 @@ namespace KreativerName.Scenes
 {
     class LoadingScene : Scene
     {
-        public LoadingScene(DoWorkEventHandler action, Scene next = null)
+        public LoadingScene(DoWorkEventHandler action, string title, Scene next = null)
         {
             worker = new BackgroundWorker();
 
@@ -21,18 +21,24 @@ namespace KreativerName.Scenes
 
             worker.RunWorkerAsync();
 
-            text = new TextBlock("", 5)
+            this.title = new TextBlock(title, 5,0,0)
+            {
+                Color = Color.White
+            };
+            this.title.Constraints.x = new CenterConstraint();
+            this.title.Constraints.y = new RelativeConstraint(0.2f, RelativeTo.Window);
+
+            text = new TextBlock("", 5, 0, 0)
             {
                 Color = Color.Gray
             };
-            text.SetConstraints(new CenterConstraint(),
-                new CenterConstraint(),
-                new PixelConstraint((int)text.TextWidth),
-                new PixelConstraint((int)text.TextHeight));
+            text.Constraints.x = new CenterConstraint();
+            text.Constraints.y = new CenterConstraint();
         }
 
         BackgroundWorker worker;
         TextBlock text;
+        TextBlock title;
 
         float prevPercent;
         float percent;
@@ -55,6 +61,7 @@ namespace KreativerName.Scenes
         public override void Render(Vector2 windowSize)
         {
             GL.Disable(EnableCap.Texture2D);
+
             GL.Begin(PrimitiveType.Quads);
             GL.Color4(Color.FromArgb(255, 255, 255, 255));
             GL.Vertex2(windowSize.X / 3, windowSize.Y / 3);
@@ -62,9 +69,11 @@ namespace KreativerName.Scenes
             GL.Vertex2(windowSize.X / 3 * (AnimatedPercent + 1), windowSize.Y / 3 * 2);
             GL.Vertex2(windowSize.X / 3 * (AnimatedPercent + 1), windowSize.Y / 3);
             GL.End();
+
             GL.Enable(EnableCap.Texture2D);
 
             text.Render(windowSize);
+            title.Render(windowSize);
         }
 
         //private float QuadraticInOut(float t)
@@ -80,7 +89,7 @@ namespace KreativerName.Scenes
 
 
             text.Text = $"{percent}%";
-            text.Constraints.widthCon = new PixelConstraint((int)text.TextWidth);
+            text.Constraints.width = new PixelConstraint((int)text.TextWidth);
         }
 
 

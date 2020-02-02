@@ -315,10 +315,11 @@ namespace KreativerName.Scenes
                 int minY = Grid.Min(x => x.Value.Y);
 
                 layout.size = Math.Min((windowSize.X - margin) / (SQRT3 * (maxX - minX + 1)), (windowSize.Y - margin) / (1.5f * (maxY - minY + 1.25f)));
-                // Round to multiples of 16
+                // Round size to multiples of 16
                 layout.size = (float)Math.Floor(layout.size / 16) * 16;
-                layout.size = Math.Min(layout.size, 48) * scale;
+                layout.size = layout.size.Clamp(16,64) * scale;
 
+                // Do level animation
                 if (levelAnim >= 0)
                 {
                     layout.spacing = 1 + 2 * (1 - QuarticOut(levelDone ? (levelAnim / (float)MAX_LEVEL_ANIM) : (1 - levelAnim / (float)MAX_LEVEL_ANIM)));
@@ -403,7 +404,7 @@ namespace KreativerName.Scenes
 
             title = new TextBlock("Level 000/000", 4, 0, 50)
             { Color = Color.LightGray };
-            title.Constraints.xCon = new CenterConstraint();
+            title.Constraints.x = new CenterConstraint();
 
             ui.Add(title);
 

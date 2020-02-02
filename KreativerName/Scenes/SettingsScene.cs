@@ -54,7 +54,7 @@ namespace KreativerName.Scenes
                 frame.AddChild(box);
 
                 TextBlock text = new TextBlock(s, 3, 45, 0);
-                text.Constraints.yCon = new CenterConstraint();
+                text.Constraints.y = new CenterConstraint();
                 text.Color = Color.White;
                 frame.AddChild(text);
 

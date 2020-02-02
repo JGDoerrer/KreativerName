@@ -54,7 +54,7 @@ namespace KreativerName.Scenes
             };
 
             TextBlock title = new TextBlock("Level", 4, 0, 50) { Color = Color.White };
-            title.Constraints.xCon = new CenterConstraint();
+            title.Constraints.x = new CenterConstraint();
             ui.Add(title);
 
 

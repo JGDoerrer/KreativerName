@@ -110,7 +110,7 @@ namespace KreativerName.Grid
 
         public void SaveToFile(string path)
         {
-            path = @$"Resources\HexData\{path}.hex";
+            //path = @$"Resources\HexData\{path}.hex";
 
             byte[] bytes = ToBytes();
 
@@ -126,6 +126,7 @@ namespace KreativerName.Grid
         public byte Data;
         public sbyte MoveX;
         public sbyte MoveY;
+        public HexActionFlags Flags;
         public HexCondition Condition;
 
         public int FromBytes(byte[] bytes, int startIndex)
@@ -140,6 +141,8 @@ namespace KreativerName.Grid
             count += 1;
             MoveY = (sbyte)bytes[startIndex + count];
             count += 1;
+            //Flags = (HexActionFlags)bytes[startIndex + count];
+            //count += 1;
             Condition = (HexCondition)bytes[startIndex + count];
             count += 1;
 
@@ -154,6 +157,7 @@ namespace KreativerName.Grid
                 Data,
                 (byte)MoveX,
                 (byte)MoveY,
+                //(byte)Flags,
                 (byte)Condition
             };
 
@@ -172,6 +176,13 @@ namespace KreativerName.Grid
         NextNotFlag = 4,
         NextID = 5,
         NextNotID = 6,
+    }
+
+    [Flags]
+    public enum HexActionFlags : byte
+    {
+        MoveHex = 1 << 0,
+        MovePlayer = 1 << 1,
     }
 
     [Flags]

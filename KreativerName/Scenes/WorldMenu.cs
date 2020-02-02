@@ -23,23 +23,31 @@ namespace KreativerName.Scenes
 
         private void InitUI()
         {
-            ui = new UI.UI();
-            ui.Input = new Input(SceneManager.Window);
+            ui = new UI.UI
+            {
+                Input = new Input(SceneManager.Window)
+            };
 
             TextBlock title = new TextBlock("Welten", 4, 0, 50)
-            { Color = Color.White };
-            title.Constraints.xCon = new CenterConstraint();
+            { 
+                Color = Color.White 
+            };
+            title.Constraints.x = new CenterConstraint();
             ui.Add(title);
 
 
-            Button exitButton = new Button(40, 40, 40, 40);
-            exitButton.Shortcut = Key.Escape;
+            Button exitButton = new Button(40, 40, 40, 40)
+            {
+                Shortcut = Key.Escape
+            };
             exitButton.OnLeftClick += (sender) =>
             {
                 SceneManager.LoadScene(new Transition(new MainMenu(), 10));
             };
-            UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black);
-            exitImage.SetConstraints(new UIConstraints(10, 10, 20, 20));
+            UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black)
+            {
+                Constraints = new UIConstraints(10, 10, 20, 20)
+            };
 
             exitButton.AddChild(exitImage);
             ui.Add(exitButton);
@@ -63,6 +71,7 @@ namespace KreativerName.Scenes
                 worldcount++;
             }
 
+            // Get stars
             bool[,] stars = new bool[worldcount, StarsPerWorld];
             int totalStars = 0;
             bool[] showWorld = new bool[worldcount];
@@ -75,6 +84,7 @@ namespace KreativerName.Scenes
                 totalStars += worlds[i].AllPerfect ? 1 : 0;
             }
 
+            // Decide if world is shown
             for (int i = 0; i < worldcount; i++)
             {
                 if (i > 1)
@@ -101,6 +111,7 @@ namespace KreativerName.Scenes
                     new PixelConstraint((ButtonSize + 20) * (showWorld.Count(x => x) / WorldsPerRow + 1) + 20))
             };
 
+            // Make buttons
             int count = 0;
             for (int i = 0; i < worldcount; i++)
             {
@@ -128,7 +139,7 @@ namespace KreativerName.Scenes
                     button.OnLeftClick += (sender) => { NewGame(world); };
 
                     TextBlock text = new TextBlock((i + 1).ToRoman().ToLower(), 3);
-                    text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)text.TextWidth), new PixelConstraint((int)text.TextHeight));
+                    text.Constraints = new UIConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)text.TextWidth), new PixelConstraint((int)text.TextHeight));
                     button.AddChild(text);
                     worldFrame.AddChild(button);
 

@@ -28,16 +28,16 @@ namespace KreativerName.Scenes
             void AddText(string s, string value, int y)
             {
                 TextBlock text1 = new TextBlock(s, 3, 0, y) { Color = Color.White };
-                text1.Constraints.xCon = new CenterConstraint(-text1.TextWidth / 2f);
+                text1.Constraints.x = new CenterConstraint(-text1.TextWidth / 2f);
                 ui.Add(text1);
 
                 TextBlock text2 = new TextBlock(value, 3, 0, y) { Color = Color.White };
-                text2.Constraints.xCon = new CenterConstraint(text2.TextWidth / 2f);
+                text2.Constraints.x = new CenterConstraint(text2.TextWidth / 2f);
                 ui.Add(text2);
             }
 
             TextBlock title = new TextBlock("Statistik", 4, 0, 50) { Color = Color.White };
-            title.Constraints.xCon = new CenterConstraint();
+            title.Constraints.x = new CenterConstraint();
             ui.Add(title);
 
             Button button = new Button(40, 40, 40, 40) { Shortcut = OpenTK.Input.Key.Escape };
