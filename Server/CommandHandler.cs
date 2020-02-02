@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using KreativerName;
+using KreativerName.Grid;
 using KreativerName.Networking;
 
 namespace Server
@@ -23,11 +24,9 @@ namespace Server
                         PrintClients();
                         break;
                     }
-                    switch (args[1])
+                    if (args[1] == "send")
                     {
-                        case "send":
-                            SendClients();
-                            break;
+                        SendClients();
                     }
                     break;
                 }
@@ -38,9 +37,9 @@ namespace Server
                         PrintUsers();
                         break;
                     }
-                    switch (args[1])
+                    if (args[1] == "resave")
                     {
-                        case "resave": DataBase.ReSaveUsers(); break;
+                        DataBase.ReSaveUsers();
                     }
                     break;
                 }
@@ -60,11 +59,10 @@ namespace Server
                         Console.WriteLine($"Current Version: {Program.version}");
                         break;
                     }
-                    switch (args[1])
+                    if (args[1] == "set")
                     {
-                        case "set":
-                            SetVersion();
-                            break;
+                        SetVersion();
+                        break;
                     }
                     break;
                 }
@@ -75,6 +73,11 @@ namespace Server
                         AnalyseStats();
                         break;
                     }
+                    break;
+                }
+                case "packets":
+                {
+                    RequestHandler.PrintPackets = !RequestHandler.PrintPackets;
                     break;
                 }
 
@@ -178,7 +181,14 @@ namespace Server
             int count = 0;
             foreach (uint id in DataBase.GetWorldIDs())
             {
+                World world = DataBase.GetWorld(id) ?? new World();
+
                 Console.WriteLine($"World {++count}:");
+                Console.WriteLine($"  ID:         {world.ID.ToID().ToUpper()}");
+                Console.WriteLine($"  Uploader:   {world.Uploader.ToID().ToUpper()}");
+                Console.WriteLine($"  UploadTime: {world.UploadTime}");
+                Console.WriteLine($"  Levels:     {world.Levels.Count}");
+                Console.WriteLine($"  Title:      {world.Title}");
             }
         }
 
@@ -212,7 +222,7 @@ namespace Server
                     double avg = users.Average(x => ((TimeSpan)property.GetValue(x.Statistics)).Ticks);
                     Console.WriteLine($"  Average: {new TimeSpan((long)avg)}");
                 }
-                
+
                 Console.WriteLine($"  Lowest:  {min}");
             }
         }

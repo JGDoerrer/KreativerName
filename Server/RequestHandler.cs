@@ -12,9 +12,12 @@ namespace Server
     {
         static Random random = new Random();
 
+        public static bool PrintPackets = false;
+
         public static void HandleRequest(Client client, Packet p)
         {
-            //Console.WriteLine($"[Packet]: {p.ToString()}");
+            if (PrintPackets)
+                Console.WriteLine($"[Packet from {client.RemoteIP}]: {p.ToString()}");
 
             switch (p.Code)
             {
