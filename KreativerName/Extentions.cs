@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace KreativerName
 {
@@ -122,6 +123,25 @@ namespace KreativerName
             }
 
             return true;
+        }
+
+        public static float Lerp(this float a, float b, float t)
+        {
+            return a + (b - a) * t;
+        }
+
+        public static byte Lerp(this byte a, byte b, float t)
+        {
+            return (byte)(a + (b - a) * t);
+        }
+
+        public static Color Lerp(this Color a, Color b, float t)
+        {
+            return Color.FromArgb(
+                a.A.Lerp(b.A, t),
+                a.R.Lerp(b.R, t),
+                a.G.Lerp(b.G, t),
+                a.B.Lerp(b.B, t));
         }
 
         public static List<int> Factor(this int x)

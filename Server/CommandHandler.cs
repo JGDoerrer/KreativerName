@@ -78,6 +78,7 @@ namespace Server
                 case "packets":
                 {
                     RequestHandler.PrintPackets = !RequestHandler.PrintPackets;
+                    Console.WriteLine($"{(RequestHandler.PrintPackets ? "Showing" : "Not showing")} packets.");
                     break;
                 }
 

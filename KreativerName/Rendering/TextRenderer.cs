@@ -78,7 +78,9 @@ namespace KreativerName.Rendering
                 if (c <= 255 && c >= 32)
                 {
                     if (!char.IsUpper(c))
-                        x -= 1 * size;
+                        x -= size;
+                    if (x == 0)
+                        x -= size;
                     x += 7 * size;
                 }
 
@@ -91,7 +93,7 @@ namespace KreativerName.Rendering
 
         public static float GetHeight(string s, float size = 2)
         {
-            float y = 8 * size;
+            float y = 6 * size;
 
             foreach (char c in s)
             {

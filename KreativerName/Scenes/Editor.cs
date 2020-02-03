@@ -70,7 +70,7 @@ namespace KreativerName.Scenes
         /// <summary>
         /// The current path of the world files.
         /// </summary>
-        public string Path { get; set; } = "Worlds";
+        public string Path { get; set; } = @"Worlds\Editor";
 
         public event EmptyEvent OnExit;
 
@@ -382,16 +382,12 @@ namespace KreativerName.Scenes
 
         private void NewLevel(UIElement sender)
         {
-            level = new Level
-            {
-                Data = new HexData[0]
-            };
 
-            Grid = LevelGenerator.GenerateGrid();
+            level = LevelGenerator.GenerateLevel(HexData.StandardData);
             renderer.Grid = Grid;
 
             InitLowerFrame();
-            SetHexData(HexData.StandardData);
+            SetHexData(level.Data);
         }
 
         #endregion
@@ -463,7 +459,7 @@ namespace KreativerName.Scenes
             {
                 TextBlock text = new TextBlock(s, 2, 10, 10);
 
-                Button button = new Button(x, y, (int)text.TextWidth + 18, (int)text.TextHeight + 18)
+                Button button = new Button(x, y, (int)text.TextWidth + 22, (int)text.TextHeight + 22)
                 { Shortcut = shortcut };
                 button.OnLeftClick += ev;
 

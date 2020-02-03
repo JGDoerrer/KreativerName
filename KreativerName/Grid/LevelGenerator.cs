@@ -16,7 +16,7 @@ namespace KreativerName.Grid
             };
 
             // Choose random start position
-            level.StartPos = level.Grid.Values.ToList().Random().Position;
+            level.StartPos = level.Grid.Keys.ToList().Random();
 
             MakePuzzle(ref level);
 
@@ -84,6 +84,19 @@ namespace KreativerName.Grid
                
         private static void MakePuzzle(ref Level level)
         {
+            // Choose goal
+            HexPoint goal;
+
+            do
+            {
+                goal = level.Grid.Keys.ToList().Random();
+            }
+            while (goal.DistanceTo(level.StartPos) < 3);
+
+
+
+            byte id = level.Data.Where(x => x.HexFlags.HasFlag(HexFlags.Goal)).ToList().Random().ID;
+            level.Grid[goal] = new Hex(goal, id);
         }
     }
 }

@@ -164,16 +164,19 @@ namespace KreativerName.UI
                 color = Color.FromArgb(color.R / 2, color.B / 2, color.G / 2);
             }
 
+            float[] xs = { x, x + a * scale, x + w - a * scale };
+            float[] ys = { y, y + a * scale, y + h - a * scale };
+
             for (int i = 0; i <= 2; i++)
+            {
                 for (int j = 0; j <= 2; j++)
                 {
-                    float x1 = x + new[] { 0, 1, -1 }[i] * a * scale + (i == 2 ? w : 0);
-                    float y1 = y + new[] { 0, 1, -1 }[j] * a * scale + (j == 2 ? h : 0);
+                    Vector2 scl = new Vector2(i == 1 ? w / (a * scale) - 2 : 1,
+                                              j == 1 ? h / (a * scale) - 2 : 1) * scale;
 
-                    Vector2 scl = new Vector2(i == 1 ? w / (a * scale) - 2 : 1, j == 1 ? h / (a * scale) - 2 : 1) * scale;
-
-                    TextureRenderer.Draw(tex, new Vector2(x1, y1), scl, color, new RectangleF(offset + a * (i), a * (j), a, a));
+                    TextureRenderer.Draw(tex, new Vector2(xs[i], ys[j]), scl, color, new RectangleF(offset + a * i, a * j, a, a));
                 }
+            }
 
             StringBuilder text = new StringBuilder(Text.PadRight(MaxTextSize));
             if ((cursorAnim / 30) % 2 == 0 && Focused)

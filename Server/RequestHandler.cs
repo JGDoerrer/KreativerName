@@ -17,7 +17,7 @@ namespace Server
         public static void HandleRequest(Client client, Packet p)
         {
             if (PrintPackets)
-                Console.WriteLine($"[Packet from {client.RemoteIP}]: {p.ToString()}");
+                Console.WriteLine($"[Packet from {(client.LoggedIn ? client.UserID.ToID() : client.RemoteIP.ToString())}]: {p.ToString()}");
 
             switch (p.Code)
             {
@@ -100,7 +100,7 @@ namespace Server
                 uint id = BitConverter.ToUInt32(msg.Bytes, 0);
 
                 World world = DataBase.GetWorld(id).Value;
-                
+
                 client.Send(new Packet(PacketCode.GetWorldByID, PacketInfo.Success, world.ToCompressed()));
             }
             catch (Exception)
@@ -159,7 +159,7 @@ namespace Server
                 world.UploadTime = DateTime.Now;
 
                 DataBase.AddWorld(id, world);
-                
+
                 client.Send(new Packet(PacketCode.UploadWorld, PacketInfo.Success, BitConverter.GetBytes(id)));
             }
             catch (Exception)
@@ -175,7 +175,7 @@ namespace Server
                 int week = DateTime.Now.Subtract(new DateTime(2020, 1, 1, 0, 0, 0)).Days / 7;
 
                 World world = DataBase.GetWeekly(week).Value;
-                
+
                 client.Send(new Packet(PacketCode.GetWeeklyWorld, PacketInfo.Success, world.ToCompressed()));
             }
             catch (Exception)
@@ -214,7 +214,7 @@ namespace Server
             {
                 int length = BitConverter.ToInt32(msg.Bytes, 0);
                 string s = Encoding.UTF8.GetString(msg.Bytes, 4, length);
-                
+
                 client.Send(new Packet(PacketCode.SendNotification, PacketInfo.Success));
             }
             catch (Exception)

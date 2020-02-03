@@ -20,22 +20,19 @@ namespace KreativerName
         public MainWindow()
             : base(16 * 80, 9 * 80, GraphicsMode.Default, "KreativerName")
         {
-            input = new Input(this);
-
             Textures.LoadTextures(@"Resources\Textures");
 
             if (File.Exists(@"Resources\Icon.ico"))
                 Icon = new Icon(@"Resources\Icon.ico");
 
             SceneManager.SetWindow(this);
-            SceneManager.LoadScene(new LoadingScene(LoadStuff, "Laden...", new Transition(new MainMenu(), 30)));
+            SceneManager.LoadScene(new LoadingScene(LoadStuff, "", new Transition(new MainMenu(), 30)));
 
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
         }
 
-        Input input;
         public int FrameCounter;
         double fps;
         double ups;
@@ -49,19 +46,19 @@ namespace KreativerName
                 ups = UpdateFrequency;
             }
 
-            if (input.KeyDown(Key.AltLeft) && input.KeyDown(Key.F4))
+            if (SceneManager.Input.KeyDown(Key.AltLeft) && SceneManager.Input.KeyDown(Key.F4))
                 Close();
 
             Vector2 size = new Vector2(Width, Height);
 
-            //try
-            //{
+            try
+            {
                 SceneManager.Update(size);
-            //}
-            //catch (Exception ex)
-            //{
-            //    SceneManager.LoadScene(new Transition(new ErrorScene(ex), 10));
-            //}
+            }
+            catch (Exception ex)
+            {
+                SceneManager.LoadScene(new Transition(new ErrorScene(ex), 10));
+            }
 
             // Update Stats
             Stats.Current.TimePlaying = Stats.Current.TimePlaying.Add(TimeSpan.FromSeconds(e.Time));
@@ -71,8 +68,6 @@ namespace KreativerName
             {
                 ClientManager.Send(new Packet(PacketCode.UploadStats, PacketInfo.None, Stats.Current.ToBytes()));
             }
-
-            input.Update();
 
             FrameCounter++;
         }
@@ -103,7 +98,10 @@ namespace KreativerName
 
             // Render Fps
             if (Settings.Current.ShowFps)
-                TextRenderer.RenderString($"{fps:00}/{ups:00}", new Vector2(Width - 68, Height - 20), Color.White);
+            {
+                string s = $"{fps:00}/{ups:00}";
+                TextRenderer.RenderString(s, new Vector2(Width - 65, Height - 17), Color.White);
+            }
 
             SwapBuffers();
         }

@@ -334,9 +334,14 @@ namespace KreativerName.Scenes
                 // Center grid
                 layout.origin = new Vector2((windowSize.X - centerX) / 2, (windowSize.Y - centerY) / 2) + scrolling;
 
-                renderer.Layout = layout;
             }
 
+            if (perfect)
+            {
+                renderer.PlayerColor = Color.FromArgb(0, 255, 0).Lerp(Color.FromArgb(255, 0, 0), ((float)Moves / (level.MinMoves)).Clamp(0,1));
+            }
+
+            renderer.Layout = layout;
             renderer.Grid = Grid;
 
             if (Settings.Current.ShowMoves)

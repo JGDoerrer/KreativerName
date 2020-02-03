@@ -94,7 +94,7 @@ namespace KreativerName.Networking
                 if (p.Code == PacketCode.CompareVersion)
                 {
                     if (p.Info == PacketInfo.New)
-                        Notification.Show("Eine neue Version ist verfügbar!");
+                        Notification.Show("Eine neue Version ist verfügbar!\nhttps://jgdoerrer.github.io/KreativerName/");
                     else if (p.Info == PacketInfo.Error)
                         Notification.Show("Fehler beim Überprüfen der Version");
 
