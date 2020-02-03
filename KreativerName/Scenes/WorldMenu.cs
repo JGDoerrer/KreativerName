@@ -29,8 +29,8 @@ namespace KreativerName.Scenes
             };
 
             TextBlock title = new TextBlock("Welten", 4, 0, 50)
-            { 
-                Color = Color.White 
+            {
+                Color = Color.White
             };
             title.Constraints.x = new CenterConstraint();
             ui.Add(title);

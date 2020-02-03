@@ -95,23 +95,23 @@ namespace KreativerName.UI
                 Texture2D tex = Textures.Get("TextBox");
 
                 // corner top left
-                TextureRenderer.Draw(tex, new Vector2(x                , y), Vector2.One * scale, color, new RectangleF(0, 0, a, a));
+                TextureRenderer.Draw(tex, new Vector2(x, y), Vector2.One * scale, color, new RectangleF(0, 0, a, a));
                 // corner top right
                 TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y), Vector2.One * scale, color, new RectangleF(a * 2, 0, a, a));
                 // corner bottom left
-                TextureRenderer.Draw(tex, new Vector2(x                , y + h - a * scale), Vector2.One * scale, color, new RectangleF(0, a * 2, a, a));
+                TextureRenderer.Draw(tex, new Vector2(x, y + h - a * scale), Vector2.One * scale, color, new RectangleF(0, a * 2, a, a));
                 // corner bottom right
                 TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y + h - a * scale), Vector2.One * scale, color, new RectangleF(a * 2, a * 2, a, a));
                 // left
-                TextureRenderer.Draw(tex, new Vector2(x                , y + a * scale), new Vector2(1, h / (a * scale) - 2) * scale, color, new RectangleF(0, a, a, a));
+                TextureRenderer.Draw(tex, new Vector2(x, y + a * scale), new Vector2(1, h / (a * scale) - 2) * scale, color, new RectangleF(0, a, a, a));
                 // top
-                TextureRenderer.Draw(tex, new Vector2(x + a * scale    , y), new Vector2(w / (a * scale) - 2, 1) * scale, color, new RectangleF(a, 0, a, a));
+                TextureRenderer.Draw(tex, new Vector2(x + a * scale, y), new Vector2(w / (a * scale) - 2, 1) * scale, color, new RectangleF(a, 0, a, a));
                 // right
                 TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y + a * scale), new Vector2(1, h / (a * scale) - 2) * scale, color, new RectangleF(a * 2, a, a, a));
                 // bottom
-                TextureRenderer.Draw(tex, new Vector2(x + a * scale    , y + h - a * scale), new Vector2(w / (a * scale) - 2, 1) * scale, color, new RectangleF(a, a * 2, a, a));
+                TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + h - a * scale), new Vector2(w / (a * scale) - 2, 1) * scale, color, new RectangleF(a, a * 2, a, a));
                 // center
-                TextureRenderer.Draw(tex, new Vector2(x + a * scale    , y + a * scale), new Vector2(w / (a * scale) - 2, h / (a * scale) - 2) * scale, color, new RectangleF(a, a, a, a));
+                TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + a * scale), new Vector2(w / (a * scale) - 2, h / (a * scale) - 2) * scale, color, new RectangleF(a, a, a, a));
 
                 TextRenderer.RenderString(Text, new Vector2(x + 8, y + 8), Color.Black, TextSize);
             }

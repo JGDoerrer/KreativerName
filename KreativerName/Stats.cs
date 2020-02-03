@@ -32,7 +32,7 @@ namespace KreativerName
         public uint MinesweeperWon { get => minesweeperWon; set => minesweeperWon = value; }
         public uint MinesweeperLost { get => minesweeperLost; set => minesweeperLost = value; }
         public DateTime LastUpdated { get => lastUpdated; set => lastUpdated = value; }
-        
+
         #region Load & Save
 
         public byte[] ToBytes()

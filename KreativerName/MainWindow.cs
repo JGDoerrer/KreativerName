@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using System.Text;
 using KreativerName.Grid;
 using KreativerName.Networking;
 using KreativerName.Rendering;
@@ -137,7 +136,7 @@ namespace KreativerName
 
             worker.ReportProgress(100);
         }
-        
+
         protected override void OnFileDrop(FileDropEventArgs e)
         {
             if (World.IsValidFile(e.FileName))

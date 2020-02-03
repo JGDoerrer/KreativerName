@@ -81,7 +81,7 @@ namespace KreativerName.Grid
                     break;
             }
         }
-               
+
         private static void MakePuzzle(ref Level level)
         {
             // Choose goal

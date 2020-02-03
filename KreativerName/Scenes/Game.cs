@@ -317,7 +317,7 @@ namespace KreativerName.Scenes
                 layout.size = Math.Min((windowSize.X - margin) / (SQRT3 * (maxX - minX + 1)), (windowSize.Y - margin) / (1.5f * (maxY - minY + 1.25f)));
                 // Round size to multiples of 16
                 layout.size = (float)Math.Floor(layout.size / 16) * 16;
-                layout.size = layout.size.Clamp(16,64) * scale;
+                layout.size = layout.size.Clamp(16, 64) * scale;
 
                 // Do level animation
                 if (levelAnim >= 0)
@@ -338,7 +338,7 @@ namespace KreativerName.Scenes
 
             if (perfect)
             {
-                renderer.PlayerColor = Color.FromArgb(0, 255, 0).Lerp(Color.FromArgb(255, 0, 0), ((float)Moves / (level.MinMoves)).Clamp(0,1));
+                renderer.PlayerColor = Color.FromArgb(0, 255, 0).Lerp(Color.FromArgb(255, 0, 0), ((float)Moves / (level.MinMoves)).Clamp(0, 1));
             }
 
             renderer.Layout = layout;

@@ -51,7 +51,7 @@ namespace KreativerName.Grid
         /// Stores the connections between levels.
         /// </summary>
         public List<int>[] LevelConnections;
-        
+
         /// <summary>
         /// Defines if all levels have been completed.
         /// </summary>

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Text;
 
@@ -42,7 +40,7 @@ namespace KreativerName.Grid
         /// </summary>
         public string Hint;
 
-        public HexData[] Data;        
+        public HexData[] Data;
         HexPoint lastPlayer;
         bool updated;
 
@@ -187,7 +185,7 @@ namespace KreativerName.Grid
             byte[] hint = Encoding.UTF8.GetBytes(Hint ?? "");
             bytes.AddRange(hint.Length.ToBytes());
             bytes.AddRange(hint);
-            
+
             // Write hex data
             bytes.AddRange(Data.Length.ToBytes());
 
@@ -219,7 +217,7 @@ namespace KreativerName.Grid
                 count += hintLength.FromBytes(bytes, startIndex + count);
                 Hint = Encoding.UTF8.GetString(bytes, startIndex + count, hintLength);
                 count += hintLength;
-                
+
                 // Read hex data
                 int dataCount = BitConverter.ToInt32(bytes, startIndex + count);
                 count += 4;

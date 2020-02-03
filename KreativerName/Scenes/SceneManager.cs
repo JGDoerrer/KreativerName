@@ -1,7 +1,4 @@
-﻿using System;
-using System.Net.Sockets;
-using KreativerName.Networking;
-using KreativerName.UI;
+﻿using KreativerName.UI;
 using OpenTK;
 
 namespace KreativerName.Scenes

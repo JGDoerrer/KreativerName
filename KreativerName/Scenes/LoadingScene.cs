@@ -21,7 +21,7 @@ namespace KreativerName.Scenes
 
             worker.RunWorkerAsync();
 
-            this.title = new TextBlock(title, 5,0,0)
+            this.title = new TextBlock(title, 5, 0, 0)
             {
                 Color = Color.White
             };
