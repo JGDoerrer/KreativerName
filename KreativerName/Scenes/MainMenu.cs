@@ -64,64 +64,63 @@ namespace KreativerName.Scenes
                 Color = Color.Transparent
             };
 
+            // Add start button
+            Button startButton = new Button
             {
-                Button button = new Button
-                {
-                    Color = Color.FromArgb(100, 255, 100),
-                    Shortcut = OpenTK.Input.Key.S,
-                    Constraints = new UIConstraints(new CenterConstraint(), new PixelConstraint(0), new PixelConstraint(300), new PixelConstraint(60))
-                };
-                button.OnLeftClick += (sender) => { SceneManager.LoadScene(new Transition(new WorldMenu(), 10)); };
+                Color = Color.FromArgb(100, 255, 100),
+                Shortcut = OpenTK.Input.Key.S,
+                Constraints = new UIConstraints(new CenterConstraint(), new PixelConstraint(0), new PixelConstraint(300), new PixelConstraint(60))
+            };
+            startButton.OnLeftClick += (sender) => { SceneManager.LoadScene(new Transition(new WorldMenu(), 10)); };
 
-                TextBlock startText = new TextBlock("Spiel starten", 3);
-                startText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)startText.TextWidth), new PixelConstraint((int)startText.TextHeight));
-                button.AddChild(startText);
+            TextBlock startText = new TextBlock("Spiel starten", 3);
+            startText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)startText.TextWidth), new PixelConstraint((int)startText.TextHeight));
+            startButton.AddChild(startText);
 
-                mainFrame.AddChild(button);
-            }
+            mainFrame.AddChild(startButton);
+
+            // Add middle frame
+            Frame frame = new Frame
             {
-                Frame frame = new Frame
-                {
-                    Color = Color.Transparent,
-                    Constraints = new UIConstraints(new CenterConstraint(), new PixelConstraint(100), new PixelConstraint(300), new PixelConstraint(60))
-                };
+                Color = Color.Transparent,
+                Constraints = new UIConstraints(new CenterConstraint(), new PixelConstraint(100), new PixelConstraint(300), new PixelConstraint(60))
+            };
 
-                void AddButton(int x, int icon, ClickEvent click)
-                {
-                    Button button = new Button(x, 0, 60, 60);
-                    button.OnLeftClick += click;
-
-                    UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(icon * 10, 10, 10, 10))
-                    {
-                        Color = Color.Black,
-                        Constraints = new UIConstraints(10, 10, 40, 40)
-                    };
-
-                    button.AddChild(image);
-                    frame.AddChild(button);
-                }
-
-                AddButton(0, 1, (sender) => { SceneManager.LoadScene(new Transition(new StatisticsScene(), 10)); });
-                AddButton(80, 2, (sender) => { SceneManager.LoadScene(new Transition(new SettingsScene(), 10)); });
-                AddButton(160, 3, NewEditor);
-                AddButton(240, 4, (sender) => { SceneManager.LoadScene(new Transition(new OnlineScene(), 10)); });
-
-                mainFrame.AddChild(frame);
-            }
+            void AddButton(int x, int icon, ClickEvent click)
             {
-                Button button = new Button
+                Button button = new Button(x, 0, 60, 60);
+                button.OnLeftClick += click;
+
+                UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(icon * 10, 10, 10, 10))
                 {
-                    Color = Color.FromArgb(255, 100, 100),
-                    Constraints = new UIConstraints(new CenterConstraint(), new PixelConstraint(200), new PixelConstraint(300), new PixelConstraint(60))
+                    Color = Color.Black,
+                    Constraints = new UIConstraints(10, 10, 40, 40)
                 };
-                button.OnLeftClick += (sender) => { SceneManager.CloseWindow(); };
 
-                TextBlock exitText = new TextBlock("Schliessen", 3);
-                exitText.Constraints = new UIConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)exitText.TextWidth), new PixelConstraint((int)exitText.TextHeight));
-                button.AddChild(exitText);
-
-                mainFrame.AddChild(button);
+                button.AddChild(image);
+                frame.AddChild(button);
             }
+
+            AddButton(0, 1, (sender) => { SceneManager.LoadScene(new Transition(new StatisticsScene(), 10)); });
+            AddButton(80, 2, (sender) => { SceneManager.LoadScene(new Transition(new SettingsScene(), 10)); });
+            AddButton(160, 3, NewEditor);
+            AddButton(240, 4, (sender) => { SceneManager.LoadScene(new Transition(new OnlineScene(), 10)); });
+
+            mainFrame.AddChild(frame);
+
+            // Add exit button
+            Button exitButton = new Button
+            {
+                Color = Color.FromArgb(255, 100, 100),
+                Constraints = new UIConstraints(new CenterConstraint(), new PixelConstraint(200), new PixelConstraint(300), new PixelConstraint(60))
+            };
+            exitButton.OnLeftClick += (sender) => { SceneManager.CloseWindow(); };
+
+            TextBlock exitText = new TextBlock("Schliessen", 3);
+            exitText.Constraints = new UIConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)exitText.TextWidth), new PixelConstraint((int)exitText.TextHeight));
+            exitButton.AddChild(exitText);
+
+            mainFrame.AddChild(exitButton);
 
             ui.Add(mainFrame);
         }
@@ -148,6 +147,7 @@ namespace KreativerName.Scenes
 
         public override void Render(Vector2 windowSize)
         {
+            // Render background
             float w = windowSize.X / (layout.size * sqrt3) + 8;
             float h = windowSize.Y / (layout.size * 1.5f) + 8;
 

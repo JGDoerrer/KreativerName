@@ -87,9 +87,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Grid\Engine.cs" />
     <Compile Include="Grid\HexData.cs" />
     <Compile Include="Grid\LevelGenerator.cs" />
     <Compile Include="Grid\LevelSolver.cs" />
+    <Compile Include="Grid\Player.cs" />
     <Compile Include="Networking\Client.cs" />
     <Compile Include="Networking\ClientManager.cs" />
     <Compile Include="Networking\Packet.cs" />

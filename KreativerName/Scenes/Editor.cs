@@ -44,6 +44,7 @@ namespace KreativerName.Scenes
         World world;
         Level level;
         Game testGame;
+        Engine engine;
 
         UI.UI ui;
         Input input;
@@ -199,7 +200,9 @@ namespace KreativerName.Scenes
                 renderer.Layout = layout;
             }
 
-            renderer.Render(level.StartPos, selectedHex, level.GetPossibleMoves(level.StartPos));
+            engine.Level = level;
+            Player player = new Player(level.StartPos, Color.FromArgb(255, 0, 255, 0));
+            renderer.Render(player, selectedHex, engine.GetPossibleMoves(level.StartPos));
 
             ui.Render(windowSize);
         }
@@ -318,6 +321,7 @@ namespace KreativerName.Scenes
             else
                 level = new Level();
 
+            engine = new Engine(level);
             renderer.Grid = level.Grid;
             renderer.Data = level.Data;
 

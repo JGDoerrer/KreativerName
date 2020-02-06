@@ -75,7 +75,7 @@ namespace KreativerName.Scenes
         int worldIndex = 0;
         World world;
         Level level;
-        TextBlock title;
+        Engine engine;
 
         // max value = 240
         int titleAnim = -1;
@@ -87,6 +87,7 @@ namespace KreativerName.Scenes
         bool worldDone = false;
 
         UI.UI ui;
+        TextBlock title;
         Input input;
         HexPoint selectedHex;
         HexPoint player;
@@ -107,7 +108,7 @@ namespace KreativerName.Scenes
         /// <summary>
         /// The grid of the current level.
         /// </summary>
-        public HexGrid<Hex> Grid { get => level.Grid; set => level.Grid = value; }
+        public HexGrid<Hex> Grid { get => engine.Level.Grid; set => engine.Level.Grid = value; }
 
         /// <summary>
         /// The current world.
@@ -120,6 +121,7 @@ namespace KreativerName.Scenes
         public int Moves { get; private set; } = 0;
 
         private int Levels => world.Levels.Count;
+
 
         /// <summary>
         /// Updates the scene.
@@ -175,10 +177,7 @@ namespace KreativerName.Scenes
             if (!singleLevel)
                 Stats.Current.TotalMoves++;
 
-            HexFlags flags = Grid[player].Value.GetFlags(level.Data);
-
-            // If player is on a deadly or solid tile, reset
-            if (flags.HasFlag(HexFlags.Deadly) || flags.HasFlag(HexFlags.Solid))
+            if (engine.Players[0].IsDead)
             {
                 if (!singleLevel)
                     Stats.Current.Fails++;
@@ -187,7 +186,7 @@ namespace KreativerName.Scenes
                 return;
             }
 
-            if (flags.HasFlag(HexFlags.Goal))
+            if (engine.LevelDone)
             {
                 CompleteLevel();
                 return;
@@ -207,10 +206,10 @@ namespace KreativerName.Scenes
 
             if (input.MousePress(MouseButton.Left) && !levelDone)
             {
-                if (level.GetPossibleMoves(player).Contains(mouse))
+                if (engine.GetPossibleMoves(player).Contains(mouse))
                 {
                     player = mouse;
-                    level.Update(player);
+                    engine.Update(0,player);
                     UpdatePlayer();
                 }
             }
@@ -338,16 +337,16 @@ namespace KreativerName.Scenes
 
             if (perfect)
             {
-                renderer.PlayerColor = Color.FromArgb(0, 255, 0).Lerp(Color.FromArgb(255, 0, 0), ((float)Moves / (level.MinMoves)).Clamp(0, 1));
+                engine.Players[0].Color = Color.FromArgb(0, 255, 0).Lerp(Color.FromArgb(255, 0, 0), ((float)Moves / (level.MinMoves)).Clamp(0, 1));
             }
 
             renderer.Layout = layout;
             renderer.Grid = Grid;
 
             if (Settings.Current.ShowMoves)
-                renderer.Render(player, selectedHex, level.GetPossibleMoves(player));
+                renderer.Render(engine.Players[0], selectedHex, engine.GetPossibleMoves(player));
             else
-                renderer.Render(player, selectedHex, null);
+                renderer.Render(engine.Players[0], selectedHex, null);
 
             ui.Render(windowSize);
 
@@ -456,6 +455,8 @@ namespace KreativerName.Scenes
             else
                 OnExit?.Invoke();
 
+            engine = new Engine(level);
+
             player = level.StartPos;
             Moves = 0;
             renderer.Grid = level.Grid;
@@ -499,6 +500,7 @@ namespace KreativerName.Scenes
 
             UpdateTitle();
 
+            engine = new Engine(this.level);
             renderer.Grid = level.Grid;
             renderer.Data = level.Data;
 

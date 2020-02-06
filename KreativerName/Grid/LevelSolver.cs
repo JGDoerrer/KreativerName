@@ -11,8 +11,10 @@ namespace KreativerName.Grid
         public LevelSolver(Level level)
         {
             this.level = level.Copy();
+            engine = new Engine(this.level);
         }
 
+        Engine engine;
         Level level;
         int[] possibleMoves;
         bool logMoves = false;
@@ -28,7 +30,7 @@ namespace KreativerName.Grid
 
             while (results.Count == 0)
             {
-                results = Solve(level.GetPossibleMoves(level.StartPos), level.Copy(), moves, new List<HexPoint>());
+                results = Solve(engine.GetPossibleMoves(level.StartPos), level.Copy(), moves, new List<HexPoint>());
                 moves++;
             }
 
@@ -50,7 +52,7 @@ namespace KreativerName.Grid
             {
                 logMoves = true;
                 possibleMoves = new int[moves];
-                results = Solve(level.GetPossibleMoves(level.StartPos), level.Copy(), moves, new List<HexPoint>());
+                results = Solve(engine.GetPossibleMoves(level.StartPos), level.Copy(), moves, new List<HexPoint>());
 
                 if (results.Count > 0)
                 {
@@ -62,7 +64,7 @@ namespace KreativerName.Grid
                         logMoves = true;
                         possibleMoves = new int[moves];
 
-                        results = Solve(level.GetPossibleMoves(level.StartPos), level.Copy(), moves, new List<HexPoint>());
+                        results = Solve(engine.GetPossibleMoves(level.StartPos), level.Copy(), moves, new List<HexPoint>());
 
                         if (results.Count == 0)
                             results = prevResults;
@@ -95,7 +97,8 @@ namespace KreativerName.Grid
             foreach (var move in moves)
             {
                 Level copy = level;//.Copy();
-                copy.Update(move);
+                Engine e = new Engine(copy);
+                e.Update(0,move);
 
                 HexFlags flags = copy.Grid[move].Value.GetFlags(level.Data);
 
@@ -108,7 +111,7 @@ namespace KreativerName.Grid
                 if (movesLeft == 1)
                     continue;
 
-                List<List<HexPoint>> result = Solve(copy.GetPossibleMoves(move), copy, movesLeft - 1, prevMoves.Append(move).ToList());
+                List<List<HexPoint>> result = Solve(e.GetPossibleMoves(move), copy, movesLeft - 1, prevMoves.Append(move).ToList());
                 if (result != null)
                     results.AddRange(result);
             }

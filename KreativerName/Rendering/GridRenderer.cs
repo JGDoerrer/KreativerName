@@ -22,11 +22,10 @@ namespace KreativerName.Rendering
         public HexGrid<Hex> Grid { get; set; }
         public HexData[] Data { get; set; }
         public HexLayout Layout { get; set; }
-        public Color PlayerColor { get; set; } = Color.FromArgb(255, 0, 255, 0);
 
         int frameCount = 0;
 
-        public void Render(HexPoint player, HexPoint selectedHex, List<HexPoint> moves)
+        public void Render(Player player, HexPoint selectedHex, List<HexPoint> moves)
         {
             if (Grid == null)
                 return;
@@ -59,8 +58,8 @@ namespace KreativerName.Rendering
                 if (mask.A > 0)
                     TextureRenderer.DrawHex(Textures.Get("Hex\\Mask"), hex.Position, Layout, Vector2.One * Layout.size, mask, null);
 
-                if (hex.Position == player)
-                    TextureRenderer.DrawHex(Textures.Get("Player"), hex.Position, Layout, Vector2.One * Layout.size, PlayerColor, null);
+                if (hex.Position == player.Position)
+                    TextureRenderer.DrawHex(Textures.Get("Player"), hex.Position, Layout, Vector2.One * Layout.size, player.Color, null);
             }
 
             frameCount++;
