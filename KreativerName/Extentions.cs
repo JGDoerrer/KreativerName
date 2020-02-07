@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace KreativerName
 {
@@ -55,7 +56,7 @@ namespace KreativerName
         }
 
         #endregion
-        
+
         public static int Clamp(this int i, int min, int max)
         {
             if (i < min)
@@ -91,7 +92,7 @@ namespace KreativerName
 
             return result;
         }
-        
+
         public static float Pow(this float b, int exp)
         {
             float result = 1;
@@ -124,18 +125,37 @@ namespace KreativerName
             return true;
         }
 
+        public static float Lerp(this float a, float b, float t)
+        {
+            return a + (b - a) * t;
+        }
+
+        public static byte Lerp(this byte a, byte b, float t)
+        {
+            return (byte)(a + (b - a) * t);
+        }
+
+        public static Color Lerp(this Color a, Color b, float t)
+        {
+            return Color.FromArgb(
+                a.A.Lerp(b.A, t),
+                a.R.Lerp(b.R, t),
+                a.G.Lerp(b.G, t),
+                a.B.Lerp(b.B, t));
+        }
+
         public static List<int> Factor(this int x)
         {
             List<int> factors = new List<int>();
 
             for (int factor = 1; factor * factor <= x; ++factor)
-            { 
+            {
                 //test from 1 to the square root, or the int below it, inclusive.
                 if (x % factor == 0)
                 {
                     factors.Add(factor);
                     if (factor * factor != x)
-                    { 
+                    {
                         // Don't add the square root twice!
                         factors.Add(x / factor);
                     }
@@ -147,7 +167,7 @@ namespace KreativerName
 
         static Random random = new Random();
 
-        public static T Random<T>(this IList<T> e) 
+        public static T Random<T>(this IList<T> e)
             => e[random.Next(0, e.Count)];
 
         public static string ToRoman(this int i)

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Net.Sockets;
-using KreativerName.Networking;
-using KreativerName.UI;
+﻿using KreativerName.UI;
 using OpenTK;
 
 namespace KreativerName.Scenes
@@ -11,7 +8,6 @@ namespace KreativerName.Scenes
         public static Scene Scene;
         public static GameWindow Window;
         public static Input Input;
-        public static Client Client;
 
         public static void LoadScene(Scene scene)
         {
@@ -44,24 +40,6 @@ namespace KreativerName.Scenes
         public static void CloseWindow()
         {
             Window.Close();
-        }
-
-        public static bool ConnectClient()
-        {
-            try
-            {
-                TcpClient tcp = new TcpClient();
-                tcp.Connect("Josuas-Pc", 8875);
-
-                Client = new Client(tcp);
-                Client.StartRecieve();
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
         }
     }
 }

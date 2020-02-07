@@ -39,6 +39,32 @@ namespace KreativerName.Rendering
             }
         }
 
+        public static void RenderString(string s, Vector2 position, Color color, float maxWidth, float size = 2)
+        {
+            if (s == null)
+                return;
+
+            float startX = position.X;
+
+            foreach (char c in s)
+            {
+                if (c == '\n' || position.X > startX + maxWidth)
+                {
+                    position.Y += 8 * size;
+                    position.X = startX;
+                }
+
+                if (c <= 287 && c >= 32)
+                {
+                    if (!char.IsUpper(c))
+                        position.X -= 1 * size;
+
+                    RenderChar(c, position, color, size);
+                    position.X += 7 * size;
+                }
+            }
+        }
+
         public static float GetWidth(string s, float size = 2)
         {
             float x = 0;
@@ -52,7 +78,9 @@ namespace KreativerName.Rendering
                 if (c <= 255 && c >= 32)
                 {
                     if (!char.IsUpper(c))
-                        x -= 1 * size;
+                        x -= size;
+                    if (x == 0)
+                        x -= size;
                     x += 7 * size;
                 }
 
@@ -65,7 +93,7 @@ namespace KreativerName.Rendering
 
         public static float GetHeight(string s, float size = 2)
         {
-            float y = 8 * size;
+            float y = 6 * size;
 
             foreach (char c in s)
             {

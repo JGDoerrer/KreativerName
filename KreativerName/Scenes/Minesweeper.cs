@@ -92,7 +92,7 @@ namespace KreativerName.Scenes
             {
                 Shortcut = Key.Escape
             };
-            exitButton.OnLeftClick += () => SceneManager.LoadScene(new Transition(new MainMenu(), 10));
+            exitButton.OnLeftClick += (sender) => SceneManager.LoadScene(new Transition(new MainMenu(), 10));
 
             UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black);
             exitImage.SetConstraints(new UIConstraints(10, 10, 20, 20));
@@ -117,7 +117,7 @@ namespace KreativerName.Scenes
                     int copyX = x;
                     int copyY = y;
 
-                    button.OnLeftClick += () =>
+                    button.OnLeftClick += (sender) =>
                     {
                         if (firstClick)
                         {
@@ -127,7 +127,7 @@ namespace KreativerName.Scenes
 
                         RevealTile(copyX, copyY);
                     };
-                    button.OnRightClick += () => MarkTile(copyX, copyY);
+                    button.OnRightClick += (sender) => MarkTile(copyX, copyY);
 
                     tiles[x, y].Button = button;
 
@@ -162,13 +162,13 @@ namespace KreativerName.Scenes
                 Color color = tiles[x, y].Neighbours switch
                 {
                     1 => Color.Blue,
-                    2 => Color.FromArgb(0,222,0),
+                    2 => Color.FromArgb(0, 222, 0),
                     3 => Color.Red,
                     4 => Color.Purple,
                     5 => Color.Yellow,
                     _ => Color.Black,
                 };
-                tiles[x, y].Button.AddChild(new TextBlock(tiles[x, y].Neighbours.ToString(), 3, 6, 4) {Color =  color});
+                tiles[x, y].Button.AddChild(new TextBlock(tiles[x, y].Neighbours.ToString(), 3, 6, 4) { Color = color });
             }
             else if (tiles[x, y].Neighbours == 0 && !tiles[x, y].IsMine)
             {

@@ -12,14 +12,14 @@ namespace KreativerName.Rendering
 
         public static Texture2D Get(string texture)
         {
-            return textures[texture];
+            return textures.ContainsKey(texture) ? textures[texture] : new Texture2D();
         }
 
         public static void LoadTextures(string directory)
         {
             string[] files = Directory.GetFiles(directory);
             string[] directories = Directory.GetDirectories(directory);
-            
+
             textures = new Dictionary<string, Texture2D>();
             foreach (string file in files)
             {

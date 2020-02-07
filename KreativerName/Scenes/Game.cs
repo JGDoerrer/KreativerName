@@ -16,6 +16,10 @@ namespace KreativerName.Scenes
     public delegate void LevelEvent(int level);
     public delegate void EmptyEvent();
 
+    // TODO: Cleanup code
+    /// <summary>
+    /// The main scene for the game.
+    /// </summary>
     public class Game : Scene
     {
         #region Constructors
@@ -69,26 +73,33 @@ namespace KreativerName.Scenes
         bool perfect = false;
         int levelIndex = 0;
         int worldIndex = 0;
-        int moves = 0;
         World world;
         Level level;
-        TextBlock title;
+        Engine engine;
 
-        int worldTitle = 0;
+        // max value = 240
+        int titleAnim = -1;
+
+        const int MAX_LEVEL_ANIM = 80;
+        int levelAnim = -1;
+        // true when level is done
+        bool levelDone = false;
+        bool worldDone = false;
 
         UI.UI ui;
+        TextBlock title;
         Input input;
         HexPoint selectedHex;
         HexPoint player;
 
-        const float sqrt3 = 1.732050807568877293527446341505872366942805253810380628055f;
+        const float SQRT3 = 1.732050807568877293527446341505872366942805253810380628055f;
+        const float SIZE = 16 * 2;
 
-        const float size = 16 * 2;
         HexLayout layout = new HexLayout(
-            new Matrix2(sqrt3, sqrt3 / 2f, 0, 3f / 2f),
-            new Matrix2(sqrt3 / 3f, -1f / 3f, 0, 2f / 3f),
+            new Matrix2(SQRT3, SQRT3 / 2f, 0, 3f / 2f),
+            new Matrix2(SQRT3 / 3f, -1f / 3f, 0, 2f / 3f),
             new Vector2(0, 0),
-            size, 0.5f);
+            SIZE, 0.5f);
         GridRenderer renderer = new GridRenderer();
 
         Vector2 scrolling;
@@ -97,7 +108,7 @@ namespace KreativerName.Scenes
         /// <summary>
         /// The grid of the current level.
         /// </summary>
-        public HexGrid<Hex> Grid { get => level.Grid; set => level.Grid = value; }
+        public HexGrid<Hex> Grid { get => engine.Level.Grid; set => engine.Level.Grid = value; }
 
         /// <summary>
         /// The current world.
@@ -107,44 +118,66 @@ namespace KreativerName.Scenes
         /// <summary>
         /// The amount of moves taken in the level.
         /// </summary>
-        public int Moves => moves;
+        public int Moves { get; private set; } = 0;
 
         private int Levels => world.Levels.Count;
-        
+
+
         /// <summary>
         /// Updates the scene.
         /// </summary>
         public override void Update()
         {
-            if (worldTitle > 0)
+            if (titleAnim >= 0)
             {
                 if (input.MousePress(MouseButton.Left))
                 {
-                    if (worldTitle > 120)
+                    if (titleAnim > 120)
                     {
-                        worldTitle = 120;
+                        titleAnim = 120;
                         input.ReleaseMouse(MouseButton.Left);
                     }
                     else
-                        worldTitle = 0;
+                        titleAnim = 0;
                 }
 
-                worldTitle--;
+                titleAnim--;
             }
 
-            HandleInput();
+            if (levelAnim >= 0)
+            {
+                levelAnim--;
+            }
+            if (levelAnim <= 0)
+            {
+                if (worldDone)
+                {
+                    WorldCompleted?.Invoke(worldIndex);
+
+                    worldIndex++;
+                    levelIndex = 0;
+                    OnExit?.Invoke();
+
+                    worldDone = true;
+                }
+                if (levelDone)
+                {
+                    UpdateTitle();
+                    LoadLevel();
+                }
+
+                HandleInput();
+            }
         }
 
         private void UpdatePlayer()
         {
-            moves++;
+            Moves++;
 
             if (!singleLevel)
                 Stats.Current.TotalMoves++;
 
-            HexFlags flags = Grid[player].Value.Flags;
-
-            if (flags.HasFlag(HexFlags.Deadly))
+            if (engine.Players[0].IsDead)
             {
                 if (!singleLevel)
                     Stats.Current.Fails++;
@@ -153,13 +186,13 @@ namespace KreativerName.Scenes
                 return;
             }
 
-            if (flags.HasFlag(HexFlags.Goal))
+            if (engine.LevelDone)
             {
                 CompleteLevel();
                 return;
             }
 
-            if (perfect && moves >= level.MinMoves)
+            if (perfect && Moves >= level.MinMoves)
             {
                 LoadLevel();
                 return;
@@ -171,18 +204,14 @@ namespace KreativerName.Scenes
             HexPoint mouse = layout.PixelToHex(input.MousePosition);
             selectedHex = mouse;
 
-            if (input.MousePress(MouseButton.Left))
+            if (input.MousePress(MouseButton.Left) && !levelDone)
             {
-                if (level.GetPossibleMoves(player).Contains(mouse))
+                if (engine.GetPossibleMoves(player).Contains(mouse))
                 {
                     player = mouse;
-                    level.Update(player);
+                    engine.Update(0,player);
                     UpdatePlayer();
                 }
-            }
-            if (input.KeyPress(Key.Escape))
-            {
-                Exit?.Invoke();
             }
 
             float scrollSpeed = 4 * (4 + (float)Math.Log(scale, 2));
@@ -221,10 +250,11 @@ namespace KreativerName.Scenes
             LevelCompleted?.Invoke(levelIndex);
 
             if (singleLevel)
-                Exit?.Invoke();
+                OnExit?.Invoke();
             else
             {
                 Level level = world.Levels[levelIndex];
+
                 level.Completed = true;
                 if (perfect)
                     level.Perfect = true;
@@ -242,15 +272,15 @@ namespace KreativerName.Scenes
 
                 if (levelIndex == Levels)
                 {
-                    WorldCompleted?.Invoke(worldIndex);
-
-                    worldIndex++;
-                    levelIndex = 0;
-                    Exit?.Invoke();
+                    worldDone = true;
                 }
 
-                UpdateTitle();
-                LoadLevel();
+                if (Settings.Current.ShowAnimations)
+                {
+                    levelAnim = MAX_LEVEL_ANIM;
+                }
+
+                levelDone = true;
             }
         }
 
@@ -283,32 +313,44 @@ namespace KreativerName.Scenes
                 int maxY = Grid.Max(x => x.Value.Y);
                 int minY = Grid.Min(x => x.Value.Y);
 
-                layout.size = Math.Min((windowSize.X - margin) / (sqrt3 * (maxX - minX + 1)), (windowSize.Y - margin) / (1.5f * (maxY - minY + 1.25f)));
-                // Round to multiples of 16
+                layout.size = Math.Min((windowSize.X - margin) / (SQRT3 * (maxX - minX + 1)), (windowSize.Y - margin) / (1.5f * (maxY - minY + 1.25f)));
+                // Round size to multiples of 16
                 layout.size = (float)Math.Floor(layout.size / 16) * 16;
-                layout.size = Math.Min(layout.size, 48) * scale;
+                layout.size = layout.size.Clamp(16, 64) * scale;
 
-                int centerX = (int)(layout.size * sqrt3 * (maxX + minX));
-                int centerY = (int)(layout.size * 1.5f * (maxY + minY));
+                // Do level animation
+                if (levelAnim >= 0)
+                {
+                    layout.spacing = 1 + 2 * (1 - QuarticOut(levelDone ? (levelAnim / (float)MAX_LEVEL_ANIM) : (1 - levelAnim / (float)MAX_LEVEL_ANIM)));
+                    layout.size *= QuarticOut(levelDone ? (levelAnim / (float)MAX_LEVEL_ANIM) : (1 - levelAnim / (float)MAX_LEVEL_ANIM));
+                }
+                else
+                    layout.spacing = 1;
+
+                int centerX = (int)(layout.size * layout.spacing * SQRT3 * (maxX + minX));
+                int centerY = (int)(layout.size * layout.spacing * 1.5f * (maxY + minY));
 
                 // Center grid
                 layout.origin = new Vector2((windowSize.X - centerX) / 2, (windowSize.Y - centerY) / 2) + scrolling;
 
-                //int totalWidth = (int)(editor.layout.size * sqrt3 * (maxX - minX + 1));
-                //int totalHeight = (int)(editor.layout.size * 1.5f * (maxY - minY + 1.25f));
-                renderer.Layout = layout;
             }
 
+            if (perfect)
+            {
+                engine.Players[0].Color = Color.FromArgb(0, 255, 0).Lerp(Color.FromArgb(255, 0, 0), ((float)Moves / (level.MinMoves)).Clamp(0, 1));
+            }
+
+            renderer.Layout = layout;
             renderer.Grid = Grid;
 
             if (Settings.Current.ShowMoves)
-                renderer.Render(player, selectedHex, level.GetPossibleMoves(player));
+                renderer.Render(engine.Players[0], selectedHex, engine.GetPossibleMoves(player));
             else
-                renderer.Render(player, selectedHex, null);
+                renderer.Render(engine.Players[0], selectedHex, null);
 
             ui.Render(windowSize);
 
-            if (worldTitle > 0)
+            if (titleAnim >= 0)
             {
                 RenderTitle(width, height);
             }
@@ -316,18 +358,9 @@ namespace KreativerName.Scenes
 
         private void RenderTitle(int width, int height)
         {
-            int alpha = (int)((1 - QuarticOut(1 - (float)worldTitle.Clamp(0, 120) / 120)) * 255);
+            int alpha = (int)((1 - QuarticOut(1 - (float)titleAnim.Clamp(0, 120) / 120)) * 255);
 
-            // Draw black window
-            GL.Disable(EnableCap.Texture2D);
-            GL.Begin(PrimitiveType.Quads);
-            GL.Color4(Color.FromArgb(alpha, 0, 0, 0));
-            GL.Vertex2(0, 0);
-            GL.Vertex2(0, height);
-            GL.Vertex2(width, height);
-            GL.Vertex2(width, 0);
-            GL.End();
-            GL.Enable(EnableCap.Texture2D);
+            DrawBlackWindow(width, height, alpha);
 
             TextBlock title = new TextBlock(world.Title, 6)
             {
@@ -338,6 +371,19 @@ namespace KreativerName.Scenes
             title.Dispose();
         }
 
+        private static void DrawBlackWindow(int width, int height, int alpha)
+        {
+            GL.Disable(EnableCap.Texture2D);
+            GL.Begin(PrimitiveType.Quads);
+            GL.Color4(Color.FromArgb(alpha, 0, 0, 0));
+            GL.Vertex2(0, 0);
+            GL.Vertex2(0, height);
+            GL.Vertex2(width, height);
+            GL.Vertex2(width, 0);
+            GL.End();
+            GL.Enable(EnableCap.Texture2D);
+        }
+
         private float QuarticOut(float t)
            => -((t - 1) * (t - 1) * (t - 1) * (t - 1)) + 1;
 
@@ -345,7 +391,7 @@ namespace KreativerName.Scenes
 
         #region Events
 
-        public event EmptyEvent Exit;
+        public event EmptyEvent OnExit;
         public event LevelEvent LevelCompleted;
         public event WorldEvent WorldCompleted;
 
@@ -360,13 +406,31 @@ namespace KreativerName.Scenes
                 Input = SceneManager.Input
             };
 
-            int size = 4;
-            title = new TextBlock("Level 000/000", size);
-            title.SetConstraints(new CenterConstraint(), new PixelConstraint(40), new PixelConstraint((int)title.TextWidth), new PixelConstraint(size * 6));
-            UpdateTitle();
-            title.Color = Color.LightGray;
+            title = new TextBlock("Level 000/000", 4, 0, 50)
+            { Color = Color.LightGray };
+            title.Constraints.x = new CenterConstraint();
 
             ui.Add(title);
+
+            Button exitButton = new Button(20, 20, 40, 40)
+            { Shortcut = Key.Escape };
+            exitButton.OnLeftClick += (sender) => OnExit?.Invoke();
+
+            UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black)
+            { Constraints = new UIConstraints(10, 10, 20, 20) };
+
+            exitButton.AddChild(exitImage);
+            ui.Add(exitButton);
+
+
+            Button hintButton = new Button(20, 80, 40, 40);
+            hintButton.OnLeftClick += (sender) => Notification.Show($"Hinweis: {level.Hint}");
+
+            UI.Image hintImage = new UI.Image(Textures.Get("Icons"), new RectangleF(50, 10, 10, 10), Color.Black)
+            { Constraints = new UIConstraints(10, 10, 20, 20) };
+
+            hintButton.AddChild(hintImage);
+            ui.Add(hintButton);
         }
 
         /// <summary>
@@ -389,14 +453,24 @@ namespace KreativerName.Scenes
             if (world.Levels != null && levelIndex < world.Levels.Count)
                 level = world.Levels[levelIndex].Copy();
             else
-                Exit?.Invoke();
+                OnExit?.Invoke();
+
+            engine = new Engine(level);
 
             player = level.StartPos;
-            moves = 0;
+            Moves = 0;
             renderer.Grid = level.Grid;
+            renderer.Data = level.Data;
 
             scrolling = new Vector2();
             scale = 1;
+
+            if (Settings.Current.ShowAnimations)
+            {
+                levelAnim = MAX_LEVEL_ANIM;
+            }
+
+            levelDone = false;
         }
 
         /// <summary>
@@ -407,6 +481,8 @@ namespace KreativerName.Scenes
         {
             levelIndex = index;
             LoadLevel();
+
+            UpdateTitle();
         }
 
         /// <summary>
@@ -424,8 +500,12 @@ namespace KreativerName.Scenes
 
             UpdateTitle();
 
+            engine = new Engine(this.level);
+            renderer.Grid = level.Grid;
+            renderer.Data = level.Data;
+
             player = level.StartPos;
-            moves = 0;
+            Moves = 0;
         }
 
         /// <summary>
@@ -436,7 +516,7 @@ namespace KreativerName.Scenes
             world = World.LoadFromFile($"{worldIndex:000}");
             levelIndex = 0;
             singleLevel = false;
-            worldTitle = 240;
+            titleAnim = 240;
 
             UpdateTitle();
         }
@@ -451,7 +531,7 @@ namespace KreativerName.Scenes
             worldIndex = index;
             levelIndex = 0;
             singleLevel = false;
-            worldTitle = 240;
+            titleAnim = 240;
 
             UpdateTitle();
         }
@@ -466,7 +546,7 @@ namespace KreativerName.Scenes
             worldIndex = -1;
             levelIndex = 0;
             singleLevel = false;
-            worldTitle = 240;
+            titleAnim = 240;
 
             UpdateTitle();
         }

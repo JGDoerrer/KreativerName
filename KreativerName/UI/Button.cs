@@ -11,6 +11,7 @@ namespace KreativerName.UI
         public Button()
         {
             constraints = new UIConstraints();
+
         }
         public Button(int x, int y, int w, int h)
         {
@@ -38,14 +39,14 @@ namespace KreativerName.UI
         {
             UpdateChildren(windowSize);
 
-            if (Enabled && !clicked && MouseOver(windowSize) && MouseLeftClick ||
-                (ui.Input.KeyDown(Shortcut) && !ui.ignoreShortcuts))
+            if (Enabled && (!clicked && MouseOver(windowSize) && MouseLeftDown && !mouseDown ||
+                (ui.Input.KeyPress(Shortcut) && !ui.ignoreShortcuts)))
             {
-                OnLeftClick?.Invoke();
+                OnLeftClick?.Invoke(this);
             }
             if (Enabled && MouseOver(windowSize) && MouseRightClick)
             {
-                OnRightClick?.Invoke();
+                OnRightClick?.Invoke(this);
             }
 
             if (ChangeState)
@@ -61,7 +62,7 @@ namespace KreativerName.UI
                     State = 0;
             }
 
-            clicked = (MouseOver(windowSize) && !mouseDown && MouseLeftDown) || (ui.Input.KeyDown(Shortcut) && !ui.ignoreShortcuts);
+            clicked = (MouseOver(windowSize) && !mouseDown && MouseLeftDown) || (ui.Input.KeyPress(Shortcut) && !ui.ignoreShortcuts);
 
             mouseDown = MouseLeftDown;
         }
@@ -86,24 +87,19 @@ namespace KreativerName.UI
                 color = Color.FromArgb(Color.R / 2, Color.B / 2, Color.G / 2);
             }
 
-            // corner top left
-            TextureRenderer.Draw(tex, new Vector2(x, y), Vector2.One * scale, color, new RectangleF(state, style, a, a));
-            // corner top right
-            TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y), Vector2.One * scale, color, new RectangleF(state + a * 2, style, a, a));
-            // corner bottom left
-            TextureRenderer.Draw(tex, new Vector2(x, y + h - a * scale), Vector2.One * scale, color, new RectangleF(state, style + a * 2, a, a));
-            // corner bottom right
-            TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y + h - a * scale), Vector2.One * scale, color, new RectangleF(state + a * 2, style + a * 2, a, a));
-            // left
-            TextureRenderer.Draw(tex, new Vector2(x, y + a * scale), new Vector2(1, h / (a * scale) - 2) * scale, color, new RectangleF(state, style + a, a, a));
-            // top
-            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y), new Vector2(w / (a * scale) - 2, 1) * scale, color, new RectangleF(state + a, style, a, a));
-            // right
-            TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y + a * scale), new Vector2(1, h / (a * scale) - 2) * scale, color, new RectangleF(state + a * 2, style + a, a, a));
-            // bottom
-            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + h - a * scale), new Vector2(w / (a * scale) - 2, 1) * scale, color, new RectangleF(state + a, style + a * 2, a, a));
-            // center
-            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + a * scale), new Vector2(w / (a * scale) - 2, h / (a * scale) - 2) * scale, color, new RectangleF(state + a, style + a, a, a));
+            float[] xs = { x, x + a * scale, x + w - a * scale };
+            float[] ys = { y, y + a * scale, y + h - a * scale };
+
+            for (int i = 0; i <= 2; i++)
+            {
+                for (int j = 0; j <= 2; j++)
+                {
+                    Vector2 scl = new Vector2(i == 1 ? w / (a * scale) - 2 : 1,
+                                              j == 1 ? h / (a * scale) - 2 : 1) * scale;
+
+                    TextureRenderer.Draw(tex, new Vector2(xs[i], ys[j]), scl, color, new RectangleF(state + a * i, style + a * j, a, a));
+                }
+            }
 
             RenderChildren(windowSize);
         }

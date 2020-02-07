@@ -1,8 +1,11 @@
 ﻿using System.Drawing;
+using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 using KreativerName.Rendering;
 using KreativerName.UI.Constraints;
 using OpenTK;
+using OpenTK.Input;
 
 namespace KreativerName.UI
 {
@@ -16,70 +19,120 @@ namespace KreativerName.UI
         }
 
         public bool Focused { get; set; }
+        public bool Enabled { get; set; } = true;
+        public bool OnlyNumbers { get; set; }
         public string Text { get; set; } = "";
         public int Cursor { get; set; } = 0;
         public Color TextColor { get; set; } = Color.Black;
         public Vector2 TextOffset { get; set; } = new Vector2(8, 8);
         public float TextSize { get; set; } = 2;
         public int MaxTextSize { get; set; } = 5;
-        public bool Enabled { get; set; } = true;
 
-        private int cursorAnim;
+        int cursorAnim;
+        int frameCount = 0;
+        const int repeatSpeed = 3;
 
         public override void Update(Vector2 windowSize)
         {
             if (MouseLeftClick && Enabled)
             {
-                ui.ignoreShortcuts = Focused = MouseOver(windowSize);
+                if (MouseOver(windowSize))
+                {
+                    Focused = true;
+                }
+                else if (Focused)
+                {
+                    ui.ignoreShortcuts = false;
+                    Focused = false;
+                }
+
                 if (Focused)
                     cursorAnim = 0;
             }
 
             if (Focused && Enabled)
             {
-                if (Cursor > Text.Length)
-                    Cursor = Text.Length;
+                ui.ignoreShortcuts = true;
 
-                if (Cursor > MaxTextSize - 1)
-                    Cursor = MaxTextSize - 1;
-
-                if (Cursor < 0)
-                    Cursor = 0;
-
-                Text = Text.Insert(Cursor, ui.Input.KeyString);
-
-                Cursor += ui.Input.KeyString.Length;
-
-                if (Text.Length > MaxTextSize)
-                    Text = Text.Remove(MaxTextSize, Text.Length - MaxTextSize);
-                
-                if (ui.Input.KeyPress(OpenTK.Input.Key.BackSpace) && Cursor > 0 && Text.Length > 0)
-                {
-                    Cursor--;
-                    Text = Text.Remove(Cursor, 1);
-                }
-                if (ui.Input.KeyPress(OpenTK.Input.Key.Delete) && Cursor < Text.Length && Text.Length > 0)
-                {
-                    Text = Text.Remove(Cursor, 1);
-                }
-
-                if (ui.Input.KeyPress(OpenTK.Input.Key.Left) && Cursor > 0)
-                {
-                    Cursor--;
-                    cursorAnim = 0;
-                }
-                if (ui.Input.KeyPress(OpenTK.Input.Key.Right) && Cursor < Text.Length)
-                {
-                    Cursor++;
-                    cursorAnim = 0;
-                }
-
-                if (ui.Input.KeyPress(OpenTK.Input.Key.Escape))
-                {
-                    ui.ignoreShortcuts = Focused = false;
-                    ui.Input.ReleaseKey(OpenTK.Input.Key.Escape);
-                }
+                HandleInput();
             }
+
+            frameCount++;
+        }
+
+        private void HandleInput()
+        {
+            if (Cursor > Text.Length)
+                Cursor = Text.Length;
+
+            if (Cursor > MaxTextSize - 1)
+                Cursor = MaxTextSize - 1;
+
+            if (Cursor < 0)
+                Cursor = 0;
+
+            // Add text
+            char[] toAdd = ui.Input.KeyString.ToCharArray();
+
+            if (OnlyNumbers)
+            {
+                toAdd = toAdd.Where(x => char.IsDigit(x)).ToArray();
+            }
+
+            Text = Text.Insert(Cursor, new string(toAdd));
+            Cursor += ui.Input.KeyString.Length;
+
+            if (Text.Length > MaxTextSize)
+                Text = Text.Remove(MaxTextSize, Text.Length - MaxTextSize);
+
+            // Deleting characters
+            if (KeyDownOrRepeat(Key.BackSpace) && Cursor > 0 && Text.Length > 0)
+            {
+                Cursor--;
+                Text = Text.Remove(Cursor, 1);
+            }
+            if (KeyDownOrRepeat(Key.Delete) && Cursor < Text.Length && Text.Length > 0)
+            {
+                Text = Text.Remove(Cursor, 1);
+            }
+
+            // Moving cursor
+            if (KeyDownOrRepeat(Key.Left) && Cursor > 0)
+            {
+                Cursor--;
+                cursorAnim = 0;
+            }
+            if (KeyDownOrRepeat(Key.Right) && Cursor < Text.Length)
+            {
+                Cursor++;
+                cursorAnim = 0;
+            }
+
+            // Unfocus
+            if (ui.Input.KeyPress(Key.Escape))
+            {
+                ui.ignoreShortcuts = Focused = false;
+                ui.Input.ReleaseKey(Key.Escape);
+            }
+
+            // Clipboard
+            if (ui.Input.KeyPress(Key.C) && ui.Input.KeyDown(Key.ControlLeft))
+            {
+                Clipboard.SetText(Text);
+            }
+            if (ui.Input.KeyPress(Key.V) && ui.Input.KeyDown(Key.ControlLeft))
+            {
+                Text = Clipboard.GetText() ?? "";
+            }
+
+            if (Cursor > Text.Length)
+                Cursor = Text.Length;
+
+            if (Cursor > MaxTextSize - 1)
+                Cursor = MaxTextSize - 1;
+
+            if (Cursor < 0)
+                Cursor = 0;
         }
 
         public override void Render(Vector2 windowSize)
@@ -93,7 +146,7 @@ namespace KreativerName.UI
             float h = GetHeight(windowSize);
 
             float offset = 0;
-            Color color = Color.White;
+            Color color;
             Texture2D tex = Textures.Get("TextBox");
 
             if (MouseOver(windowSize) || Focused)
@@ -111,33 +164,30 @@ namespace KreativerName.UI
                 color = Color.FromArgb(color.R / 2, color.B / 2, color.G / 2);
             }
 
-            // corner top left
-            TextureRenderer.Draw(tex, new Vector2(x, y), Vector2.One * scale, color, new RectangleF(offset, 0, a, a));
-            // corner top right
-            TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y), Vector2.One * scale, color, new RectangleF(offset + a * 2, 0, a, a));
-            // corner bottom left
-            TextureRenderer.Draw(tex, new Vector2(x, y + h - a * scale), Vector2.One * scale, color, new RectangleF(offset, a * 2, a, a));
-            // corner bottom right
-            TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y + h - a * scale), Vector2.One * scale, color, new RectangleF(offset + a * 2, a * 2, a, a));
-            // left
-            TextureRenderer.Draw(tex, new Vector2(x, y + a * scale), new Vector2(1, h / (a * scale) - 2) * scale, color, new RectangleF(offset, a, a, a));
-            // top
-            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y), new Vector2(w / (a * scale) - 2, 1) * scale, color, new RectangleF(offset + a, 0, a, a));
-            // right
-            TextureRenderer.Draw(tex, new Vector2(x + w - a * scale, y + a * scale), new Vector2(1, h / (a * scale) - 2) * scale, color, new RectangleF(offset + a * 2, a, a, a));
-            // bottom
-            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + h - a * scale), new Vector2(w / (a * scale) - 2, 1) * scale, color, new RectangleF(offset + a, a * 2, a, a));
-            // center
-            TextureRenderer.Draw(tex, new Vector2(x + a * scale, y + a * scale), new Vector2(w / (a * scale) - 2, h / (a * scale) - 2) * scale, color, new RectangleF(offset + a, a, a, a));
+            float[] xs = { x, x + a * scale, x + w - a * scale };
+            float[] ys = { y, y + a * scale, y + h - a * scale };
+
+            for (int i = 0; i <= 2; i++)
+            {
+                for (int j = 0; j <= 2; j++)
+                {
+                    Vector2 scl = new Vector2(i == 1 ? w / (a * scale) - 2 : 1,
+                                              j == 1 ? h / (a * scale) - 2 : 1) * scale;
+
+                    TextureRenderer.Draw(tex, new Vector2(xs[i], ys[j]), scl, color, new RectangleF(offset + a * i, a * j, a, a));
+                }
+            }
 
             StringBuilder text = new StringBuilder(Text.PadRight(MaxTextSize));
             if ((cursorAnim / 30) % 2 == 0 && Focused)
                 text[Cursor] = '_';
 
-            TextRenderer.RenderString(text.ToString(), new Vector2(GetX(windowSize), GetY(windowSize)) + TextOffset, TextColor, TextSize);
+            Rendering.TextRenderer.RenderString(text.ToString(), new Vector2(GetX(windowSize), GetY(windowSize)) + TextOffset, TextColor, w - TextOffset.X * 3, TextSize);
 
             RenderChildren(windowSize);
             cursorAnim++;
         }
+
+        private bool KeyDownOrRepeat(Key key) => ui.Input.KeyPress(key) || (ui.Input.KeyRepeat(key) && frameCount % repeatSpeed == 0);
     }
 }

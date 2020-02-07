@@ -11,10 +11,14 @@ namespace KreativerName
         public bool Fullscreen;
         public bool ShowFps;
         public bool LoggedIn;
+        public bool ShowAnimations;
 
         public uint UserID;
         public uint LoginInfo;
         public string UserName;
+
+        public int EditorWorld;
+        public int EditorLevel;
 
         public static Settings Current;
         public static Settings New => new Settings()
@@ -23,32 +27,42 @@ namespace KreativerName
             Fullscreen = false,
             ShowFps = false,
             LoggedIn = false,
-            UserID = 0,
-            LoginInfo = 0,
+            ShowAnimations = true,
             UserName = "",
         };
-        
+
         public int FromBytes(byte[] bytes, int startIndex)
         {
             int count = 0;
 
-            ShowMoves = (bytes[startIndex + count] & (1 << 0)) > 0;
-            Fullscreen = (bytes[startIndex + count] & (1 << 1)) > 0;
-            ShowFps = (bytes[startIndex + count] & (1 << 2)) > 0;
-            LoggedIn = (bytes[startIndex + count] & (1 << 3)) > 0;
+            try
+            {
+                ShowMoves = (bytes[startIndex + count] & (1 << 0)) > 0;
+                Fullscreen = (bytes[startIndex + count] & (1 << 1)) > 0;
+                ShowFps = (bytes[startIndex + count] & (1 << 2)) > 0;
+                LoggedIn = (bytes[startIndex + count] & (1 << 3)) > 0;
+                ShowAnimations = (bytes[startIndex + count] & (1 << 4)) > 0;
 
-            count++;
+                count++;
 
-            UserID = BitConverter.ToUInt32(bytes, startIndex + count);
-            count += 4;
+                UserID = BitConverter.ToUInt32(bytes, startIndex + count);
+                count += 4;
 
-            LoginInfo = BitConverter.ToUInt32(bytes, startIndex + count);
-            count += 4;
+                LoginInfo = BitConverter.ToUInt32(bytes, startIndex + count);
+                count += 4;
 
-            int nameLength = BitConverter.ToInt32(bytes, startIndex + count);
-            count += 4;
-            UserName = Encoding.UTF8.GetString(bytes, startIndex + count, nameLength);
-            count += nameLength;
+                int nameLength = BitConverter.ToInt32(bytes, startIndex + count);
+                count += 4;
+                UserName = Encoding.UTF8.GetString(bytes, startIndex + count, nameLength);
+                count += nameLength;
+
+                count += EditorWorld.FromBytes(bytes, startIndex + count);
+                count += EditorLevel.FromBytes(bytes, startIndex + count);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"[Settings]: Error while loading: {e.Message}");
+            }
 
             return count;
         }
@@ -57,7 +71,7 @@ namespace KreativerName
         {
             List<byte> bytes = new List<byte>();
 
-            byte b1 = (byte)((ShowMoves ? 1 : 0) << 0 | (Fullscreen ? 1 : 0) << 1 | (ShowFps ? 1 : 0) << 2 | (LoggedIn ? 1 : 0) << 3);
+            byte b1 = (byte)((ShowMoves ? 1 : 0) << 0 | (Fullscreen ? 1 : 0) << 1 | (ShowFps ? 1 : 0) << 2 | (LoggedIn ? 1 : 0) << 3 | (ShowAnimations ? 1 : 0) << 4);
             bytes.Add(b1);
 
             bytes.AddRange(BitConverter.GetBytes(UserID));
@@ -66,6 +80,9 @@ namespace KreativerName
             byte[] name = Encoding.UTF8.GetBytes(UserName ?? "");
             bytes.AddRange(BitConverter.GetBytes(name.Length));
             bytes.AddRange(name);
+
+            bytes.AddRange(EditorWorld.ToBytes());
+            bytes.AddRange(EditorLevel.ToBytes());
 
             return bytes.ToArray();
         }

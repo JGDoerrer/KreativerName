@@ -21,52 +21,33 @@ namespace KreativerName.Scenes
 
         UI.UI ui;
 
-        bool normalMode = true;
-
         private void InitUI()
         {
-            ui = new UI.UI();
-            ui.Input = new Input(SceneManager.Window);
+            ui = new UI.UI
+            {
+                Input = new Input(SceneManager.Window)
+            };
 
-            TextBlock title = new TextBlock("Welten", 4);
-            title.Color = Color.White;
-            title.SetConstraints(
-                new CenterConstraint(),
-                new PixelConstraint(50),
-                new PixelConstraint((int)title.TextWidth),
-                new PixelConstraint((int)title.TextHeight));
+            TextBlock title = new TextBlock("Welten", 4, 0, 50)
+            {
+                Color = Color.White
+            };
+            title.Constraints.x = new CenterConstraint();
             ui.Add(title);
 
-            Button modeButton = new Button();
-            modeButton.Shortcut = Key.Tab;
-            modeButton.Color = Color.FromArgb(100, 255, 100);
-            modeButton.SetConstraints(new PixelConstraint(40, RelativeTo.Window, Direction.Left),
-                new PixelConstraint(40, RelativeTo.Window, Direction.Bottom),
-                new PixelConstraint(300),
-                new PixelConstraint(60));
 
-            TextBlock modeText = new TextBlock("Normal", 3);
-            modeText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)modeText.TextWidth), new PixelConstraint((int)modeText.TextHeight));
-            modeButton.AddChild(modeText);
-
-            modeButton.OnLeftClick += () =>
+            Button exitButton = new Button(40, 40, 40, 40)
             {
-                normalMode = !normalMode;
-
-                modeText.Text = normalMode ? "Normal" : "Perfekt";
-                modeButton.Color = normalMode ? Color.FromArgb(100, 255, 100) : Color.FromArgb(255, 100, 100);
-                modeText.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)modeText.TextWidth), new PixelConstraint((int)modeText.TextHeight));
+                Shortcut = Key.Escape
             };
-            ui.Add(modeButton);
-
-            Button exitButton = new Button(40, 40, 40, 40);
-            exitButton.Shortcut = Key.Escape;
-            exitButton.OnLeftClick += () =>
+            exitButton.OnLeftClick += (sender) =>
             {
                 SceneManager.LoadScene(new Transition(new MainMenu(), 10));
             };
-            UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black);
-            exitImage.SetConstraints(new UIConstraints(10, 10, 20, 20));
+            UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black)
+            {
+                Constraints = new UIConstraints(10, 10, 20, 20)
+            };
 
             exitButton.AddChild(exitImage);
             ui.Add(exitButton);
@@ -77,16 +58,21 @@ namespace KreativerName.Scenes
         private void InitWorlds()
         {
             const int ButtonSize = 60;
+            const int StarsPerWorld = 2;
+            const int WorldsPerRow = 5;
+
             List<World> worlds = new List<World>();
             int worldcount = 0;
-            while (File.Exists($@"Resources\Worlds\{worldcount:000}.wld"))
+
+            while (File.Exists($"{World.BasePath}{worldcount:000}.wld"))
             {
-                worlds.Add(World.LoadFromFile($"{worldcount:000}"));
+                World item = World.LoadFromFile($"{worldcount:000}");
+                worlds.Add(item);
                 worldcount++;
             }
 
-            const int starsPerWorld = 2;            
-            bool[,] stars = new bool[worldcount, starsPerWorld];
+            // Get stars
+            bool[,] stars = new bool[worldcount, StarsPerWorld];
             int totalStars = 0;
             bool[] showWorld = new bool[worldcount];
 
@@ -97,22 +83,19 @@ namespace KreativerName.Scenes
                 stars[i, 1] = worlds[i].AllPerfect;
                 totalStars += worlds[i].AllPerfect ? 1 : 0;
             }
-            
+
+            // Decide if world is shown
             for (int i = 0; i < worldcount; i++)
             {
                 if (i > 1)
                 {
                     for (int j = 0; j < 3; j++)
-                    {
-                        for (int k = 0; k < starsPerWorld; k++)
-                        {
+                        for (int k = 0; k < StarsPerWorld; k++)
                             if (stars[i - j, k])
                             {
                                 showWorld[i] = true;
                                 break;
                             }
-                        }
-                    }
                 }
                 else
                     showWorld[i] = true;
@@ -124,22 +107,23 @@ namespace KreativerName.Scenes
                 Constraints = new UIConstraints(
                     new CenterConstraint(),
                     new PixelConstraint(180),
-                    new PixelConstraint(showWorld.Count(x => x) * (ButtonSize + 20) + 20),
-                    new PixelConstraint(ButtonSize + 40))
+                    new PixelConstraint((showWorld.Count(x => x) / WorldsPerRow < 1 ? showWorld.Count(x => x) % WorldsPerRow : WorldsPerRow) * (ButtonSize + 20) + 20),
+                    new PixelConstraint((ButtonSize + 20) * (showWorld.Count(x => x) / WorldsPerRow + 1) + 20))
             };
 
+            // Make buttons
             int count = 0;
             for (int i = 0; i < worldcount; i++)
             {
                 if (showWorld[i])
                 {
-                    Button button = new Button((ButtonSize + 20) * count + 20, 20, ButtonSize, ButtonSize);
+                    Button button = new Button((ButtonSize + 20) * (count % WorldsPerRow) + 20, (ButtonSize + 20) * (count / WorldsPerRow) + 20, ButtonSize, ButtonSize);
 
-                    for (int j = 0; j < starsPerWorld; j++)
+                    for (int j = 0; j < StarsPerWorld; j++)
                     {
                         UI.Image image = new UI.Image(Textures.Get("Icons"), new RectangleF(stars[i, j] ? 10 : 0, 0, 10, 10));
                         image.SetConstraints(new UIConstraints(
-                            ButtonSize * (j + 1) / (starsPerWorld + 1) - 10,
+                            ButtonSize * (j + 1) / (StarsPerWorld + 1) - 10,
                             ButtonSize - 15, 20, 20));
 
                         button.AddChild(image);
@@ -152,13 +136,10 @@ namespace KreativerName.Scenes
                         button.Enabled = worlds[i - 1].AllCompleted || worlds[i - 1].AllPerfect;
 
                     int world = i;
-                    button.OnLeftClick += () =>
-                    {
-                        NewGame(world);
-                    };
+                    button.OnLeftClick += (sender) => { NewGame(world); };
 
                     TextBlock text = new TextBlock((i + 1).ToRoman().ToLower(), 3);
-                    text.SetConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)text.TextWidth), new PixelConstraint((int)text.TextHeight));
+                    text.Constraints = new UIConstraints(new CenterConstraint(), new CenterConstraint(), new PixelConstraint((int)text.TextWidth), new PixelConstraint((int)text.TextHeight));
                     button.AddChild(text);
                     worldFrame.AddChild(button);
 
@@ -185,14 +166,8 @@ namespace KreativerName.Scenes
 
         private void NewGame(int world)
         {
-            Game game = new Game(world, !normalMode);
-            game.Exit += () =>
-            {
-                game.World.SaveToFile($"{world:000}");
-                SceneManager.LoadScene(new Transition(new WorldMenu(), 10));
-            };
-
-            SceneManager.LoadScene(new Transition(game, 10));
+            LevelMenu menu = new LevelMenu(world);
+            SceneManager.LoadScene(new Transition(menu, 10));
         }
 
         #region IDisposable Support

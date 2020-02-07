@@ -5,11 +5,14 @@ using KreativerName.Grid;
 
 namespace KreativerName.Networking
 {
+    /// <summary>
+    /// Stores data
+    /// </summary>
     public struct Packet : IBytes
     {
         public Packet(byte[] bytes) : this()
         {
-            FromBytes(bytes,0);
+            FromBytes(bytes, 0);
         }
 
         public Packet(PacketCode code, PacketInfo info) : this()
@@ -45,8 +48,8 @@ namespace KreativerName.Networking
             bytes.AddRange(BitConverter.GetBytes((ushort)Code));
             bytes.Add((byte)Info);
 
-            bytes.AddRange(BitConverter.GetBytes(Bytes?.Length??0));
-            bytes.AddRange(Bytes??new byte[0]);
+            bytes.AddRange(BitConverter.GetBytes(Bytes?.Length ?? 0));
+            bytes.AddRange(Bytes ?? new byte[0]);
 
             return bytes.ToArray();
         }
@@ -67,6 +70,8 @@ namespace KreativerName.Networking
 
             return count;
         }
+
+        public override string ToString() => $"{Code}, {Info}, {BitConverter.ToString(Bytes)}";
     }
 
     public enum PacketCode : ushort

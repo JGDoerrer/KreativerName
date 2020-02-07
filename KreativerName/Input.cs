@@ -11,16 +11,17 @@ namespace KreativerName
             Initialise(window);
         }
 
-        private List<Key> keysDown;
-        private List<Key> keysDownLast;
-        private List<MouseButton> mouseDown;
-        private List<MouseButton> mouseDownLast;
-        private Vector2 mousePosition;
+        List<Key> keysDown;
+        List<Key> keysDownLast;
+        List<Key> keysRepeat;
+        List<MouseButton> mouseDown;
+        List<MouseButton> mouseDownLast;
+        Vector2 mousePosition;
 
-        private int mouseWheel;
-        private int mouseWheelLast;
-        private MouseState mouseState;
-        private KeyboardState keyState;
+        int mouseWheel;
+        int mouseWheelLast;
+        MouseState mouseState;
+        KeyboardState keyState;
 
         public void Initialise(GameWindow window)
         {
@@ -76,10 +77,14 @@ namespace KreativerName
         {
             while (keysDown.Contains(e.Key))
                 keysDown.Remove(e.Key);
+            while (keysRepeat.Contains(e.Key))
+                keysRepeat.Remove(e.Key);
             keyState = e.Keyboard;
         }
         private void KeyDown(object sender, KeyboardKeyEventArgs e)
         {
+            if (e.IsRepeat)
+                keysRepeat.Add(e.Key);
             keysDown.Add(e.Key);
             keyState = e.Keyboard;
         }
@@ -115,12 +120,14 @@ namespace KreativerName
         {
             keysDown = new List<Key>();
             keysDownLast = new List<Key>();
+            keysRepeat = new List<Key>();
             KeyString = "";
         }
 
         public bool KeyPress(Key key) => keysDown.Contains(key) && !keysDownLast.Contains(key);
         public bool KeyDown(Key key) => keysDown.Contains(key);
         public bool KeyRelease(Key key) => !keysDown.Contains(key) && keysDownLast.Contains(key);
+        public bool KeyRepeat(Key key) => keysRepeat.Contains(key);
 
         public bool MousePress(MouseButton button) => mouseDown.Contains(button) && !mouseDownLast.Contains(button);
         public bool MouseDown(MouseButton button) => mouseDown.Contains(button);

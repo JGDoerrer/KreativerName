@@ -20,11 +20,12 @@ namespace KreativerName.Rendering
         const float sqrt3 = 1.732050807568877293527446341505872366942805253810380628055f;
 
         public HexGrid<Hex> Grid { get; set; }
+        public HexData[] Data { get; set; }
         public HexLayout Layout { get; set; }
 
         int frameCount = 0;
 
-        public void Render(HexPoint player, HexPoint selectedHex, List<HexPoint> moves)
+        public void Render(Player player, HexPoint selectedHex, List<HexPoint> moves)
         {
             if (Grid == null)
                 return;
@@ -52,13 +53,13 @@ namespace KreativerName.Rendering
                 else
                     mask = Color.Transparent;
 
-                RenderHex(hex.Position, hex.Types, Layout, Color.White, frameCount, Grid);
+                RenderHex(hex.Position, hex.GetTypes(Data), Layout, Color.White, frameCount, Grid);
 
                 if (mask.A > 0)
                     TextureRenderer.DrawHex(Textures.Get("Hex\\Mask"), hex.Position, Layout, Vector2.One * Layout.size, mask, null);
-                
-                if (hex.Position == player)
-                    TextureRenderer.DrawHex(Textures.Get("Player"), hex.Position, Layout, Vector2.One * Layout.size, Color.White, null);
+
+                if (hex.Position == player.Position)
+                    TextureRenderer.DrawHex(Textures.Get("Player"), hex.Position, Layout, Vector2.One * Layout.size, player.Color, null);
             }
 
             frameCount++;
@@ -74,7 +75,7 @@ namespace KreativerName.Rendering
                 int animation = 0;
                 int connection = 0;
 
-                if (types[i].RenderFlags.HasFlag(RenderFlags.Animated))
+                if (types[i].RenderFlags.HasFlag(RenderFlags.Animated) && types[i].AnimationLength != 0 && types[i].AnimationSpeed != 0)
                 {
                     animation = ((frameCount + types[i].AnimationPhase) / types[i].AnimationSpeed) % types[i].AnimationLength;
                 }
@@ -97,7 +98,7 @@ namespace KreativerName.Rendering
                     }
                 }
 
-                TextureRenderer.DrawHex(Textures.Get($"Hex\\{types[i].ID}"), pos, layout, Vector2.One * layout.size, color, new RectangleF(32 * connection, animation * 32, 32, 32));
+                TextureRenderer.DrawHex(Textures.Get($"Hex\\{types[i].Texture}"), pos, layout, Vector2.One * layout.size, color, new RectangleF(32 * connection, animation * 32, 32, 32));
             }
         }
     }

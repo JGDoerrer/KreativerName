@@ -28,6 +28,10 @@ namespace KreativerName.Scenes
             renderer = new GridRenderer(null, layout);
 
             InitUI();
+            InitLowerFrame();
+
+            worldIndex = Settings.Current.EditorWorld;
+            levelIndex = Settings.Current.EditorLevel;
 
             LoadWorld();
             LoadLevel();
@@ -36,32 +40,28 @@ namespace KreativerName.Scenes
         int levelIndex = 0;
         int worldIndex = 0;
         bool ignoreMouse;
-        byte? drawType = null;
+        byte? drawID = null;
         World world;
         Level level;
         Game testGame;
+        Engine engine;
 
         UI.UI ui;
         Input input;
+        HexPoint lastSelectedHex;
         HexPoint selectedHex;
-        HexPoint player;
 
-        const float sqrt3 = 1.732050807568877293527446341505872366942805253810380628055f;
+        const float SQRT3 = 1.732050807568877293527446341505872366942805253810380628055f;
 
-        const float hexSize = 16 * 2;
+        const float HEX_SIZE = 16 * 2;
         HexLayout layout = new HexLayout(
-            new Matrix2(sqrt3, sqrt3 / 2f, 0, 3f / 2f),
-            new Matrix2(sqrt3 / 3f, -1f / 3f, 0, 2f / 3f),
+            new Matrix2(SQRT3, SQRT3 / 2f, 0, 3f / 2f),
+            new Matrix2(SQRT3 / 3f, -1f / 3f, 0, 2f / 3f),
             new Vector2(0, 0),
-            hexSize, 0.5f);
+            HEX_SIZE, 0.5f);
         Vector2 scrolling;
         float scale = 1;
         GridRenderer renderer;
-
-        /// <summary>
-        /// Gets invoked when leaving the editor.
-        /// </summary>
-        public event EmptyEvent OnExit;
 
         /// <summary>
         /// The grid of the current level.
@@ -71,27 +71,15 @@ namespace KreativerName.Scenes
         /// <summary>
         /// The current path of the world files.
         /// </summary>
-        public string Path { get; set; } = "Worlds";
+        public string Path { get; set; } = @"Worlds\Editor";
+
+        public event EmptyEvent OnExit;
 
         /// <summary>
         /// Updates the scene.
         /// </summary>
         public override void Update()
         {
-            for (int i = 0; i < buttonFrame.Children.Count; i++)
-            {
-                Button item = (Button)buttonFrame.Children[i];
-                if (drawType != null && (int)drawType == i)
-                {
-                    item.Color = Color.Green;
-                    HexData data = HexData.Data.First(x => x.ID == i);
-                    //textHexDesc.Text = $"Solide:  {(data.Flags.HasFlag(HexFlags.Solid) ? "Ja" : "Nein")}\nTödlich: {(data.Flags.HasFlag(HexFlags.Deadly) ? "Ja" : "Nein")}\nZiel:    {(data.Flags.HasFlag(HexFlags.Goal) ? "Ja" : "Nein")}";
-                }
-                else
-                    item.Color = Color.White;
-
-            }
-
             HandleInput();
 
             input.Update();
@@ -100,6 +88,8 @@ namespace KreativerName.Scenes
         private void HandleInput()
         {
             HexPoint mouse = layout.PixelToHex(input.MousePosition);
+
+            lastSelectedHex = selectedHex;
             selectedHex = mouse;
 
             float scrollSpeed = 2 * (4 + (float)Math.Log(scale, 2));
@@ -108,19 +98,19 @@ namespace KreativerName.Scenes
             {
                 if (input.MouseDown(MouseButton.Left))
                 {
-                    if (Grid != null && Grid[mouse] != null && drawType != null)
+                    if (Grid != null && Grid[mouse] != null && drawID != null)
                     {
                         Hex hex = Grid[mouse].Value;
 
-                        if (drawType.HasValue && (drawType == 0))
-                            hex.IDs = new List<byte> { drawType.Value };
-                        else if (drawType.HasValue && !hex.IDs.Contains(drawType.Value))
-                            hex.IDs.Add(drawType.Value);
+                        if (drawID.HasValue && (drawID == 0))
+                            hex.IDs = new List<byte> { drawID.Value };
+                        else if (drawID.HasValue && !hex.IDs.Contains(drawID.Value))
+                            hex.IDs.Add(drawID.Value);
 
                         Grid[mouse] = hex;
                     }
                 }
-                if (input.MousePress(MouseButton.Right))
+                if (input.MousePress(MouseButton.Right) || (input.MouseDown(MouseButton.Right) && lastSelectedHex != selectedHex))
                 {
                     if (Grid != null)
                     {
@@ -135,12 +125,7 @@ namespace KreativerName.Scenes
             {
                 if (input.KeyPress(Key.A))
                 {
-                    //if (GetPlayerMoves().Contains(mouse))
-                    player = mouse;
-                }
-                if (input.KeyPress(Key.Escape))
-                {
-                    OnExit?.Invoke();
+                    level.StartPos = mouse;
                 }
                 if (input.KeyDown(Key.Left))
                 {
@@ -167,6 +152,7 @@ namespace KreativerName.Scenes
                 scale = scale.Clamp(0.125f, 16);
 
                 scrolling = scrolling * scale / oldScale;
+
             }
         }
 
@@ -188,7 +174,7 @@ namespace KreativerName.Scenes
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
 
-            if (Grid != null)
+            if (Grid != null && !input.MouseDown(MouseButton.Right))
             {
                 const int margin = 50;
 
@@ -197,12 +183,12 @@ namespace KreativerName.Scenes
                 int maxY = Grid.Max(x => x.Value.Y);
                 int minY = Grid.Min(x => x.Value.Y);
 
-                layout.size = Math.Min((width - margin - leftFrame.GetWidth(windowSize)) / (sqrt3 * (maxX - minX + 1)), (height - margin - lowerFrame.GetHeight(windowSize)) / (1.5f * (maxY - minY + 1.25f)));
+                layout.size = Math.Min((width - margin - leftFrame.GetWidth(windowSize)) / (SQRT3 * (maxX - minX + 1)), (height - margin - lowerFrame.GetHeight(windowSize)) / (1.5f * (maxY - minY + 1.25f)));
                 // Round to multiples of 16
                 layout.size = (float)Math.Floor(layout.size / 16) * 16;
-                layout.size = Math.Min(layout.size, 48) * scale;
+                layout.size = layout.size.Clamp(16, 48) * scale;
 
-                int centerX = (int)(layout.size * sqrt3 * (maxX + minX));
+                int centerX = (int)(layout.size * SQRT3 * (maxX + minX));
                 int centerY = (int)(layout.size * 1.5f * (maxY + minY));
 
                 // Center grid
@@ -214,14 +200,24 @@ namespace KreativerName.Scenes
                 renderer.Layout = layout;
             }
 
-            renderer.Render(player, selectedHex, level.GetPossibleMoves(player));
+            engine.Level = level;
+            Player player = new Player(level.StartPos, Color.FromArgb(255, 0, 255, 0));
+            renderer.Render(player, selectedHex, engine.GetPossibleMoves(level.StartPos));
 
             ui.Render(windowSize);
         }
 
+        private void SetHexData(HexData[] data)
+        {
+            level.Data = data;
+            renderer.Data = data;
+
+            InitHex();
+        }
+
         #region Loading
 
-        private void SolveLevel()
+        private void SolveLevel(UIElement sender)
         {
             int worldCopy = worldIndex;
             int levelCopy = levelIndex;
@@ -240,9 +236,9 @@ namespace KreativerName.Scenes
 
         }
 
-        private void UploadLevel()
+        private void UploadLevel(UIElement sender)
         {
-            if (SceneManager.Client?.Connected != true)
+            if (!ClientManager.Connected)
             {
                 Notification.Show("Nicht mit Server verbunden");
                 return;
@@ -256,44 +252,44 @@ namespace KreativerName.Scenes
 
                     Notification.Show($"Hochgeladen unter {id.ToString("x")}");
 
-                    SceneManager.Client.PacketRecieved -= uploaded;
+                    ClientManager.PacketRecieved -= uploaded;
                 }
                 else if (p.Code == PacketCode.UploadWorld && p.Info == PacketInfo.Error)
                 {
                     Notification.Show($"Fehler beim Hochladen");
-                    SceneManager.Client.PacketRecieved -= uploaded;
+                    ClientManager.PacketRecieved -= uploaded;
                 }
             }
 
-            SceneManager.Client.PacketRecieved += uploaded;
-            SceneManager.Client.Send(new Packet(PacketCode.UploadWorld, PacketInfo.None, world.ToCompressed()));
+            ClientManager.PacketRecieved += uploaded;
+            ClientManager.Send(new Packet(PacketCode.UploadWorld, PacketInfo.None, world.ToCompressed()));
 
         }
 
-        private void TestLevel()
+        private void TestLevel(UIElement sender)
         {
             testGame = new Game();
             testGame.LoadLevel(level);
-            testGame.Exit += () => SceneManager.LoadScene(new Transition(this, 10));
+            testGame.OnExit += () => SceneManager.LoadScene(new Transition(this, 10));
             testGame.LevelCompleted += (a) => Notification.Show($"{testGame.Moves} Züge");
 
             SceneManager.LoadScene(new Transition(testGame, 10));
         }
 
-        private void NextLevel()
+        private void NextLevel(UIElement sender)
         {
             levelIndex++;
             LoadLevel();
         }
 
-        private void PreviousLevel()
+        private void PreviousLevel(UIElement sender)
         {
             if (levelIndex > 0)
                 levelIndex--;
             LoadLevel();
         }
 
-        private void NextWorld()
+        private void NextWorld(UIElement sender)
         {
             worldIndex++;
 
@@ -305,7 +301,7 @@ namespace KreativerName.Scenes
             LoadLevel();
         }
 
-        private void PreviousWorld()
+        private void PreviousWorld(UIElement sender)
         {
             if (worldIndex > 0)
                 worldIndex--;
@@ -325,10 +321,15 @@ namespace KreativerName.Scenes
             else
                 level = new Level();
 
-            player = level.StartPos;
+            engine = new Engine(level);
             renderer.Grid = level.Grid;
+            renderer.Data = level.Data;
+
             scrolling = new Vector2(0, 0);
 
+            InitLowerFrame();
+
+            boxLevelHint.Text = level.Hint ?? "";
             textLevel.Text = $"Level {levelIndex + 1:000}";
             textMoves.Text = $"Min. Züge: {level.MinMoves:00}";
         }
@@ -345,8 +346,8 @@ namespace KreativerName.Scenes
             if (level.Grid == null)
                 return;
 
-            level.StartPos = player;
             level.Completed = false;
+            level.Hint = boxLevelHint.Text;
 
             if (world.Levels == null)
                 world.Levels = new List<Level>();
@@ -357,12 +358,21 @@ namespace KreativerName.Scenes
             world.Levels[levelIndex] = level;
         }
 
-        private void SaveWorld()
+        private void SaveWorld(UIElement sender)
         {
             SaveLevel();
             world.AllCompleted = false;
             world.AllPerfect = false;
             world.Title = boxWorldName.Text ?? "";
+
+            world.LevelConnections = new List<int>[world.Levels.Count];
+            for (int i = 0; i < world.Levels.Count; i++)
+            {
+                if (i != world.Levels.Count - 1)
+                    world.LevelConnections[i] = new List<int> { i + 1 };
+                else
+                    world.LevelConnections[i] = new List<int>();
+            }
 
             if (!Directory.Exists(Path))
             {
@@ -374,23 +384,14 @@ namespace KreativerName.Scenes
             Notification.Show("Welt gespeichert!", 2);
         }
 
-        private void NewLevel()
+        private void NewLevel(UIElement sender)
         {
-            Grid = new HexGrid<Hex>();
 
-            int w = 10;
-            int h = 5;
-
-            // make rectangle
-            for (int j = 0; j < h; j++)
-            {
-                for (int i = -(j / 2); i < w - (j + 1) / 2; i++)
-                {
-                    Grid[i, j] = new Hex(i, j, 0);
-                }
-            }
-
+            level = LevelGenerator.GenerateLevel(HexData.StandardData);
             renderer.Grid = Grid;
+
+            InitLowerFrame();
+            SetHexData(level.Data);
         }
 
         #endregion
@@ -402,150 +403,10 @@ namespace KreativerName.Scenes
         TextBlock textMoves;
         TextBlock textHexDesc;
         TextBox boxWorldName;
+        TextBox boxLevelHint;
         Frame buttonFrame;
         Frame lowerFrame;
         Frame leftFrame;
-
-        private void InitUI()
-        {
-            ui = new UI.UI
-            {
-                Input = input
-            };
-
-            // Hexagons
-            {
-                const int size = 42;
-                const int rowSize = 8;
-                const int margin = 5;
-                byte[] values = HexData.Data.Select(x => x.ID).OrderBy(x => x).ToArray();
-
-                lowerFrame = new Frame();
-                lowerFrame.SetConstraints(
-                   new PixelConstraint(0),
-                   new PixelConstraint(0, RelativeTo.Window, Direction.Bottom),
-                   new RelativeConstraint(1, RelativeTo.Window),
-                   new PixelConstraint((values.Length / rowSize + 1) * (size + margin) + (40 - margin)));
-
-                buttonFrame = new Frame();
-                buttonFrame.Constraints = new UIConstraints(20, 20, 0, 0);
-                    
-                for (int i = 0; i < values.Length; i++)
-                {
-                    Button button = new Button((i % rowSize) * (size + margin), (i / rowSize) * (size + margin), size, size);
-                    
-                    UI.Image image = new UI.Image(Textures.Get($"Hex\\{i}"), new RectangleF(0, 0, 32, 32));
-                    image.SetConstraints(new UIConstraints(6, 5, size - 10, size - 10));
-                    button.AddChild(image);
-
-                    if (i < 10)
-                        button.Shortcut = (Key)(110 + i);
-
-                    int copy = i;
-                    button.OnLeftClick += () => drawType = values[copy];
-
-                    buttonFrame.AddChild(button);
-                }
-
-                textHexDesc = new TextBlock("", 2, rowSize * (size + margin) + 40, 20);
-
-                lowerFrame.AddChild(buttonFrame);
-                lowerFrame.AddChild(textHexDesc);
-
-                ui.Add(lowerFrame);
-            }
-            // Level
-            {
-                leftFrame = new Frame();
-                leftFrame.SetConstraints(new UIConstraints(0, 0, 260, 300));
-
-                Button exitButton = new Button(20, 20, 40, 40)
-                {
-                    Shortcut = Key.Escape
-                };
-                exitButton.OnLeftClick += () =>
-                {
-                    SceneManager.LoadScene(new Transition(new MainMenu(), 10));
-                };
-                UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black);
-                exitImage.SetConstraints(new UIConstraints(10, 10, 20, 20));
-
-                exitButton.AddChild(exitImage);
-                leftFrame.AddChild(exitButton);
-
-
-                void AddButton1(int x, int y, int w, int h, string s, int tx, int ty, ClickEvent ev, Key shortcut)
-                {
-                    Button button = new Button(x, y, w, h);
-                    button.OnLeftClick += ev;
-                    button.Shortcut = shortcut;
-
-                    TextBlock text = new TextBlock(s, 2, tx, ty);
-
-                    button.AddChild(text);
-                    leftFrame.AddChild(button);
-                }
-                void AddButton2(int x, int y, string s, ClickEvent ev, Key shortcut)
-                {
-                    TextBlock text = new TextBlock(s, 2, 10, 10);
-
-                    Button button = new Button(x, y, (int)text.TextWidth + 18, (int)text.TextHeight + 18);
-                    button.OnLeftClick += ev;
-                    button.Shortcut = shortcut;
-
-                    button.AddChild(text);
-                    leftFrame.AddChild(button);
-                }
-
-                textWorld = new TextBlock($"Welt  {worldIndex:000}", 2, 80, 22);
-                leftFrame.AddChild(textWorld);
-
-                AddButton1(200, 20, 20, 20, "+", 5, 3, NextWorld, new Key());
-                AddButton1(220, 20, 20, 20, "-", 5, 3, PreviousWorld, new Key());
-
-                textLevel = new TextBlock($"Level {levelIndex:000}", 2, 80, 42);
-                leftFrame.AddChild(textLevel);
-
-                AddButton1(200, 40, 20, 20, "+", 5, 3, NextLevel, new Key());
-                AddButton1(220, 40, 20, 20, "-", 5, 3, PreviousLevel, new Key());
-
-                AddButton2(20, 70, "Neu", NewLevel, new Key());
-                AddButton2(100, 70, "Testen", TestLevel, Key.T);
-
-                // Min Moves
-                textMoves = new TextBlock($"Min. Züge: {level.MinMoves:00}", 2, 20, 122);
-
-                leftFrame.AddChild(textMoves);
-
-                void add()
-                {
-                    level.MinMoves++;
-                    textMoves.Text = $"Min. Züge: {level.MinMoves:00}";
-                }
-                AddButton1(180, 120, 20, 20, "+", 5, 3, add, new Key());
-                void sub()
-                {
-                    if (level.MinMoves > 0)
-                        level.MinMoves--;
-                    textMoves.Text = $"Min. Züge: {level.MinMoves:00}";
-                }
-                AddButton1(200, 120, 20, 20, "-", 5, 3, sub, new Key());
-
-
-                AddButton2(20, 150, "Speichern", SaveWorld, Key.S);
-                AddButton2(20, 200, "Lösen", SolveLevel, new Key());
-                AddButton2(110, 200, "Upload", UploadLevel, new Key());
-
-                boxWorldName = new TextBox(20, 250, 200, 30)
-                {
-                    Text = world.Title ?? "",
-                    MaxTextSize = 15
-                };
-                leftFrame.AddChild(boxWorldName);
-
-                ui.Add(leftFrame);
-            }
-        }
 
         /// <summary>
         /// Updates the UI of the scene.
@@ -556,6 +417,244 @@ namespace KreativerName.Scenes
             ui.Update(windowSize);
 
             ignoreMouse = ui.MouseOver(windowSize);
+        }
+
+        private void InitUI()
+        {
+            ui = new UI.UI
+            {
+                Input = input
+            };
+
+            // Level
+
+            leftFrame = new Frame
+            { Constraints = new UIConstraints(0, 0, 260, 450) };
+
+            Button exitButton = new Button(20, 20, 40, 40)
+            { Shortcut = Key.Escape };
+
+            exitButton.OnLeftClick += (s) =>
+            {
+                Settings.Current.EditorWorld = worldIndex;
+                Settings.Current.EditorLevel = levelIndex;
+
+                SceneManager.LoadScene(new Transition(new MainMenu(), 10));
+            };
+            UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black)
+            { Constraints = new UIConstraints(10, 10, 20, 20) };
+
+            exitButton.AddChild(exitImage);
+            leftFrame.AddChild(exitButton);
+
+
+            void AddButton1(int x, int y, int w, int h, string s, int tx, int ty, ClickEvent ev, Key shortcut)
+            {
+                Button button = new Button(x, y, w, h)
+                { Shortcut = shortcut };
+                button.OnLeftClick += ev;
+
+                TextBlock text = new TextBlock(s, 2, tx, ty);
+
+                button.AddChild(text);
+                leftFrame.AddChild(button);
+            }
+            void AddButton2(int x, int y, string s, ClickEvent ev, Key shortcut)
+            {
+                TextBlock text = new TextBlock(s, 2, 10, 10);
+
+                Button button = new Button(x, y, (int)text.TextWidth + 22, (int)text.TextHeight + 22)
+                { Shortcut = shortcut };
+                button.OnLeftClick += ev;
+
+                button.AddChild(text);
+                leftFrame.AddChild(button);
+            }
+
+            textWorld = new TextBlock($"Welt  {worldIndex:000}", 2, 80, 22);
+            leftFrame.AddChild(textWorld);
+
+            AddButton1(200, 20, 20, 20, "+", 5, 3, NextWorld, new Key());
+            AddButton1(220, 20, 20, 20, "-", 5, 3, PreviousWorld, new Key());
+
+            textLevel = new TextBlock($"Level {levelIndex:000}", 2, 80, 42);
+            leftFrame.AddChild(textLevel);
+
+            AddButton1(200, 40, 20, 20, "+", 5, 3, NextLevel, new Key());
+            AddButton1(220, 40, 20, 20, "-", 5, 3, PreviousLevel, new Key());
+
+            AddButton2(20, 70, "Neu", NewLevel, new Key());
+            AddButton2(100, 70, "Testen", TestLevel, Key.T);
+
+            // Min Moves
+            textMoves = new TextBlock($"Min. Züge: {level.MinMoves:00}", 2, 20, 122);
+
+            leftFrame.AddChild(textMoves);
+
+            void add(UIElement sender)
+            {
+                level.MinMoves++;
+                textMoves.Text = $"Min. Züge: {level.MinMoves:00}";
+            }
+            AddButton1(180, 120, 20, 20, "+", 5, 3, add, new Key());
+            void sub(UIElement sender)
+            {
+                if (level.MinMoves > 0)
+                    level.MinMoves--;
+                textMoves.Text = $"Min. Züge: {level.MinMoves:00}";
+            }
+            AddButton1(200, 120, 20, 20, "-", 5, 3, sub, new Key());
+
+
+            AddButton2(20, 150, "Speichern", SaveWorld, Key.S);
+            AddButton2(20, 200, "Lösen", SolveLevel, new Key());
+            AddButton2(110, 200, "Upload", UploadLevel, new Key());
+
+            leftFrame.AddChild(new TextBlock("Weltname:", 2, 20, 250));
+
+            boxWorldName = new TextBox(20, 270, 200, 30)
+            {
+                Text = world.Title ?? "",
+                MaxTextSize = 15
+            };
+            leftFrame.AddChild(boxWorldName);
+
+            leftFrame.AddChild(new TextBlock("Level Hinweis:", 2, 20, 320));
+
+            boxLevelHint = new TextBox(20, 340, 200, 94)
+            {
+                Text = level.Hint ?? "",
+                MaxTextSize = 75
+            };
+            leftFrame.AddChild(boxLevelHint);
+
+            ui.Add(leftFrame);
+        }
+
+        private void InitLowerFrame()
+        {
+            if (level.Data == null)
+                return;
+
+            ui.Remove(lowerFrame);
+
+            lowerFrame = new Frame
+            {
+                Constraints = new UIConstraints(
+                    new PixelConstraint(0),
+                    new PixelConstraint(0, RelativeTo.Window, Direction.Bottom),
+                    new RelativeConstraint(1, RelativeTo.Window),
+                    new PixelConstraint(200))
+            };
+
+            buttonFrame = new Frame();
+
+            InitHex();
+
+            lowerFrame.AddChild(buttonFrame);
+
+            const int size = 42;
+            const int rowSize = 8;
+            const int margin = 5;
+            const int X = rowSize * (size + margin) + 40;
+
+            textHexDesc = new TextBlock("", 2, X, 20);
+            lowerFrame.AddChild(textHexDesc);
+
+            Button button1 = new Button(X, 20, 140, 40);
+            button1.OnLeftClick += (sender) =>
+            {
+                if (drawID != null)
+                {
+                    int index = 0;
+                    for (int i = 0; i < level.Data.Length; i++)
+                    {
+                        if (level.Data[i].ID == drawID)
+                        {
+                            index = i;
+                            break;
+                        }
+                    }
+
+                    HexEditor next = new HexEditor(level.Data.First(x => x.ID == drawID));
+                    next.OnExit += () =>
+                    {
+                        level.Data[index] = next.Data;
+                        SetHexData(level.Data);
+                        SceneManager.LoadScene(new Transition(this, 10));
+                    };
+                    SceneManager.LoadScene(new Transition(next, 10));
+                }
+            };
+            button1.AddChild(new TextBlock("Bearbeiten", 2, 10, 10));
+            lowerFrame.AddChild(button1);
+
+            Button button2 = new Button(X, 80, 140, 40);
+            button2.OnLeftClick += (sender) =>
+            {
+                SetHexData(HexData.StandardData);
+            };
+            button2.AddChild(new TextBlock("Set", 2, 10, 10));
+            lowerFrame.AddChild(button2);
+
+            Button button3 = new Button(X, 120, 140, 40);
+            button3.OnLeftClick += (sender) =>
+            {
+                List<HexData> newData = level.Data.ToList();
+                int index = newData.FindIndex(x => x.ID == drawID);
+
+                if (index >= 0 && index < newData.Count)
+                    newData.RemoveAt(index);
+
+                SetHexData(newData.ToArray());
+            };
+            button3.AddChild(new TextBlock("Remove", 2, 10, 10));
+            lowerFrame.AddChild(button3);
+
+            ui.Add(lowerFrame);
+        }
+
+        private void InitHex()
+        {
+            const int size = 42;
+            const int rowSize = 8;
+            const int margin = 5;
+
+            HexData[] values = level.Data.OrderBy(x => x.ID).ToArray();
+
+            buttonFrame.ClearChildren();
+            buttonFrame.Constraints = new UIConstraints(20, 20, rowSize * (size + margin), (values.Length / rowSize) * (size + margin));
+
+            for (int i = 0; i < values.Length; i++)
+            {
+                Button button = new Button((i % rowSize) * (size + margin), (i / rowSize) * (size + margin), size, size);
+
+                UI.Image image = new UI.Image(Textures.Get($"Hex\\{values[i].Texture}"), new RectangleF(0, 0, 32, 32))
+                {
+                    Constraints = new UIConstraints(6, 5, size - 10, size - 10)
+                };
+                button.AddChild(image);
+
+                if (i < 10)
+                    button.Shortcut = (Key)(110 + i);
+
+                int copy = i;
+                button.OnLeftClick += sender => OnClick(sender, values, copy);
+
+                buttonFrame.AddChild(button);
+            }
+        }
+
+        private void OnClick(UIElement sender, HexData[] values, int copy)
+        {
+            drawID = values[copy].ID;
+
+            for (int j = 0; j < buttonFrame.Children.Count; j++)
+            {
+                ((Button)buttonFrame.Children[j]).Color = Color.White;
+            }
+
+            ((Button)sender).Color = Color.Green;
         }
 
         #endregion

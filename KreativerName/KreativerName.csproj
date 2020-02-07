@@ -39,6 +39,7 @@
     <WarningLevel>4</WarningLevel>
     <LangVersion>preview</LangVersion>
     <DocumentationFile>..\bin\KreativerName\Debug\KreativerName.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -51,6 +52,7 @@
     <LangVersion>8.0</LangVersion>
     <DocumentationFile>
     </DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>KreativerName.Program</StartupObject>
@@ -58,6 +60,7 @@
   <PropertyGroup />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ServerTest|AnyCPU'">
     <OutputPath>bin\ServerTest\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Resources\Icon.ico</ApplicationIcon>
@@ -84,9 +87,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Grid\Engine.cs" />
     <Compile Include="Grid\HexData.cs" />
+    <Compile Include="Grid\LevelGenerator.cs" />
     <Compile Include="Grid\LevelSolver.cs" />
+    <Compile Include="Grid\Player.cs" />
     <Compile Include="Networking\Client.cs" />
+    <Compile Include="Networking\ClientManager.cs" />
     <Compile Include="Networking\Packet.cs" />
     <Compile Include="Networking\User.cs" />
     <Compile Include="Rendering\GridRenderer.cs" />
@@ -109,11 +116,12 @@
     <Compile Include="Rendering\TextureRenderer.cs" />
     <Compile Include="Rendering\Textures.cs" />
     <Compile Include="Scenes\HexEditor.cs" />
+    <Compile Include="Scenes\LevelMenu.cs" />
     <Compile Include="Scenes\LoadingScene.cs" />
     <Compile Include="Scenes\Minesweeper.cs" />
     <Compile Include="Scenes\OnlineScene.cs" />
     <Compile Include="Scenes\SettingsScene.cs" />
-    <Compile Include="Scenes\Statistics.cs" />
+    <Compile Include="Scenes\StatisticsScene.cs" />
     <Compile Include="Scenes\Tetris.cs" />
     <Compile Include="Scenes\Transition.cs" />
     <Compile Include="Scenes\MainMenu.cs" />
@@ -177,7 +185,13 @@
     <Content Include="Resources\Textures\Hex\3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\Textures\Hex\14.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Textures\Hex\4.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Textures\Hex\15.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\Hex\5.png">
@@ -211,46 +225,52 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Resources\HexData\MovingDeadlyNW.hex">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\HexData\MovingDeadlySE.hex">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\HexData\MovingDeadlySW.hex">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\HexData\MovingDeadlyNE.hex">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\HexData\MovingDeadlyW.hex">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\HexData\MovingDeadlyE.hex">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\HexData\OneUseDeadlyOff.hex">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\HexData\OneUseDeadlyOn.hex">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\HexData\TwoStateSolidOff.hex">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\HexData\TwoStateDeadlyOff.hex">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\HexData\TwoStateSolidOn.hex">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\HexData\TwoStateDeadlyOn.hex">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\HexData\Goal.hex">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\HexData\Deadly.hex">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\HexData\Normal.hex">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\HexData\Solid.hex">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Content Include="Resources\Worlds\001.wld">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -262,6 +282,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Resources\Worlds\004.wld">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Worlds\005.wld">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

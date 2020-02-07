@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KreativerName
 {
@@ -55,12 +52,12 @@ namespace KreativerName
 
             if (Revision != version.Revision)
                 return Revision > version.Revision;
-            
+
             return false;
         }
 
         public override string ToString() => $"{Major}.{Minor}.{Build}.{Revision}";
-        
+
         public int FromBytes(byte[] bytes, int startIndex)
         {
             int count = 0;

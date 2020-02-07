@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using KreativerName;
+using KreativerName.Grid;
 using KreativerName.Networking;
 
 namespace Server
@@ -22,11 +24,9 @@ namespace Server
                         PrintClients();
                         break;
                     }
-                    switch (args[1])
+                    if (args[1] == "send")
                     {
-                        case "send":
-                            SendClients();
-                            break;
+                        SendClients();
                     }
                     break;
                 }
@@ -37,9 +37,9 @@ namespace Server
                         PrintUsers();
                         break;
                     }
-                    switch (args[1])
+                    if (args[1] == "resave")
                     {
-                        case "resave": DataBase.ReSaveUsers(); break;
+                        DataBase.ReSaveUsers();
                     }
                     break;
                 }
@@ -59,11 +59,10 @@ namespace Server
                         Console.WriteLine($"Current Version: {Program.version}");
                         break;
                     }
-                    switch (args[1])
+                    if (args[1] == "set")
                     {
-                        case "set":
-                            SetVersion();
-                            break;
+                        SetVersion();
+                        break;
                     }
                     break;
                 }
@@ -74,6 +73,12 @@ namespace Server
                         AnalyseStats();
                         break;
                     }
+                    break;
+                }
+                case "packets":
+                {
+                    RequestHandler.PrintPackets = !RequestHandler.PrintPackets;
+                    Console.WriteLine($"{(RequestHandler.PrintPackets ? "Showing" : "Not showing")} packets.");
                     break;
                 }
 
@@ -93,7 +98,7 @@ namespace Server
             Console.WriteLine("Message: ");
             string s = "";
 
-            for (string line = ""; (line = Console.ReadLine()) != "";)
+            for (string line; (line = Console.ReadLine()) != "";)
             {
                 s += line + "\n";
             }
@@ -177,7 +182,14 @@ namespace Server
             int count = 0;
             foreach (uint id in DataBase.GetWorldIDs())
             {
+                World world = DataBase.GetWorld(id) ?? new World();
+
                 Console.WriteLine($"World {++count}:");
+                Console.WriteLine($"  ID:         {world.ID.ToID().ToUpper()}");
+                Console.WriteLine($"  Uploader:   {world.Uploader.ToID().ToUpper()}");
+                Console.WriteLine($"  UploadTime: {world.UploadTime}");
+                Console.WriteLine($"  Levels:     {world.Levels.Count}");
+                Console.WriteLine($"  Title:      {world.Title}");
             }
         }
 
@@ -190,24 +202,29 @@ namespace Server
             PropertyInfo[] properties = typeof(Stats).GetProperties();
             foreach (PropertyInfo property in properties)
             {
-                User highest = users[0];
-                User lowest = users[0];
-
-                foreach (User user in users)
-                {
-                    object v = property.GetValue(user.Statistics);
-                    object vHighest = property.GetValue(highest.Statistics);
-                    object vLowest = property.GetValue(lowest.Statistics);
-                                       
-                    if (Comparer<object>.Default.Compare(v, vHighest) > 0)
-                        highest = user;
-                    if (Comparer<object>.Default.Compare(v, vLowest) < 0)
-                        lowest = user;
-                }
+                object max = users.Max(x => property.GetValue(x.Statistics));
+                object min = users.Min(x => property.GetValue(x.Statistics));
 
                 Console.WriteLine($"{property.Name}:");
-                Console.WriteLine($"  Highest: {highest.ID.ToID()} with {property.GetValue(highest.Statistics)}");
-                Console.WriteLine($"  Lowest:  {lowest.ID.ToID()} with {property.GetValue(lowest.Statistics)}");
+                Console.WriteLine($"  Highest: {max}");
+
+                if (property.PropertyType == typeof(uint))
+                {
+                    object avg = users.Average(x => (uint)property.GetValue(x.Statistics));
+                    Console.WriteLine($"  Average: {avg}");
+                }
+                else if (property.PropertyType == typeof(DateTime))
+                {
+                    double avg = users.Average(x => ((DateTime)property.GetValue(x.Statistics)).Ticks);
+                    Console.WriteLine($"  Average: {new DateTime((long)avg)}");
+                }
+                else if (property.PropertyType == typeof(TimeSpan))
+                {
+                    double avg = users.Average(x => ((TimeSpan)property.GetValue(x.Statistics)).Ticks);
+                    Console.WriteLine($"  Average: {new TimeSpan((long)avg)}");
+                }
+
+                Console.WriteLine($"  Lowest:  {min}");
             }
         }
     }

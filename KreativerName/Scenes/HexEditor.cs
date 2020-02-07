@@ -4,7 +4,9 @@ using System.Drawing;
 using KreativerName.Grid;
 using KreativerName.Rendering;
 using KreativerName.UI;
+using KreativerName.UI.Constraints;
 using OpenTK;
+using OpenTK.Input;
 
 namespace KreativerName.Scenes
 {
@@ -12,14 +14,14 @@ namespace KreativerName.Scenes
     {
         public HexEditor(HexData data)
         {
-            this.data = data;
+            Data = data;
 
             InitUI();
         }
 
         UI.UI ui;
 
-        HexData data;
+        public HexData Data;
 
         const float sqrt3 = 1.732050807568877293527446341505872366942805253810380628055f;
 
@@ -30,26 +32,36 @@ namespace KreativerName.Scenes
             new Vector2(0, 0),
             32, 0.5f);
 
+        public event EmptyEvent OnExit;
+
         private void InitUI()
         {
-            ui = new UI.UI();
-            ui.Input = SceneManager.Input;
-
+            ui = new UI.UI
             {
-                TextBlock text = new TextBlock($"ID: {data.ID}", 2, 20, 20);
-                text.Color = Color.White;
-                ui.Add(text);
-            }
+                Input = SceneManager.Input
+            };
 
-            void AddLine(string desc, int value, int y, ValueEvent e)
+            Button exitButton = new Button(20, 20, 40, 40)
+            { Shortcut = Key.Escape };
+            exitButton.OnLeftClick += (sender) => OnExit?.Invoke();
+
+            UI.Image exitImage = new UI.Image(Textures.Get("Icons"), new RectangleF(0, 10, 10, 10), Color.Black)
+            { Constraints = new UIConstraints(10, 10, 20, 20) };
+
+            exitButton.AddChild(exitImage);
+            ui.Add(exitButton);
+
+            void AddNumber(string desc, int value, int y, ValueEvent e, byte min = byte.MinValue, byte max = byte.MaxValue)
             {
-                TextBlock text = new TextBlock(desc, 2, 20, y);
-                text.Color = Color.White;
+                TextBlock text = new TextBlock(desc, 2, 20, y)
+                {
+                    Color = Color.White
+                };
 
                 NumberInput input = new NumberInput(20 + (int)text.TextWidth, y - 3, value)
                 {
-                    MinValue = byte.MinValue,
-                    MaxValue = byte.MaxValue,
+                    MinValue = min,
+                    MaxValue = max,
                 };
                 input.ValueChanged += e;
 
@@ -58,11 +70,35 @@ namespace KreativerName.Scenes
                 ui.Add(text);
             }
 
-            AddLine("Textur:       ", data.Texture, 40, a => data.Texture = (byte)a);
-            AddLine("Anim.länge:   ", data.AnimationLength, 60, a => data.AnimationLength = (byte)a);
-            AddLine("Anim.phase:   ", data.AnimationPhase, 80, a => data.AnimationPhase = (byte)a);
-            AddLine("Anim.geschw.: ", data.AnimationSpeed, 100, a => data.AnimationSpeed = (byte)a);
+            void AddCheckBox(string desc, int y, bool check, CheckEvent e)
+            {
+                TextBlock text = new TextBlock(desc, 2, 20, y + 2)
+                {
+                    Color = Color.White
+                };
 
+                CheckBox checkBox = new CheckBox(20 + (int)text.TextWidth, y, 24, 24)
+                {
+                    Checked = check
+                };
+                checkBox.OnChecked += e;
+
+                ui.Add(text);
+                ui.Add(checkBox);
+            }
+
+            AddNumber("Id:           ", Data.ID, 100, a => Data.ID = (byte)a);
+            AddNumber("Textur:       ", Data.Texture, 120, a => Data.Texture = (byte)a);
+            AddNumber("Anim.länge:   ", Data.AnimationLength, 140, a => Data.AnimationLength = (byte)a);
+            AddNumber("Anim.phase:   ", Data.AnimationPhase, 160, a => Data.AnimationPhase = (byte)a);
+            AddNumber("Anim.geschw.: ", Data.AnimationSpeed, 180, a => Data.AnimationSpeed = (byte)a);
+
+            AddCheckBox("Solide:       ", 200, Data.HexFlags.HasFlag(HexFlags.Solid), a => { if (a) Data.HexFlags |= HexFlags.Solid; else Data.HexFlags &= ~HexFlags.Solid; });
+            AddCheckBox("Tödlich:      ", 224, Data.HexFlags.HasFlag(HexFlags.Deadly), a => { if (a) Data.HexFlags |= HexFlags.Deadly; else Data.HexFlags &= ~HexFlags.Deadly; });
+            AddCheckBox("Ziel:         ", 248, Data.HexFlags.HasFlag(HexFlags.Goal), a => { if (a) Data.HexFlags |= HexFlags.Goal; else Data.HexFlags &= ~HexFlags.Goal; });
+
+            AddCheckBox("Animiert:     ", 272, Data.RenderFlags.HasFlag(RenderFlags.Animated), a => { if (a) Data.RenderFlags |= RenderFlags.Animated; else Data.RenderFlags &= ~RenderFlags.Animated; });
+            AddCheckBox("Verbunden:    ", 296, Data.RenderFlags.HasFlag(RenderFlags.Connected), a => { if (a) Data.RenderFlags |= RenderFlags.Connected; else Data.RenderFlags &= ~RenderFlags.Connected; });
         }
 
         public override void Update()
@@ -79,7 +115,7 @@ namespace KreativerName.Scenes
             ui.Render(windowSize);
 
             layout.origin = new Vector2(400, 400);
-            GridRenderer.RenderHex(new HexPoint(0, 0), new List<HexData> { data }, layout, Color.White, frameCount);
+            GridRenderer.RenderHex(new HexPoint(0, 0), new List<HexData> { Data }, layout, Color.White, frameCount);
 
             frameCount++;
         }
@@ -101,7 +137,7 @@ namespace KreativerName.Scenes
                 MaxValue = 9999;
                 MinValue = -999;
 
-                add.OnLeftClick += () =>
+                add.OnLeftClick += (sender) =>
                 {
                     if (add.ui.Input.KeyDown(OpenTK.Input.Key.LControl) ||
                         add.ui.Input.KeyDown(OpenTK.Input.Key.RControl))
@@ -117,7 +153,7 @@ namespace KreativerName.Scenes
                     text.Text = Value.ToString();
                     ValueChanged?.Invoke(Value);
                 };
-                sub.OnLeftClick += () =>
+                sub.OnLeftClick += (sender) =>
                 {
                     if (add.ui.Input.KeyDown(OpenTK.Input.Key.LControl) ||
                         add.ui.Input.KeyDown(OpenTK.Input.Key.RControl))

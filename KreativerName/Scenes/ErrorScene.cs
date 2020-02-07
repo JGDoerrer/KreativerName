@@ -29,8 +29,8 @@ namespace KreativerName.Scenes
 
             void AddText(string s, float size, int y)
             {
-                TextBlock text = new TextBlock(s, size);
-                text.SetConstraints(new CenterConstraint(), new PixelConstraint(y), new PixelConstraint((int)text.TextWidth), new PixelConstraint((int)text.TextHeight));
+                TextBlock text = new TextBlock(s, size, 0, y);
+                text.Constraints.x = new CenterConstraint();
 
                 ui.Add(text);
             }
@@ -41,7 +41,7 @@ namespace KreativerName.Scenes
             string[] stack = e.StackTrace.Split('\n');
             for (int i = 0; i < stack.Length; i++)
             {
-                stack[i] = stack[i].Trim().Replace(@"D:\Programmieren\Source\KreativerName\KreativerName\", "");
+                stack[i] = stack[i].Trim().Replace(@"D:\Programmieren\Projekte\KreativerName\KreativerName\", "");
                 AddText($"{stack[i]}", 1, 150 + i * 10);
             }
 

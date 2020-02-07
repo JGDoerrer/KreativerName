@@ -24,6 +24,9 @@ namespace KreativerName.UI.Constraints
                 case RelativeTo.Self:
                     value = element.GetY(windowSize);
                     break;
+                case RelativeTo.Window:
+                    value = windowSize.X;
+                    break;
                 default:
                     value = 0;
                     break;
@@ -41,6 +44,9 @@ namespace KreativerName.UI.Constraints
                     break;
                 case RelativeTo.Self:
                     value = element.GetX(windowSize);
+                    break;
+                case RelativeTo.Window:
+                    value = windowSize.Y;
                     break;
                 default:
                     value = 0;

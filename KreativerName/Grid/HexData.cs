@@ -18,17 +18,18 @@ namespace KreativerName.Grid
 
         public byte[] ToBytes()
         {
-            List<byte> bytes = new List<byte>();
+            List<byte> bytes = new List<byte>
+            {
+                ID,
+                (byte)HexFlags,
+                (byte)RenderFlags,
+                Texture,
+                AnimationLength,
+                AnimationSpeed,
+                AnimationPhase,
 
-            bytes.Add(ID);
-            bytes.Add((byte)HexFlags);
-            bytes.Add((byte)RenderFlags);
-            bytes.Add(Texture);
-            bytes.Add(AnimationLength);
-            bytes.Add(AnimationSpeed);
-            bytes.Add(AnimationPhase);
-
-            bytes.Add((byte)Changes.Count);
+                (byte)Changes.Count
+            };
 
             for (int i = 0; i < (byte)Changes.Count; i++)
             {
@@ -72,8 +73,8 @@ namespace KreativerName.Grid
 
             return count;
         }
-        
-        public static HexData[] Data;
+
+        public static HexData[] StandardData;
 
         public static void LoadData(string directory)
         {
@@ -81,16 +82,16 @@ namespace KreativerName.Grid
             {
                 string[] files = Directory.GetFiles(directory);
 
-                Data = new HexData[files.Length];
+                StandardData = new HexData[files.Length];
 
                 for (int i = 0; i < files.Length; i++)
                 {
                     string file = files[i];
                     HexData hexData = LoadFromFile(file);
-                    Data[i] = hexData;
+                    StandardData[i] = hexData;
                 }
 
-                Data = Data.OrderBy(x => x.ID).ToArray();
+                StandardData = StandardData.OrderBy(x => x.ID).ToArray();
             }
         }
 
@@ -109,7 +110,7 @@ namespace KreativerName.Grid
 
         public void SaveToFile(string path)
         {
-            path = @$"Resources\HexData\{path}.hex";
+            //path = @$"Resources\HexData\{path}.hex";
 
             byte[] bytes = ToBytes();
 
@@ -125,6 +126,7 @@ namespace KreativerName.Grid
         public byte Data;
         public sbyte MoveX;
         public sbyte MoveY;
+        public HexActionFlags Flags;
         public HexCondition Condition;
 
         public int FromBytes(byte[] bytes, int startIndex)
@@ -139,6 +141,8 @@ namespace KreativerName.Grid
             count += 1;
             MoveY = (sbyte)bytes[startIndex + count];
             count += 1;
+            //Flags = (HexActionFlags)bytes[startIndex + count];
+            //count += 1;
             Condition = (HexCondition)bytes[startIndex + count];
             count += 1;
 
@@ -147,12 +151,15 @@ namespace KreativerName.Grid
 
         public byte[] ToBytes()
         {
-            List<byte> bytes = new List<byte>();
-
-            bytes.Add(ChangeTo);
-            bytes.Add((byte)MoveX);
-            bytes.Add((byte)MoveY);
-            bytes.Add((byte)Condition);
+            List<byte> bytes = new List<byte>
+            {
+                ChangeTo,
+                Data,
+                (byte)MoveX,
+                (byte)MoveY,
+                //(byte)Flags,
+                (byte)Condition
+            };
 
             return bytes.ToArray();
         }
@@ -169,6 +176,13 @@ namespace KreativerName.Grid
         NextNotFlag = 4,
         NextID = 5,
         NextNotID = 6,
+    }
+
+    [Flags]
+    public enum HexActionFlags : byte
+    {
+        MoveHex = 1 << 0,
+        MovePlayer = 1 << 1,
     }
 
     [Flags]

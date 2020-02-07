@@ -18,6 +18,7 @@ namespace KreativerName
         private uint tetrisHighLevel;
         private uint minesweeperWon;
         private uint minesweeperLost;
+        private DateTime lastUpdated;
 
         public uint TotalMoves { get => totalMoves; set => totalMoves = value; }
         public TimeSpan TimePlaying { get => timePlaying; set => timePlaying = value; }
@@ -30,6 +31,9 @@ namespace KreativerName
         public uint TetrisHighLevel { get => tetrisHighLevel; set => tetrisHighLevel = value; }
         public uint MinesweeperWon { get => minesweeperWon; set => minesweeperWon = value; }
         public uint MinesweeperLost { get => minesweeperLost; set => minesweeperLost = value; }
+        public DateTime LastUpdated { get => lastUpdated; set => lastUpdated = value; }
+
+        #region Load & Save
 
         public byte[] ToBytes()
         {
@@ -46,6 +50,7 @@ namespace KreativerName
             bytes.AddRange(TetrisHighLevel.ToBytes());
             bytes.AddRange(MinesweeperWon.ToBytes());
             bytes.AddRange(MinesweeperLost.ToBytes());
+            bytes.AddRange(LastUpdated.ToBytes());
 
             return bytes.ToArray();
         }
@@ -67,15 +72,15 @@ namespace KreativerName
                 count += tetrisHighLevel.FromBytes(bytes, startIndex + count);
                 count += minesweeperWon.FromBytes(bytes, startIndex + count);
                 count += minesweeperLost.FromBytes(bytes, startIndex + count);
+                count += lastUpdated.FromBytes(bytes, startIndex + count);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                Console.WriteLine($"[Stats]: Error while loading: {e.Message}");
             }
 
             return count;
         }
-
 
         public void SaveToFile(string name)
         {
@@ -98,5 +103,7 @@ namespace KreativerName
 
             return stats;
         }
+
+        #endregion
     }
 }

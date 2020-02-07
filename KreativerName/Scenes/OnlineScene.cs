@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using KreativerName.Grid;
 using KreativerName.Networking;
 using KreativerName.Rendering;
@@ -18,12 +17,12 @@ namespace KreativerName.Scenes
         {
             InitUI();
 
-            if (SceneManager.Client?.Connected == true)
+            if (ClientManager.Connected)
             {
-                SceneManager.Client.PacketRecieved += HandleRequest;
+                ClientManager.PacketRecieved += HandleRequest;
 
-                SceneManager.Client.Send(new Packet(PacketCode.GetIDs, BitConverter.GetBytes(10)));
-                SceneManager.Client.Send(new Packet(PacketCode.GetWeeklyWorld, PacketInfo.None));
+                ClientManager.Send(new Packet(PacketCode.GetIDs, BitConverter.GetBytes(10)));
+                ClientManager.Send(new Packet(PacketCode.GetWeeklyWorld, PacketInfo.None));
             }
             else
             {
@@ -51,8 +50,7 @@ namespace KreativerName.Scenes
 
         public override void Exit()
         {
-            if (SceneManager.Client != null)
-                SceneManager.Client.PacketRecieved -= HandleRequest;
+            ClientManager.PacketRecieved -= HandleRequest;
         }
 
         #region UI
@@ -71,7 +69,7 @@ namespace KreativerName.Scenes
             {
                 Shortcut = Key.Escape
             };
-            exitButton.OnLeftClick += () =>
+            exitButton.OnLeftClick += (sender) =>
             {
                 SceneManager.LoadScene(new Transition(new MainMenu(), 10));
             };
@@ -82,7 +80,7 @@ namespace KreativerName.Scenes
             ui.Add(exitButton);
 
             Button weeklyButton = new Button(200, 40, 40, 40);
-            weeklyButton.OnLeftClick += () =>
+            weeklyButton.OnLeftClick += (sender) =>
             {
                 if (!weekly.HasValue)
                 {
@@ -91,7 +89,7 @@ namespace KreativerName.Scenes
                 }
 
                 Game game = new Game(weekly.Value);
-                game.Exit += () => { SceneManager.LoadScene(new Transition(this, 10)); };
+                game.OnExit += () => { SceneManager.LoadScene(new Transition(this, 10)); };
                 SceneManager.LoadScene(new Transition(game, 10));
             };
 
@@ -120,17 +118,17 @@ namespace KreativerName.Scenes
             foreach (var world in worlds)
             {
                 Button button = new Button(0, i * (ButtonHeight + Margin), 0, ButtonHeight);
-                button.Constraints.widthCon = new RelativeConstraint(1, RelativeTo.Parent);
-                button.OnLeftClick += () =>
+                button.Constraints.width = new RelativeConstraint(1, RelativeTo.Parent);
+                button.OnLeftClick += (sender) =>
                 {
                     Game game = new Game(world);
-                    game.Exit += () => { SceneManager.LoadScene(new Transition(this, 10)); };
+                    game.OnExit += () => { SceneManager.LoadScene(new Transition(this, 10)); };
                     SceneManager.LoadScene(new Transition(game, 10));
                 };
 
                 TextBlock text = new TextBlock($"{world.Title}: {world.Levels.Count} Level", 3, 10, 10);
-                text.Constraints.xCon = new CenterConstraint();
-                text.Constraints.yCon = new CenterConstraint();
+                text.Constraints.x = new CenterConstraint();
+                text.Constraints.y = new CenterConstraint();
                 text.Color = Color.Black;
                 button.AddChild(text);
 
@@ -142,7 +140,7 @@ namespace KreativerName.Scenes
         #endregion
 
         #region Handle Request
-        
+
         void HandleRequest(Client client, Packet p)
         {
             switch (p.Code)
@@ -157,7 +155,7 @@ namespace KreativerName.Scenes
                     Notification.Show("Konnte IDs nicht herunterladen"); break;
                 case PacketCode.UploadWorld when p.Info == PacketInfo.Success:
                     UploadWorldSuccess(client, p); break;
-                case PacketCode.UploadWorld when p.Info == PacketInfo.Error: 
+                case PacketCode.UploadWorld when p.Info == PacketInfo.Error:
                     Notification.Show("Konnte Welt nicht hochladen"); break;
                 case PacketCode.GetWeeklyWorld when p.Info == PacketInfo.Success:
                     GetWeeklySuccess(client, p); break;

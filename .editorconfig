@@ -2,3 +2,9 @@
 
 # CS1591: Fehledes XML-Kommentar für öffentlich sichtbaren Typ oder Element
 dotnet_diagnostic.CS1591.severity = none
+
+# CS0660: Typ definiert Operator == oder Operator !=, überschreibt jedoch nicht Object.Equals(Objekt o)
+dotnet_diagnostic.CS0660.severity = none
+
+# CS0661: Typ definiert Operator == oder Operator !=, überschreibt jedoch nicht Object.GetHashCode()
+dotnet_diagnostic.CS0661.severity = none

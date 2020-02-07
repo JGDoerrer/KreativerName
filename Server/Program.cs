@@ -9,7 +9,7 @@ namespace Server
 {
     partial class Program
     {
-        public static KreativerName.Version version = new KreativerName.Version(0, 1, 0, 0);
+        public static KreativerName.Version version = new KreativerName.Version(0, 2, 1, 0);
         
         public static List<Client> clients = new List<Client>();
         static TcpListener listener;
@@ -41,6 +41,7 @@ namespace Server
                 new Thread(client.StartRecieve).Start();
 
                 clients.Add(client);
+                Console.Beep(240, 500);
             }
         }
 

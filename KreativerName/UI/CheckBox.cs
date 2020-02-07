@@ -40,7 +40,7 @@ namespace KreativerName.UI
             {
                 Checked = !Checked;
 
-                OnClick?.Invoke();
+                OnClick?.Invoke(this);
                 OnChecked?.Invoke(Checked);
             }
 

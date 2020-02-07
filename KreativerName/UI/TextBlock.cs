@@ -8,8 +8,8 @@ namespace KreativerName.UI
     public class TextBlock : UIElement
     {
         public TextBlock()
-        {
-        }
+        { }
+
         public TextBlock(string text, float size = 2)
         {
             Text = text;

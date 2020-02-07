@@ -30,11 +30,17 @@ namespace KreativerName.Grid
             set => y = value;
         }
 
-        public int LengthSquared => x * x + y * y;
-
         public override string ToString()
         {
             return $"({x}, {y})";
+        }
+
+        public float DistanceTo(HexPoint b)
+           => DistanceTo(b.x, b.y);
+
+        public float DistanceTo(int x, int y)
+        {
+            return (Math.Abs(X - x) + Math.Abs(X + Y - x - y) + Math.Abs(Y - y)) / 2;
         }
 
         #region Operators
@@ -95,6 +101,11 @@ namespace KreativerName.Grid
         public static bool operator !=(HexPoint left, HexPoint right)
         {
             return !(left == right);
+        }
+
+        public static implicit operator Vector2(HexPoint hexPoint)
+        {
+            return new Vector2(hexPoint.x, hexPoint.y);
         }
 
         #endregion

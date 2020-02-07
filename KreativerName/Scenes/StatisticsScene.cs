@@ -9,9 +9,9 @@ using OpenTK;
 
 namespace KreativerName.Scenes
 {
-    public class Statistics : Scene
+    public class StatisticsScene : Scene
     {
-        public Statistics()
+        public StatisticsScene()
         {
             InitUI();
 
@@ -28,20 +28,20 @@ namespace KreativerName.Scenes
             void AddText(string s, string value, int y)
             {
                 TextBlock text1 = new TextBlock(s, 3, 0, y) { Color = Color.White };
-                text1.Constraints.xCon = new CenterConstraint(-text1.TextWidth / 2f);
+                text1.Constraints.x = new CenterConstraint(-text1.TextWidth / 2f);
                 ui.Add(text1);
 
                 TextBlock text2 = new TextBlock(value, 3, 0, y) { Color = Color.White };
-                text2.Constraints.xCon = new CenterConstraint(text2.TextWidth / 2f);
+                text2.Constraints.x = new CenterConstraint(text2.TextWidth / 2f);
                 ui.Add(text2);
             }
 
             TextBlock title = new TextBlock("Statistik", 4, 0, 50) { Color = Color.White };
-            title.Constraints.xCon = new CenterConstraint();
+            title.Constraints.x = new CenterConstraint();
             ui.Add(title);
 
             Button button = new Button(40, 40, 40, 40) { Shortcut = OpenTK.Input.Key.Escape };
-            button.OnLeftClick += () =>
+            button.OnLeftClick += (sender) =>
             {
                 SceneManager.LoadScene(new Transition(new MainMenu(), 10));
             };
@@ -172,7 +172,7 @@ namespace KreativerName.Scenes
                             do
                             {
                                 next = (byte)random.Next(0, 10);
-                            } 
+                            }
                             while (next == number.Values[i]);
 
                             number.Values[i] = next;
@@ -311,7 +311,7 @@ namespace KreativerName.Scenes
             }
         }
 
-        ~Statistics()
+        ~StatisticsScene()
         {
             // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
             Dispose(false);

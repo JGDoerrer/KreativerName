@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using System.Text;
 using KreativerName.Grid;
 using KreativerName.Networking;
 using KreativerName.Rendering;
@@ -20,44 +19,33 @@ namespace KreativerName
         public MainWindow()
             : base(16 * 80, 9 * 80, GraphicsMode.Default, "KreativerName")
         {
-            input = new Input(this);
-
             Textures.LoadTextures(@"Resources\Textures");
 
             if (File.Exists(@"Resources\Icon.ico"))
                 Icon = new Icon(@"Resources\Icon.ico");
 
             SceneManager.SetWindow(this);
-            SceneManager.LoadScene(new LoadingScene(LoadStuff, new Transition(new MainMenu(), 30)));
+            SceneManager.LoadScene(new LoadingScene(LoadStuff, "", new Transition(new MainMenu(), 30)));
 
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
         }
 
-        Input input;
         public int FrameCounter;
         double fps;
-        public static readonly Version version = new Version(0, 2, 0, 0);
+        double ups;
+        public static readonly Version version = new Version(0, 3, 0, 0);
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             if (FrameCounter % 10 == 0)
             {
                 fps = RenderFrequency;
+                ups = UpdateFrequency;
             }
 
-            if (input.KeyPress(Key.F11))
-            {
-                if (WindowState != WindowState.Fullscreen)
-                    WindowState = WindowState.Fullscreen;
-                else
-                    WindowState = WindowState.Normal;
-
-                Settings.Current.Fullscreen = WindowState == WindowState.Fullscreen;
-            }
-
-            if (input.KeyDown(Key.AltLeft) && input.KeyDown(Key.F4))
+            if (SceneManager.Input.KeyDown(Key.AltLeft) && SceneManager.Input.KeyDown(Key.F4))
                 Close();
 
             Vector2 size = new Vector2(Width, Height);
@@ -71,15 +59,14 @@ namespace KreativerName
                 SceneManager.LoadScene(new Transition(new ErrorScene(ex), 10));
             }
 
-            // Update TimePlaying
+            // Update Stats
             Stats.Current.TimePlaying = Stats.Current.TimePlaying.Add(TimeSpan.FromSeconds(e.Time));
+            Stats.Current.LastUpdated = DateTime.Now;
 
-            if (FrameCounter % 600 == 0 && SceneManager.Client?.Connected == true)
+            if (FrameCounter % 600 == 0)
             {
-                SceneManager.Client.Send(new Packet(PacketCode.UploadStats, PacketInfo.None, Stats.Current.ToBytes()));
+                ClientManager.Send(new Packet(PacketCode.UploadStats, PacketInfo.None, Stats.Current.ToBytes()));
             }
-
-            input.Update();
 
             FrameCounter++;
         }
@@ -110,7 +97,10 @@ namespace KreativerName
 
             // Render Fps
             if (Settings.Current.ShowFps)
-                TextRenderer.RenderString($"{fps:00} fps", new Vector2(Width - 80, Height - 20), Color.White);
+            {
+                string s = $"{fps:00}/{ups:00}";
+                TextRenderer.RenderString(s, new Vector2(Width - 65, Height - 17), Color.White);
+            }
 
             SwapBuffers();
         }
@@ -128,12 +118,10 @@ namespace KreativerName
             HexData.LoadData(@"Resources\HexData");
             worker.ReportProgress(60);
 
-            SceneManager.ConnectClient();
-            if (SceneManager.Client != null)
+            if (ClientManager.Connect())
             {
-                SceneManager.Client.PacketRecieved += HandleRequest;
-                Login();
-                CompareVersion();
+                ClientManager.Login();
+                ClientManager.CompareVersion();
             }
             else
             {
@@ -149,73 +137,12 @@ namespace KreativerName
             worker.ReportProgress(100);
         }
 
-        private void Login()
-        {
-            if (SceneManager.Client == null)
-                return;
-            if (!Settings.Current.LoggedIn)
-                return;
-
-            byte[] msg = new byte[8];
-            BitConverter.GetBytes(Settings.Current.UserID).CopyTo(msg, 0);
-            BitConverter.GetBytes(Settings.Current.LoginInfo).CopyTo(msg, 4);
-
-            static void handle(Client c, Packet p)
-            {
-                if (p.Code == PacketCode.LogIn && p.Info == PacketInfo.Success)
-                {
-                    Notification.Show($"Eingeloggt unter {Settings.Current.UserName} ({Settings.Current.UserID.ToID()})");
-                    SceneManager.Client.PacketRecieved -= handle;
-                }
-            }
-            SceneManager.Client.PacketRecieved += handle;
-
-            SceneManager.Client.Send(new Packet(PacketCode.LogIn, PacketInfo.None, msg));
-        }
-
-        private void CompareVersion()
-        {
-            if (SceneManager.Client == null)
-                return;
-
-            static void handle(Client client, Packet p)
-            {
-                if (p.Code == PacketCode.CompareVersion)
-                {
-                    if (p.Info == PacketInfo.New)
-                        Notification.Show("Eine neue Version ist verfügbar!");
-                    else if (p.Info == PacketInfo.Error)
-                        Notification.Show("Fehler beim Überprüfen der Version");
-
-                    SceneManager.Client.PacketRecieved -= handle;
-                }
-            }
-
-            SceneManager.Client.PacketRecieved += handle;
-
-            SceneManager.Client.Send(new Packet(PacketCode.CompareVersion, PacketInfo.None, version.ToBytes()));
-        }
-
-        private void HandleRequest(Client client, Packet msg)
-        {
-            switch (msg.Code)
-            {
-                case PacketCode.RecieveNotification:
-                    float size = BitConverter.ToSingle(msg.Bytes, 0);
-                    int sLength = BitConverter.ToInt32(msg.Bytes, 4);
-                    string s = Encoding.UTF8.GetString(msg.Bytes, 8, sLength);
-
-                    Notification.Show(s, size);
-                    break;
-            }
-        }
-
         protected override void OnFileDrop(FileDropEventArgs e)
         {
             if (World.IsValidFile(e.FileName))
             {
                 Game game = new Game(World.LoadFromFile(e.FileName, false));
-                game.Exit += () =>
+                game.OnExit += () =>
                 {
                     game.World.SaveToFile(e.FileName, false);
                     SceneManager.LoadScene(new Transition(new MainMenu(), 10));
@@ -226,9 +153,7 @@ namespace KreativerName
 
         protected override void OnClosed(EventArgs e)
         {
-            SceneManager.Client?.Send(new Packet(PacketCode.Disconnect, PacketInfo.None));
-
-            SceneManager.Client?.Disconnect();
+            ClientManager.Disconnect();
         }
     }
 }
