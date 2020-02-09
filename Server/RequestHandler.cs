@@ -244,7 +244,7 @@ namespace Server
         static void Disconnect(Client client, Packet msg)
         {
             client.Disconnect();
-            Program.clients.Remove(client);
+            Program.Clients.Remove(client);
         }
     }
 }

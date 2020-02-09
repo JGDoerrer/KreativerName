@@ -108,7 +108,7 @@ namespace Server
 
             byte[] msg = Encoding.UTF8.GetBytes(s);
 
-            foreach (var client in Program.clients)
+            foreach (var client in Program.Clients)
             {
                 List<byte> bytes = new List<byte>();
 
@@ -144,7 +144,7 @@ namespace Server
         static void PrintClients()
         {
             int count = 0;
-            foreach (Client client in Program.clients)
+            foreach (Client client in Program.Clients)
             {
                 Console.WriteLine($"Client {++count}:");
 
