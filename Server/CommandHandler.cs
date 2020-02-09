@@ -81,6 +81,15 @@ namespace Server
                     Console.WriteLine($"{(RequestHandler.PrintPackets ? "Showing" : "Not showing")} packets.");
                     break;
                 }
+                case "rooms":
+                {
+                    if (args.Length == 1)
+                    {
+                        PrintRooms();
+                        break;
+                    }
+                    break;
+                }
 
                 default:
                     Console.WriteLine("Command not found.");
@@ -190,6 +199,21 @@ namespace Server
                 Console.WriteLine($"  UploadTime: {world.UploadTime}");
                 Console.WriteLine($"  Levels:     {world.Levels.Count}");
                 Console.WriteLine($"  Title:      {world.Title}");
+            }
+        }
+
+        static void PrintRooms()
+        {
+            int count = 0;
+            foreach (Room room in Program.Rooms)
+            {
+                Console.WriteLine($"Room {++count,3}:");
+
+                int clientCount = 0;
+                foreach (Client client in room.Clients)
+                {
+                    Console.WriteLine($"  Client {++clientCount, 3}: {(client.LoggedIn ? client.UserID.ToID() : client.RemoteIP.ToString())}");
+                }
             }
         }
 

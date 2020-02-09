@@ -93,6 +93,8 @@ namespace KreativerName.Networking
 
         CompareVersion = 0x0500,
 
+        CreateRoom = 0x0600,
+
         Disconnect = 0xFF00,
     }
 

@@ -30,6 +30,7 @@ namespace Server
                 case PacketCode.UploadStats: UploadStats(client, p); break;
                 case PacketCode.SendNotification: Message(client, p); break;
                 case PacketCode.CompareVersion: CompareVersion(client, p); break;
+                case PacketCode.CreateRoom: CreateRoom(client, p); break;
                 case PacketCode.Disconnect: Disconnect(client, p); break;
             }
         }
@@ -238,6 +239,21 @@ namespace Server
             catch (Exception)
             {
                 client.Send(new Packet(PacketCode.CompareVersion, PacketInfo.Error));
+            }
+        }
+
+        static void CreateRoom(Client client, Packet msg)
+        {
+            try
+            {
+                Room room = new Room();
+                room.Join(client);
+
+                client.Send(new Packet(PacketCode.CreateRoom, PacketInfo.Success));
+            }
+            catch (Exception)
+            {
+                client.Send(new Packet(PacketCode.CreateRoom, PacketInfo.Error));
             }
         }
 

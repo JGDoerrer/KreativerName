@@ -10,18 +10,18 @@ namespace Server
 {
     public class Room
     {
-        List<Client> clients = new List<Client>();
+        public List<Client> Clients = new List<Client>();
 
         World world;
 
         public void Join(Client client)
         {
-            clients.Add(client);
+            Clients.Add(client);
         }
 
         public void SendAll(Packet packet)
         {
-            foreach (Client client in clients)
+            foreach (Client client in Clients)
             {
                 client.Send(packet);
             }
