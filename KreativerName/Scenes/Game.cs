@@ -5,7 +5,6 @@ using System.Linq;
 using KreativerName.Grid;
 using KreativerName.Rendering;
 using KreativerName.UI;
-using KreativerName.UI.Constraints;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;

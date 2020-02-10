@@ -35,6 +35,15 @@ namespace KreativerName.UI
         public int Width { get; set; }
         public int Height { get; set; }
 
+        public int MarginLeft { get; set; }
+        public int MarginUp { get; set; }
+        public int MarginRight { get; set; }
+        public int MarginDown { get; set; }
+        public Vector4 Margin => new Vector4(MarginLeft, MarginUp, MarginRight, MarginDown);
+
+        public Alignment HorizontalAlign { get; set; }
+        public Alignment VerticalAlign { get; set; }
+
         public abstract void Update(Vector2 windowSize);
 
         public abstract void Render(Vector2 windowSize);
@@ -139,5 +148,12 @@ namespace KreativerName.UI
             GC.SuppressFinalize(this);
         }
         #endregion
+    }
+
+    public enum Alignment
+    {
+        LeftOrTop,
+        Center,
+        RightOrBottom,
     }
 }

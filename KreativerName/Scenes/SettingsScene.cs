@@ -5,7 +5,6 @@ using System.Text;
 using KreativerName.Networking;
 using KreativerName.Rendering;
 using KreativerName.UI;
-using KreativerName.UI.Constraints;
 using OpenTK;
 
 namespace KreativerName.Scenes

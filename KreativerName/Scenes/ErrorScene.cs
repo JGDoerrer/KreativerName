@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using KreativerName.UI;
-using KreativerName.UI.Constraints;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 

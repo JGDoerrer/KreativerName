@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Linq;
 using KreativerName.Rendering;
 using KreativerName.UI;
-using KreativerName.UI.Constraints;
 using OpenTK;
 
 namespace KreativerName.Scenes
