@@ -10,7 +10,15 @@ namespace Server
 {
     public class Room
     {
+        public Room()
+        { }
+        public Room(uint id)
+        {
+            ID = id;
+        }
+
         public List<Client> Clients = new List<Client>();
+        public uint ID;
 
         World world;
 

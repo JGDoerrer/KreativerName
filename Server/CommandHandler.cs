@@ -205,12 +205,13 @@ namespace Server
         static void PrintRooms()
         {
             int count = 0;
-            foreach (Room room in Program.Rooms)
+            foreach (var room in Program.Rooms)
             {
                 Console.WriteLine($"Room {++count,3}:");
+                Console.WriteLine($"  ID: {room.Value.ID.ToID().ToUpper()}");
 
                 int clientCount = 0;
-                foreach (Client client in room.Clients)
+                foreach (Client client in room.Value.Clients)
                 {
                     Console.WriteLine($"  Client {++clientCount, 3}: {(client.LoggedIn ? client.UserID.ToID() : client.RemoteIP.ToString())}");
                 }

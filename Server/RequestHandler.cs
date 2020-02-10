@@ -31,6 +31,7 @@ namespace Server
                 case PacketCode.SendNotification: Message(client, p); break;
                 case PacketCode.CompareVersion: CompareVersion(client, p); break;
                 case PacketCode.CreateRoom: CreateRoom(client, p); break;
+                case PacketCode.JoinRoom: JoinRoom(client, p); break;
                 case PacketCode.Disconnect: Disconnect(client, p); break;
             }
         }
@@ -246,14 +247,42 @@ namespace Server
         {
             try
             {
-                Room room = new Room();
+                uint id;
+                do
+                {
+                    id = (uint)random.Next(int.MinValue, int.MaxValue);
+                }
+                while (Program.Rooms.ContainsKey(id));
+
+                Room room = new Room(id);
                 room.Join(client);
+
+                Program.Rooms.Add(id, room);
 
                 client.Send(new Packet(PacketCode.CreateRoom, PacketInfo.Success));
             }
             catch (Exception)
             {
                 client.Send(new Packet(PacketCode.CreateRoom, PacketInfo.Error));
+            }
+        }
+
+        static void JoinRoom(Client client, Packet msg)
+        {
+            try
+            {
+                uint id = BitConverter.ToUInt32(msg.Bytes, 0);
+
+                if (!Program.Rooms.ContainsKey(id))
+                    throw new Exception();
+
+                Program.Rooms[id].Join(client);
+
+                client.Send(new Packet(PacketCode.JoinRoom, PacketInfo.Success));
+            }
+            catch (Exception)
+            {
+                client.Send(new Packet(PacketCode.JoinRoom, PacketInfo.Error));
             }
         }
 

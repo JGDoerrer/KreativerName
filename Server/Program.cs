@@ -12,7 +12,7 @@ namespace Server
         public static KreativerName.Version version = new KreativerName.Version(0, 2, 1, 0);
         
         public static List<Client> Clients = new List<Client>();
-        public static List<Room> Rooms = new List<Room>();
+        public static Dictionary<uint, Room> Rooms = new Dictionary<uint, Room>();
         static TcpListener listener;
 
         static void Main(string[] args)
