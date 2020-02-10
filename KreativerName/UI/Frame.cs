@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using KreativerName.UI.Constraints;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
@@ -8,17 +7,9 @@ namespace KreativerName.UI
     public class Frame : UIElement
     {
         public Frame()
-        {
-            constraints = new UIConstraints();
-        }
-        public Frame(int x, int y, int w, int h)
-        {
-            constraints = new UIConstraints(
-                new PixelConstraint(x),
-                new PixelConstraint(y),
-                new PixelConstraint(w),
-                new PixelConstraint(h));
-        }
+        { }
+        public Frame(int x, int y, int w, int h) : base(x, y, w, h)
+        { }
 
         public Color Color { get; set; } = Color.FromArgb(100, 100, 100);
 
@@ -33,10 +24,10 @@ namespace KreativerName.UI
 
         public override void Render(Vector2 windowSize)
         {
-            float x1 = GetX(windowSize);
-            float y1 = GetY(windowSize);
-            float x2 = x1 + GetWidth(windowSize);
-            float y2 = y1 + GetHeight(windowSize);
+            float x1 = ActualX;
+            float y1 = ActualY;
+            float x2 = x1 + Width;
+            float y2 = y1 + Height;
 
             GL.Disable(EnableCap.Texture2D);
 

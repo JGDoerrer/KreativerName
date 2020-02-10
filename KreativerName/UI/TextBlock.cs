@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using KreativerName.Rendering;
-using KreativerName.UI.Constraints;
 using OpenTK;
 
 namespace KreativerName.UI
@@ -15,15 +14,10 @@ namespace KreativerName.UI
             Text = text;
             Size = size;
         }
-        public TextBlock(string text, float size, int x, int y)
+        public TextBlock(string text, float size, int x, int y) : base(x, y, (int)TextRenderer.GetWidth(text, size), (int)TextRenderer.GetHeight(text, size))
         {
             Text = text;
             Size = size;
-            constraints = new UIConstraints(
-                new PixelConstraint(x),
-                new PixelConstraint(y),
-                new PixelConstraint((int)TextWidth),
-                new PixelConstraint((int)TextHeight));
         }
 
         public string Text { get; set; }//.ToUpper(); }
@@ -39,9 +33,7 @@ namespace KreativerName.UI
 
         public override void Render(Vector2 windowSize)
         {
-            Vector2 pos = new Vector2(GetX(windowSize), GetY(windowSize));
-
-            TextRenderer.RenderString(Text, pos, Color, Size);
+            TextRenderer.RenderString(Text, ActualPosition, Color, Size);
         }
 
     }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using KreativerName.UI.Constraints;
 using OpenTK;
 using OpenTK.Input;
 
@@ -9,24 +8,32 @@ namespace KreativerName.UI
     public abstract class UIElement : IDisposable
     {
         public UIElement()
+        { }
+        public UIElement(int x, int y, int w, int h)
         {
-            constraints = new UIConstraints();
+            X = x;
+            Y = y;
+            Width = w;
+            Height = h;
         }
-        public UIElement(Constraint x, Constraint y, Constraint width, Constraint height)
-        {
-            constraints = new UIConstraints(x, y, width, height);
-        }
-
-        protected UIConstraints constraints;
 
         internal UI ui;
         internal UIElement parent;
         protected List<UIElement> children = new List<UIElement>();
 
-        internal bool HasParent => parent != null;
         public List<UIElement> Children => children;
         public bool Visible { get; set; } = true;
-        public UIConstraints Constraints { get => constraints; set => constraints = value; }
+
+        public int X { get; set; }
+        public int Y { get; set; }
+        public Vector2 Position => new Vector2(X, Y);
+
+        public int ActualX => X + parent?.ActualX ?? 0;
+        public int ActualY => Y + parent?.ActualY ?? 0;
+        public Vector2 ActualPosition => new Vector2(ActualX, ActualY);
+
+        public int Width { get; set; }
+        public int Height { get; set; }
 
         public abstract void Update(Vector2 windowSize);
 
@@ -55,16 +62,13 @@ namespace KreativerName.UI
         {
             foreach (UIElement child in children)
             {
-                if (child.MouseOver(windowSize))
+                if (child.MouseOver)
                     return true;
                 else if (child.MouseOverChildren(windowSize))
                     return true;
             }
             return false;
         }
-
-        public void SetConstraints(UIConstraints constaints) => constraints = constaints;
-        public void SetConstraints(Constraint x, Constraint y, Constraint width, Constraint height) => constraints = new UIConstraints(x, y, width, height);
 
         public void AddChild(UIElement element)
         {
@@ -82,25 +86,13 @@ namespace KreativerName.UI
             }
         }
 
-        internal float GetX(Vector2 windowSize) => constraints.GetX(windowSize, this);
-        internal float GetY(Vector2 windowSize) => constraints.GetY(windowSize, this);
-        internal float GetWidth(Vector2 windowSize) => constraints.GetWidth(windowSize, this);
-        internal float GetHeight(Vector2 windowSize) => constraints.GetHeight(windowSize, this);
-
         #region Mouse
 
-        internal bool MouseOver(Vector2 windowSize)
-        {
-            float x = constraints.GetX(windowSize, this);
-            float y = constraints.GetY(windowSize, this);
-            float w = constraints.GetWidth(windowSize, this);
-            float h = constraints.GetHeight(windowSize, this);
-
-            return ui.MousePosition.X >= x &&
-                   ui.MousePosition.X < x + w &&
-                   ui.MousePosition.Y >= y &&
-                   ui.MousePosition.Y < y + h;
-        }
+        internal bool MouseOver => 
+            ui.MousePosition.X >= X &&
+            ui.MousePosition.X < X + Width &&
+            ui.MousePosition.Y >= Y &&
+            ui.MousePosition.Y < Y + Height;
 
         protected bool MouseLeftDown => ui.Input.MouseDown(MouseButton.Left);
         protected bool MouseLeftUp => !MouseLeftDown;

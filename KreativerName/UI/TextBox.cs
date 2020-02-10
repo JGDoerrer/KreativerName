@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using KreativerName.Rendering;
-using KreativerName.UI.Constraints;
 using OpenTK;
 using OpenTK.Input;
 
@@ -13,9 +12,8 @@ namespace KreativerName.UI
     {
         public TextBox()
         { }
-        public TextBox(int x, int y, int w, int h)
+        public TextBox(int x, int y, int w, int h) : base(x,y,w,h)
         {
-            constraints = new UIConstraints(x, y, w, h);
         }
 
         public bool Focused { get; set; }
@@ -36,7 +34,7 @@ namespace KreativerName.UI
         {
             if (MouseLeftClick && Enabled)
             {
-                if (MouseOver(windowSize))
+                if (MouseOver)
                 {
                     Focused = true;
                 }
@@ -139,17 +137,12 @@ namespace KreativerName.UI
         {
             const int a = 8;
             const float scale = 2;
-
-            float x = GetX(windowSize);
-            float y = GetY(windowSize);
-            float w = GetWidth(windowSize);
-            float h = GetHeight(windowSize);
-
+            
             float offset = 0;
             Color color;
             Texture2D tex = Textures.Get("TextBox");
 
-            if (MouseOver(windowSize) || Focused)
+            if (MouseOver|| Focused)
             {
                 if (MouseLeftDown)
                     color = Color.FromArgb(100, 100, 100);
@@ -164,15 +157,15 @@ namespace KreativerName.UI
                 color = Color.FromArgb(color.R / 2, color.B / 2, color.G / 2);
             }
 
-            float[] xs = { x, x + a * scale, x + w - a * scale };
-            float[] ys = { y, y + a * scale, y + h - a * scale };
+            float[] xs = { ActualX, ActualX + a * scale, ActualX + (float)Width - a * scale };
+            float[] ys = { ActualY, ActualY + a * scale, (float)ActualY + Height - a * scale };
 
             for (int i = 0; i <= 2; i++)
             {
                 for (int j = 0; j <= 2; j++)
                 {
-                    Vector2 scl = new Vector2(i == 1 ? w / (a * scale) - 2 : 1,
-                                              j == 1 ? h / (a * scale) - 2 : 1) * scale;
+                    Vector2 scl = new Vector2(i == 1 ? Width / (a * scale) - 2 : 1,
+                                              j == 1 ? Height / (a * scale) - 2 : 1) * scale;
 
                     TextureRenderer.Draw(tex, new Vector2(xs[i], ys[j]), scl, color, new RectangleF(offset + a * i, a * j, a, a));
                 }
@@ -182,7 +175,7 @@ namespace KreativerName.UI
             if ((cursorAnim / 30) % 2 == 0 && Focused)
                 text[Cursor] = '_';
 
-            Rendering.TextRenderer.RenderString(text.ToString(), new Vector2(GetX(windowSize), GetY(windowSize)) + TextOffset, TextColor, w - TextOffset.X * 3, TextSize);
+            Rendering.TextRenderer.RenderString(text.ToString(), new Vector2(ActualX,ActualY) + TextOffset, TextColor, (float)Width - TextOffset.X * 3, TextSize);
 
             RenderChildren(windowSize);
             cursorAnim++;

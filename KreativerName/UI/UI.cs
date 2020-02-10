@@ -69,7 +69,7 @@ namespace KreativerName.UI
         {
             foreach (UIElement element in Elements)
             {
-                if (element.MouseOver(windowSize))
+                if (element.MouseOver)
                     return true;
                 if (element.MouseOverChildren(windowSize))
                     return true;

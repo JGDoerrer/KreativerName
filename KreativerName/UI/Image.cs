@@ -32,12 +32,11 @@ namespace KreativerName.UI
 
         public override void Render(Vector2 windowSize)
         {
-            Vector2 pos = new Vector2(GetX(windowSize), GetY(windowSize));
             float width = sourceRect.HasValue ? sourceRect.Value.Width : texture.Width;
             float height = sourceRect.HasValue ? sourceRect.Value.Height : texture.Height;
-            Vector2 scale = new Vector2(GetWidth(windowSize) / width, GetHeight(windowSize) / height);
+            Vector2 scale = new Vector2(Width / width, Height / height);
 
-            TextureRenderer.Draw(texture, pos, scale, Color, sourceRect);
+            TextureRenderer.Draw(texture, ActualPosition, scale, Color, sourceRect);
         }
     }
 }

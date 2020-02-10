@@ -132,11 +132,6 @@
     <Compile Include="Stats.cs" />
     <Compile Include="UI\Button.cs" />
     <Compile Include="UI\CheckBox.cs" />
-    <Compile Include="UI\Constraints\CenterConstraint.cs" />
-    <Compile Include="UI\Constraints\Constraint.cs" />
-    <Compile Include="UI\Constraints\PixelConstraint.cs" />
-    <Compile Include="UI\Constraints\RelativeConstraint.cs" />
-    <Compile Include="UI\Constraints\UIConstraints.cs" />
     <Compile Include="UI\Events.cs" />
     <Compile Include="UI\Frame.cs" />
     <Compile Include="UI\Image.cs" />

@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using KreativerName.Rendering;
-using KreativerName.UI.Constraints;
 using OpenTK;
 using OpenTK.Input;
 
@@ -10,15 +9,9 @@ namespace KreativerName.UI
     {
         public CheckBox()
         {
-            constraints = new UIConstraints();
         }
-        public CheckBox(int x, int y, int w, int h)
+        public CheckBox(int x, int y, int w, int h) : base(x,y,w,h)
         {
-            constraints = new UIConstraints(
-                new PixelConstraint(x),
-                new PixelConstraint(y),
-                new PixelConstraint(w),
-                new PixelConstraint(h));
         }
 
         public bool Checked { get; set; }
@@ -35,7 +28,7 @@ namespace KreativerName.UI
         {
             UpdateChildren(windowSize);
 
-            bool b = (MouseOver(windowSize) && !mouseDown && MouseLeftDown) || ui.Input.KeyDown(Shortcut);
+            bool b = (MouseOver&& !mouseDown && MouseLeftDown) || ui.Input.KeyDown(Shortcut);
             if (Enabled && !clicked && b)
             {
                 Checked = !Checked;
@@ -52,19 +45,14 @@ namespace KreativerName.UI
         public override void Render(Vector2 windowSize)
         {
             const int a = 12;
-
-            float x = GetX(windowSize);
-            float y = GetY(windowSize);
-            float w = GetWidth(windowSize);
-            float h = GetHeight(windowSize);
-
+            
             float offset;
             Color color = Color.White;
             Texture2D tex = Textures.Get("CheckBox");
 
-            Vector2 scale = new Vector2(w / a, h / a);
+            Vector2 scale = new Vector2((float)Width / a, (float)Height / a);
 
-            if (!Enabled || MouseOver(windowSize))
+            if (!Enabled || MouseOver)
             {
                 color = Color.FromArgb(color.R / 4 * 3, color.B / 4 * 3, color.G / 4 * 3);
             }
@@ -74,7 +62,7 @@ namespace KreativerName.UI
             else
                 offset = 0;
 
-            TextureRenderer.Draw(tex, new Vector2(x, y), scale, color, new RectangleF(offset, 0, a, a));
+            TextureRenderer.Draw(tex, ActualPosition, scale, color, new RectangleF(offset, 0, a, a));
 
             RenderChildren(windowSize);
         }
