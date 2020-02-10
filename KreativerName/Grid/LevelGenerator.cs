@@ -63,7 +63,7 @@ namespace KreativerName.Grid
                 }
                 case 2: // Hexagon
                 {
-                    w -= 3;
+                    w -= 2;
 
                     for (int x = -w; x <= w; x++)
                     {
