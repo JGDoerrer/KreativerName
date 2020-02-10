@@ -67,12 +67,7 @@ namespace KreativerName.Scenes
         /// The grid of the current level.
         /// </summary>
         public HexGrid<Hex> Grid { get => level.Grid; set => level.Grid = value; }
-
-        /// <summary>
-        /// The current path of the world files.
-        /// </summary>
-        public string Path { get; set; } = @"Worlds\Editor";
-
+        
         public event EmptyEvent OnExit;
 
         /// <summary>
@@ -336,7 +331,7 @@ namespace KreativerName.Scenes
 
         private void LoadWorld()
         {
-            world = World.LoadFromFile($"{Path}/{worldIndex:000}.wld", false);
+            world = World.LoadFromFile(@$"Editor\{worldIndex:000}");
             boxWorldName.Text = world.Title ?? "";
             textWorld.Text = $"Welt  {worldIndex + 1:000}";
         }
@@ -373,13 +368,8 @@ namespace KreativerName.Scenes
                 else
                     world.LevelConnections[i] = new List<int>();
             }
-
-            if (!Directory.Exists(Path))
-            {
-                Directory.CreateDirectory(Path);
-            }
-
-            world.SaveToFile($"{Path}/{worldIndex:000}.wld", false);
+            
+            world.SaveToFile($@"Editor\{worldIndex:000}");
 
             Notification.Show("Welt gespeichert!", 2);
         }

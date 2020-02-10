@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using KreativerName.Grid;
 using KreativerName.Networking;
 using KreativerName.Rendering;
@@ -139,7 +140,7 @@ namespace KreativerName.Scenes
 
         #endregion
 
-        #region Handle Request
+        #region Handle Requests
 
         void HandleRequest(Client client, Packet p)
         {
@@ -172,6 +173,8 @@ namespace KreativerName.Scenes
             {
                 worlds.Add(world);
                 UpdateWorlds();
+
+                world.SaveToFile($@"Online\{world.ID.ToString("X")}");
             }
         }
 

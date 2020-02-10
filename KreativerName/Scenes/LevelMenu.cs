@@ -15,7 +15,7 @@ namespace KreativerName.Scenes
         public LevelMenu(int world)
         {
             worldIndex = world;
-            this.world = World.LoadFromFile($"{world:000}");
+            this.world = World.LoadFromFile($"{World.ResourcePath}{world:000}.wld", false);
 
             for (int i = 0; i < this.world.Levels.Count; i++)
             {
@@ -202,7 +202,7 @@ namespace KreativerName.Scenes
             Game game = new Game(worldIndex, level, !normalMode);
             game.OnExit += () =>
             {
-                game.World.SaveToFile($"{worldIndex:000}");
+                game.World.SaveToFile($"{World.ResourcePath}{worldIndex:000}.wld", false);
                 SceneManager.LoadScene(new Transition(new WorldMenu(), 10));
             };
 

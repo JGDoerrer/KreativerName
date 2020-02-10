@@ -97,7 +97,12 @@ namespace KreativerName.Grid
         /// <summary>
         /// The path where the world files are found.
         /// </summary>
-        public static string BasePath => @"Resources\Worlds\";
+        public static string BasePath => @"Worlds\";
+
+        /// <summary>
+        /// The path where the world files are found.
+        /// </summary>
+        public static string ResourcePath => @"Resources\Worlds\";
 
         /// <summary>
         /// Saves the world to a file in the base path with the specified name.
@@ -122,6 +127,9 @@ namespace KreativerName.Grid
             byte[] hash = sha256.ComputeHash(bytes);
 
             bytes = bytes.Concat(hash).ToArray();
+
+            if (!Directory.Exists(Path.GetDirectoryName(path)))
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
 
             File.WriteAllBytes(path, Compress(bytes));
 

@@ -64,9 +64,9 @@ namespace KreativerName.Scenes
             List<World> worlds = new List<World>();
             int worldcount = 0;
 
-            while (File.Exists($"{World.BasePath}{worldcount:000}.wld"))
+            while (File.Exists($"{World.ResourcePath}{worldcount:000}.wld"))
             {
-                World item = World.LoadFromFile($"{worldcount:000}");
+                World item = World.LoadFromFile($"{World.ResourcePath}{worldcount:000}.wld", false);
                 worlds.Add(item);
                 worldcount++;
             }
