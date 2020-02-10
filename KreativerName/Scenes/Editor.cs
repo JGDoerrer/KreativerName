@@ -247,6 +247,8 @@ namespace KreativerName.Scenes
 
                     Notification.Show($"Hochgeladen unter {id.ToString("x")}");
 
+                    Stats.Current.WorldsUploaded++;
+
                     ClientManager.PacketRecieved -= uploaded;
                 }
                 else if (p.Code == PacketCode.UploadWorld && p.Info == PacketInfo.Error)

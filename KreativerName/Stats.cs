@@ -19,6 +19,7 @@ namespace KreativerName
         private uint minesweeperWon;
         private uint minesweeperLost;
         private DateTime lastUpdated;
+        private uint worldsUploaded;
 
         public uint TotalMoves { get => totalMoves; set => totalMoves = value; }
         public TimeSpan TimePlaying { get => timePlaying; set => timePlaying = value; }
@@ -32,6 +33,7 @@ namespace KreativerName
         public uint MinesweeperWon { get => minesweeperWon; set => minesweeperWon = value; }
         public uint MinesweeperLost { get => minesweeperLost; set => minesweeperLost = value; }
         public DateTime LastUpdated { get => lastUpdated; set => lastUpdated = value; }
+        public uint WorldsUploaded { get => worldsUploaded; set => worldsUploaded = value; }
 
         #region Load & Save
 
@@ -51,6 +53,7 @@ namespace KreativerName
             bytes.AddRange(MinesweeperWon.ToBytes());
             bytes.AddRange(MinesweeperLost.ToBytes());
             bytes.AddRange(LastUpdated.ToBytes());
+            bytes.AddRange(WorldsUploaded.ToBytes());
 
             return bytes.ToArray();
         }
@@ -73,6 +76,7 @@ namespace KreativerName
                 count += minesweeperWon.FromBytes(bytes, startIndex + count);
                 count += minesweeperLost.FromBytes(bytes, startIndex + count);
                 count += lastUpdated.FromBytes(bytes, startIndex + count);
+                count += worldsUploaded.FromBytes(bytes, startIndex + count);
             }
             catch (Exception e)
             {
