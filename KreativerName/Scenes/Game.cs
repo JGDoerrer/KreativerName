@@ -28,37 +28,17 @@ namespace KreativerName.Scenes
         {
             Init();
         }
-        public Game(int world)
+        public Game(bool perfect)
         {
-            Init();
-            LoadWorld(world);
-            LoadLevel(0);
-        }
-        public Game(int world, int level)
-        {
-            Init();
-            LoadWorld(world);
-            LoadLevel(level);
-        }
-        public Game(int world, bool perfect)
-        {
-            Init();
-            LoadWorld(world);
-            LoadLevel(0);
             this.perfect = perfect;
+            Init();
         }
-        public Game(int world, int level, bool perfect)
+        public Game(World world, int level = 0, bool perfect = false)
         {
             Init();
             LoadWorld(world);
             LoadLevel(level);
             this.perfect = perfect;
-        }
-        public Game(World world)
-        {
-            Init();
-            LoadWorld(world);
-            LoadLevel(0);
         }
 
         private void Init()

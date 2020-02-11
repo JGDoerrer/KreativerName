@@ -199,7 +199,7 @@ namespace KreativerName.Scenes
 
         private void NewGame(int level)
         {
-            Game game = new Game(worldIndex, level, !normalMode);
+            Game game = new Game(world, level, !normalMode);
             game.OnExit += () =>
             {
                 game.World.SaveToFile($"{World.ResourcePath}{worldIndex:000}.wld", false);
