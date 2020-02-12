@@ -32,8 +32,15 @@ namespace KreativerName.UI
         public int ActualY => Y + parent?.ActualY ?? 0;
         public Vector2 ActualPosition => new Vector2(ActualX, ActualY);
 
-        public int Width { get; set; }
-        public int Height { get; set; }
+        private int width;
+        public int Width { get => width; set => width = value.Clamp(MinWidth, MaxWidth); }
+        public int MinWidth { get; set; } = 0;
+        public int MaxWidth { get; set; } = int.MaxValue;
+
+        private int height;
+        public int Height { get => height; set => height = value.Clamp(MinHeight, MaxHeight); }
+        public int MinHeight { get; set; } = 0;
+        public int MaxHeight { get; set; } = int.MaxValue;
 
         public int MarginLeft { get; set; }
         public int MarginUp { get; set; }

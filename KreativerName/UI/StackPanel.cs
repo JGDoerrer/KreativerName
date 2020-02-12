@@ -14,69 +14,50 @@ namespace KreativerName.UI
         {
             int sum = 0;
 
-            foreach (var child in children)
+            foreach (UIElement child in children)
             {
-                if (child.HorizontalAlign == Alignment.LeftOrTop)
+                if (Horizontal)
                 {
-                    if (Horizontal)
-                    {
-                        child.X = child.MarginLeft;
-                    }
-                    else
-                    {
-                        sum += child.MarginLeft;
+                    sum += child.MarginUp;
+                    child.Y = sum;
+                    sum += child.Height + child.MarginDown;
 
-                        child.X = sum;
-
-                        sum += child.Width + child.MarginRight;
+                    switch (child.HorizontalAlign)
+                    {
+                        case Alignment.LeftOrTop:
+                            child.X = child.MarginLeft;
+                            child.Width = Width - child.MarginLeft - child.MarginRight;
+                            break;
+                        case Alignment.Center:
+                            child.X = child.MarginLeft;
+                            child.Width = (Width - child.MarginLeft - child.MarginRight) / 2;
+                            break;
+                        case Alignment.RightOrBottom:
+                            child.X = child.MarginRight;
+                            child.Width = Width - child.MarginLeft - child.MarginRight;
+                            break;
                     }
                 }
-                else if (child.HorizontalAlign == Alignment.Center)
+                else
                 {
-                    if (Horizontal)
+                    sum += child.MarginLeft;
+                    child.X = sum;
+                    sum += child.Width + child.MarginRight;
+
+                    switch (child.VerticalAlign)
                     {
-                        child.X = child.MarginLeft;
-                        child.Width = (Width - child.MarginLeft - child.MarginRight) / 2;
-                    }
-                    else
-                    {
-                        sum += child.MarginLeft;
-
-                        child.X = sum;
-
-                        sum += child.Width + child.MarginRight;
-                    }
-                }
-
-                if (child.VerticalAlign == Alignment.LeftOrTop)
-                {
-                    if (Horizontal)
-                    {
-                        sum += child.MarginUp;
-
-                        child.Y = sum;
-
-                        sum += child.Height + child.MarginDown;
-                    }
-                    else
-                    {
-                        child.Y = child.MarginUp;
-                    }
-                }
-                else if (child.VerticalAlign == Alignment.Center)
-                {
-                    if (Horizontal)
-                    {
-                        sum += child.MarginUp;
-
-                        child.Y = sum;
-
-                        sum += child.Width + child.MarginDown;
-                    }
-                    else
-                    {
-                        child.Y = child.MarginUp;
-                        child.Height = (Width - child.MarginUp - child.MarginDown) / 2;
+                        case Alignment.LeftOrTop:
+                            child.Y = child.MarginUp;
+                            child.Height = Height - child.MarginUp - child.MarginDown;
+                            break;
+                        case Alignment.Center:
+                            child.Y = child.MarginUp;
+                            child.Height = (Height - child.MarginUp - child.MarginDown) / 2;
+                            break;
+                        case Alignment.RightOrBottom:
+                            child.Y = child.MarginDown;
+                            child.Height = Height - child.MarginUp - child.MarginDown;
+                            break;
                     }
                 }
             }
