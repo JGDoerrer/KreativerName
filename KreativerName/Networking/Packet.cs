@@ -95,6 +95,8 @@ namespace KreativerName.Networking
 
         CreateRoom = 0x0600,
         JoinRoom = 0x0610,
+        RoomMakeMove = 0x0620,
+        LeaveRoom = 0x06F0,
 
         Disconnect = 0xFF00,
     }

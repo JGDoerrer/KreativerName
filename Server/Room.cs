@@ -21,9 +21,12 @@ namespace Server
         public uint ID;
 
         World world;
+        Engine engine;
 
         public void Join(Client client)
         {
+            client.RoomID = ID;
+            client.PacketRecieved += HandleRequest;
             Clients.Add(client);
         }
 
@@ -32,6 +35,20 @@ namespace Server
             foreach (Client client in Clients)
             {
                 client.Send(packet);
+            }
+        }
+
+        private void HandleRequest(Client client, Packet packet)
+        {
+            switch (packet.Code)
+            {
+                case PacketCode.RoomMakeMove:
+                    break;
+                case PacketCode.LeaveRoom:
+                    client.PacketRecieved -= HandleRequest;
+                    client.RoomID = 0;
+                    Clients.Remove(client);
+                    break;
             }
         }
     }

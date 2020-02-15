@@ -9,7 +9,7 @@ namespace Server
 {
     partial class Program
     {
-        public static KreativerName.Version version = new KreativerName.Version(0, 2, 1, 0);
+        public static KreativerName.Version version = new KreativerName.Version(0, 3, 0, 0);
         
         public static List<Client> Clients = new List<Client>();
         public static Dictionary<uint, Room> Rooms = new Dictionary<uint, Room>();

@@ -252,7 +252,7 @@ namespace Server
                 {
                     id = (uint)random.Next(int.MinValue, int.MaxValue);
                 }
-                while (Program.Rooms.ContainsKey(id));
+                while (Program.Rooms.ContainsKey(id) && id != 0);
 
                 Room room = new Room(id);
                 room.Join(client);

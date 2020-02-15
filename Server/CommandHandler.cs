@@ -159,6 +159,7 @@ namespace Server
 
                 Console.WriteLine($"  ID:        {client.UserID}");
                 Console.WriteLine($"  LoggedIn:  {client.LoggedIn}");
+                Console.WriteLine($"  RoomID:    {client.RoomID.ToID().ToUpper()}");
                 Console.WriteLine($"  Connected: {client.Connected}");
                 Console.WriteLine("  TcpClient:");
                 Console.WriteLine($"    LocalIP:  {client.LocalIP}");

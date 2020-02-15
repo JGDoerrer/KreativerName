@@ -41,7 +41,7 @@ namespace KreativerName.UI
         {
             Vector2 pos = new Vector2(GetX(windowSize), GetY(windowSize));
 
-            TextRenderer.RenderString(Text, pos, Color, Size);
+            TextRenderer.RenderString(Text, pos, Color, GetWidth(windowSize), Size);
         }
 
     }

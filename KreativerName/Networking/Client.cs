@@ -28,6 +28,7 @@ namespace KreativerName.Networking
         public bool Connected => tcp.Connected;
         public uint UserID;
         public bool LoggedIn;
+        public uint RoomID;
 
         public EndPoint LocalIP => tcp.Client.LocalEndPoint;
         public EndPoint RemoteIP => tcp.Client.RemoteEndPoint;
