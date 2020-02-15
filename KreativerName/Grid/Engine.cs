@@ -65,7 +65,7 @@ namespace KreativerName.Grid
                 foreach (HexAction action in type.Changes)
                 {
                     bool conditionMet = false;
-                    bool move = true;
+                    bool move = action.Flags.HasFlag(HexActionFlags.MoveHex);
                     HexPoint nextPos = position + new HexPoint(action.MoveX, action.MoveY);
 
                     switch (action.Condition)
@@ -81,14 +81,12 @@ namespace KreativerName.Grid
                             break;
                         case HexCondition.NextFlag:
                             conditionMet = Level.Grid[nextPos] == null || (Level.Grid[nextPos]?.GetFlags(Level.Data) & (HexFlags)action.Data) != 0;
-                            move = false;
                             break;
                         case HexCondition.NextNotFlag:
                             conditionMet = Level.Grid[nextPos] != null && (Level.Grid[nextPos]?.GetFlags(Level.Data) & (HexFlags)action.Data) == 0;
                             break;
                         case HexCondition.NextID:
                             conditionMet = Level.Grid[nextPos] == null || Level.Grid[nextPos]?.IDs.Contains(action.Data) == true;
-                            move = false;
                             break;
                         case HexCondition.NextNotID:
                             conditionMet = Level.Grid[nextPos] != null && Level.Grid[nextPos]?.IDs.Contains(action.Data) != true;

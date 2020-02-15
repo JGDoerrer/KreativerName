@@ -141,8 +141,8 @@ namespace KreativerName.Grid
             count += 1;
             MoveY = (sbyte)bytes[startIndex + count];
             count += 1;
-            //Flags = (HexActionFlags)bytes[startIndex + count];
-            //count += 1;
+            Flags = (HexActionFlags)bytes[startIndex + count];
+            count += 1;
             Condition = (HexCondition)bytes[startIndex + count];
             count += 1;
 
@@ -157,7 +157,7 @@ namespace KreativerName.Grid
                 Data,
                 (byte)MoveX,
                 (byte)MoveY,
-                //(byte)Flags,
+                (byte)Flags,
                 (byte)Condition
             };
 
