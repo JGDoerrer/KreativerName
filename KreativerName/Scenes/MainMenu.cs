@@ -151,11 +151,13 @@ namespace KreativerName.Scenes
             float w = windowSize.X / (layout.size * sqrt3) + 8;
             float h = windowSize.Y / (layout.size * 1.5f) + 8;
 
+            Texture2D tex = Textures.Get("Hex\\000");
+
             for (int y = -4; y < h - 4; y++)
             {
                 for (int x = -(y / 2) - 4; x < w - (y + 1) / 2; x++)
                 {
-                    TextureRenderer.DrawHex(Textures.Get("Hex\\0"), new HexPoint(x, y), layout, Vector2.One, Color.FromArgb(10, 10, 10), new RectangleF(0, 0, 32, 32));
+                    TextureRenderer.DrawHex(tex, new HexPoint(x, y), layout, Vector2.One, Color.FromArgb(10, 10, 10), new RectangleF(0, 0, 32, 32));
                 }
             }
 

@@ -159,55 +159,55 @@
     <Content Include="Resources\Splash.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Textures\Hex\0.png">
+    <Content Include="Resources\Textures\Hex\000.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Textures\Hex\1.png">
+    <Content Include="Resources\Textures\Hex\001.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\CheckBox.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Textures\Hex\10.png">
+    <Content Include="Resources\Textures\Hex\010.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Textures\Hex\11.png">
+    <Content Include="Resources\Textures\Hex\011.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Textures\Hex\12.png">
+    <Content Include="Resources\Textures\Hex\012.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Textures\Hex\13.png">
+    <Content Include="Resources\Textures\Hex\013.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Textures\Hex\2.png">
+    <Content Include="Resources\Textures\Hex\002.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Textures\Hex\3.png">
+    <Content Include="Resources\Textures\Hex\003.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Textures\Hex\14.png">
+    <Content Include="Resources\Textures\Hex\014.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Textures\Hex\4.png">
+    <Content Include="Resources\Textures\Hex\004.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Textures\Hex\15.png">
+    <Content Include="Resources\Textures\Hex\015.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Textures\Hex\5.png">
+    <Content Include="Resources\Textures\Hex\005.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Textures\Hex\6.png">
+    <Content Include="Resources\Textures\Hex\006.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Textures\Hex\7.png">
+    <Content Include="Resources\Textures\Hex\007.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Textures\Hex\8.png">
+    <Content Include="Resources\Textures\Hex\008.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Textures\Hex\9.png">
+    <Content Include="Resources\Textures\Hex\009.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\Hex\Mask.png">

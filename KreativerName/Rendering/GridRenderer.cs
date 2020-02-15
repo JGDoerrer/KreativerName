@@ -98,7 +98,7 @@ namespace KreativerName.Rendering
                     }
                 }
 
-                TextureRenderer.DrawHex(Textures.Get($"Hex\\{types[i].Texture}"), pos, layout, Vector2.One * layout.size, color, new RectangleF(32 * connection, animation * 32, 32, 32));
+                TextureRenderer.DrawHex(Textures.Get($"Hex\\{types[i].Texture:000}"), pos, layout, Vector2.One * layout.size, color, new RectangleF(32 * connection, animation * 32, 32, 32));
             }
         }
     }
