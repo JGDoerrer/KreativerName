@@ -53,7 +53,7 @@ namespace KreativerName.Scenes
             splash.Color = Color.White;
             ui.Add(splash);
 
-            TextBlock version = new TextBlock($"Version {MainWindow.version}", 2, 5, 0);
+            TextBlock version = new TextBlock($"Version {MainWindow.Version}", 2, 5, 0);
             version.Constraints.y = new PixelConstraint(5, RelativeTo.Window, Direction.Bottom);
             version.Color = Color.White;
             ui.Add(version);

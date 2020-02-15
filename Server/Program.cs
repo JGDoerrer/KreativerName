@@ -9,9 +9,10 @@ namespace Server
 {
     partial class Program
     {
-        public static KreativerName.Version version = new KreativerName.Version(0, 2, 1, 0);
+        public static KreativerName.Version version = new KreativerName.Version(0, 3, 0, 0);
         
-        public static List<Client> clients = new List<Client>();
+        public static List<Client> Clients = new List<Client>();
+        public static Dictionary<uint, Room> Rooms = new Dictionary<uint, Room>();
         static TcpListener listener;
 
         static void Main(string[] args)
@@ -38,9 +39,9 @@ namespace Server
                 TcpClient tcpClient = listener.AcceptTcpClient();
                 Client client = new Client(tcpClient);
                 client.PacketRecieved += ClientBytesRecieved;
-                new Thread(client.StartRecieve).Start();
+                client.StartRecieve();
 
-                clients.Add(client);
+                Clients.Add(client);
                 Console.Beep(240, 500);
             }
         }
@@ -49,11 +50,11 @@ namespace Server
         {
             while (true)
             {
-                for (int i = clients.Count - 1; i >= 0; i--)
+                for (int i = Clients.Count - 1; i >= 0; i--)
                 {
-                    if (!clients[i].Connected)
+                    if (!Clients[i].Connected)
                     {
-                        clients.RemoveAt(i);
+                        Clients.RemoveAt(i);
                     }
                 }
                 Thread.Sleep(1000);

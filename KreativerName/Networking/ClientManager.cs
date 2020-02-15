@@ -104,7 +104,7 @@ namespace KreativerName.Networking
 
             client.PacketRecieved += handle;
 
-            client.Send(new Packet(PacketCode.CompareVersion, PacketInfo.None, MainWindow.version.ToBytes()));
+            client.Send(new Packet(PacketCode.CompareVersion, PacketInfo.None, MainWindow.Version.ToBytes()));
         }
 
         /// <summary>

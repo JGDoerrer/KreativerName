@@ -17,7 +17,7 @@ namespace KreativerName
     public class MainWindow : GameWindow
     {
         public MainWindow()
-            : base(16 * 80, 9 * 80, GraphicsMode.Default, "KreativerName")
+            : base(16 * 80, 9 * 80, GraphicsMode.Default, $"KreativerName {Version}")
         {
             Textures.LoadTextures(@"Resources\Textures");
 
@@ -35,7 +35,7 @@ namespace KreativerName
         public int FrameCounter;
         double fps;
         double ups;
-        public static readonly Version version = new Version(0, 3, 0, 0);
+        public static readonly Version Version = new Version(0, 3, 0, 0);
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {

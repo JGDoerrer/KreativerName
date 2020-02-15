@@ -81,6 +81,15 @@ namespace Server
                     Console.WriteLine($"{(RequestHandler.PrintPackets ? "Showing" : "Not showing")} packets.");
                     break;
                 }
+                case "rooms":
+                {
+                    if (args.Length == 1)
+                    {
+                        PrintRooms();
+                        break;
+                    }
+                    break;
+                }
 
                 default:
                     Console.WriteLine("Command not found.");
@@ -108,7 +117,7 @@ namespace Server
 
             byte[] msg = Encoding.UTF8.GetBytes(s);
 
-            foreach (var client in Program.clients)
+            foreach (var client in Program.Clients)
             {
                 List<byte> bytes = new List<byte>();
 
@@ -144,12 +153,13 @@ namespace Server
         static void PrintClients()
         {
             int count = 0;
-            foreach (Client client in Program.clients)
+            foreach (Client client in Program.Clients)
             {
                 Console.WriteLine($"Client {++count}:");
 
                 Console.WriteLine($"  ID:        {client.UserID}");
                 Console.WriteLine($"  LoggedIn:  {client.LoggedIn}");
+                Console.WriteLine($"  RoomID:    {client.RoomID.ToID().ToUpper()}");
                 Console.WriteLine($"  Connected: {client.Connected}");
                 Console.WriteLine("  TcpClient:");
                 Console.WriteLine($"    LocalIP:  {client.LocalIP}");
@@ -190,6 +200,22 @@ namespace Server
                 Console.WriteLine($"  UploadTime: {world.UploadTime}");
                 Console.WriteLine($"  Levels:     {world.Levels.Count}");
                 Console.WriteLine($"  Title:      {world.Title}");
+            }
+        }
+
+        static void PrintRooms()
+        {
+            int count = 0;
+            foreach (var room in Program.Rooms)
+            {
+                Console.WriteLine($"Room {++count,3}:");
+                Console.WriteLine($"  ID: {room.Value.ID.ToID().ToUpper()}");
+
+                int clientCount = 0;
+                foreach (Client client in room.Value.Clients)
+                {
+                    Console.WriteLine($"  Client {++clientCount, 3}: {(client.LoggedIn ? client.UserID.ToID() : client.RemoteIP.ToString())}");
+                }
             }
         }
 

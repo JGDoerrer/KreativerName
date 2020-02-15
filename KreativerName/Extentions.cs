@@ -188,9 +188,6 @@ namespace KreativerName
             return "";
         }
 
-        public static string ToID(this uint i)
-        {
-            return i.ToString("x").PadLeft(8, '0').Insert(4, "-");
-        }
+        public static string ToID(this uint i) => i.ToString("x").PadLeft(8, '0').Insert(4, "-");
     }
 }
