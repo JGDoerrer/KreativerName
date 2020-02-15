@@ -176,6 +176,8 @@ namespace KreativerName.Grid
         NextNotFlag = 4,
         NextID = 5,
         NextNotID = 6,
+        PlayerEnterID = 7,
+        PlayerLeaveID = 8,
     }
 
     [Flags]

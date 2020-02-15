@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace KreativerName.Grid
 {
+    /// <summary>
+    /// A class for the game logic.
+    /// </summary>
     public class Engine
     {
         public Engine()
@@ -65,44 +68,21 @@ namespace KreativerName.Grid
                 foreach (HexAction action in type.Changes)
                 {
                     bool conditionMet = false;
-                    bool move = action.Flags.HasFlag(HexActionFlags.MoveHex);
+                    bool moveHex = action.Flags.HasFlag(HexActionFlags.MoveHex);
                     HexPoint nextPos = position + new HexPoint(action.MoveX, action.MoveY);
 
-                    switch (action.Condition)
-                    {
-                        case HexCondition.Move:
-                            conditionMet = true;
-                            break;
-                        case HexCondition.PlayerEnter:
-                            conditionMet = position == Players[player].Position;
-                            break;
-                        case HexCondition.PlayerLeave:
-                            conditionMet = position == Players[player].LastPosition;
-                            break;
-                        case HexCondition.NextFlag:
-                            conditionMet = Level.Grid[nextPos] == null || (Level.Grid[nextPos]?.GetFlags(Level.Data) & (HexFlags)action.Data) != 0;
-                            break;
-                        case HexCondition.NextNotFlag:
-                            conditionMet = Level.Grid[nextPos] != null && (Level.Grid[nextPos]?.GetFlags(Level.Data) & (HexFlags)action.Data) == 0;
-                            break;
-                        case HexCondition.NextID:
-                            conditionMet = Level.Grid[nextPos] == null || Level.Grid[nextPos]?.IDs.Contains(action.Data) == true;
-                            break;
-                        case HexCondition.NextNotID:
-                            conditionMet = Level.Grid[nextPos] != null && Level.Grid[nextPos]?.IDs.Contains(action.Data) != true;
-                            break;
-                    }
+                    conditionMet = CheckCondition(player, position, action, nextPos);
 
                     if (conditionMet && nextGrid[position].Value.IDs.Contains(type.ID))
                     {
-                        if (nextPos == position || !move)
+                        if (nextPos == position || !moveHex)
                         {
                             Hex temp = nextGrid[position].Value;
                             temp.IDs.Remove(type.ID);
                             temp.IDs.Add(action.ChangeTo);
                             nextGrid[position] = temp;
                         }
-                        else if (nextGrid[nextPos].HasValue && move)
+                        else if (nextGrid[nextPos].HasValue && moveHex)
                         {
                             Hex temp = nextGrid[position].Value;
                             temp.IDs.Remove(type.ID);
@@ -118,6 +98,44 @@ namespace KreativerName.Grid
                     }
                 }
             }
+        }
+
+        private bool CheckCondition(int player, HexPoint position, HexAction action, HexPoint nextPos)
+        {
+            bool conditionMet = false;
+
+            switch (action.Condition)
+            {
+                case HexCondition.Move:
+                    conditionMet = true;
+                    break;
+                case HexCondition.PlayerEnter:
+                    conditionMet = position == Players[player].Position;
+                    break;
+                case HexCondition.PlayerLeave:
+                    conditionMet = position == Players[player].LastPosition;
+                    break;
+                case HexCondition.NextFlag:
+                    conditionMet = Level.Grid[nextPos] == null || (Level.Grid[nextPos]?.GetFlags(Level.Data) & (HexFlags)action.Data) != 0;
+                    break;
+                case HexCondition.NextNotFlag:
+                    conditionMet = Level.Grid[nextPos] != null && (Level.Grid[nextPos]?.GetFlags(Level.Data) & (HexFlags)action.Data) == 0;
+                    break;
+                case HexCondition.NextID:
+                    conditionMet = Level.Grid[nextPos] == null || Level.Grid[nextPos]?.IDs.Contains(action.Data) == true;
+                    break;
+                case HexCondition.NextNotID:
+                    conditionMet = Level.Grid[nextPos] != null && Level.Grid[nextPos]?.IDs.Contains(action.Data) != true;
+                    break;
+                case HexCondition.PlayerEnterID:
+                    conditionMet = Level.Grid[Players[player].Position]?.IDs.Contains(action.Data) == true;
+                    break;
+                case HexCondition.PlayerLeaveID:
+                    conditionMet = Level.Grid[Players[player].LastPosition]?.IDs.Contains(action.Data) == true;
+                    break;
+            }
+
+            return conditionMet;
         }
 
         /// <summary>
