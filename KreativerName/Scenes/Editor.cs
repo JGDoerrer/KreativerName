@@ -245,7 +245,7 @@ namespace KreativerName.Scenes
                 {
                     uint id = BitConverter.ToUInt32(p.Bytes, 0);
 
-                    Notification.Show($"Hochgeladen unter {id.ToString("x")}");
+                    Notification.Show($"Hochgeladen unter {id.ToID()}");
 
                     Stats.Current.WorldsUploaded++;
 
