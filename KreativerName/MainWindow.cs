@@ -35,7 +35,7 @@ namespace KreativerName
         public int FrameCounter;
         double fps;
         double ups;
-        public static readonly Version Version = new Version(0, 3, 0, 0);
+        public static readonly Version Version = new Version(0, 4, 0, 0);
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
