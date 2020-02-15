@@ -99,6 +99,82 @@ namespace KreativerName.Scenes
 
             AddCheckBox("Animiert:     ", 272, Data.RenderFlags.HasFlag(RenderFlags.Animated), a => { if (a) Data.RenderFlags |= RenderFlags.Animated; else Data.RenderFlags &= ~RenderFlags.Animated; });
             AddCheckBox("Verbunden:    ", 296, Data.RenderFlags.HasFlag(RenderFlags.Connected), a => { if (a) Data.RenderFlags |= RenderFlags.Connected; else Data.RenderFlags &= ~RenderFlags.Connected; });
+
+            int count = 0;
+            for (int i = 0; i < Data.Changes.Count; i++)
+            {
+                Frame frame = new Frame(400 + 300 * count, 100, 300, 200);
+                frame.Color = Color.Transparent;
+
+                void AddNumber2(string desc, int value, int y, ValueEvent e, int min = byte.MinValue, int max = byte.MaxValue)
+                {
+                    TextBlock text = new TextBlock(desc, 2, 0, y)
+                    {
+                        Color = Color.White
+                    };
+
+                    NumberInput input = new NumberInput((int)text.TextWidth, y - 3, value)
+                    {
+                        MinValue = min,
+                        MaxValue = max,
+                    };
+                    input.ValueChanged += e;
+
+                    input.AddTo(frame);
+                    frame.AddChild(text);
+                }
+
+                void AddCheckBox2(string desc, int y, bool check, CheckEvent e)
+                {
+                    TextBlock text = new TextBlock(desc, 2, 0, y + 6)
+                    {
+                        Color = Color.White
+                    };
+
+                    CheckBox checkBox = new CheckBox((int)text.TextWidth, y, 24, 24)
+                    {
+                        Checked = check
+                    };
+                    checkBox.OnChecked += e;
+
+                    frame.AddChild(text);
+                    frame.AddChild(checkBox);
+                }
+
+
+                frame.AddChild(new TextBlock($"Aktion {i+1}:", 2, 0, 0) { Color = Color.White });
+
+                int copy = i;
+                HexAction action = Data.Changes[copy];
+                AddNumber2("Ändere zu:  ", action.ChangeTo, 20, a => { action.ChangeTo = (byte)a; Data.Changes[copy] = action; });
+                AddNumber2("Daten:      ", action.Data, 40, a => { action.Data = (byte)a; Data.Changes[copy] = action; });
+                AddNumber2("Bewege x:   ", action.MoveX, 60, a => { action.MoveX = (sbyte)a; Data.Changes[copy] = action; }, sbyte.MinValue, sbyte.MaxValue);
+                AddNumber2("Bewege y:   ", action.MoveX, 80, a => { action.MoveY = (sbyte)a; Data.Changes[copy] = action; }, sbyte.MinValue, sbyte.MaxValue);
+                
+                AddCheckBox2("Bewege Hex: ", 100, action.Flags.HasFlag(HexActionFlags.MoveHex), a => { if (a) action.Flags |= HexActionFlags.MoveHex; else action.Flags &= ~HexActionFlags.MoveHex; Data.Changes[copy] = action; });
+                AddCheckBox2("Bewege Spieler: ", 124, action.Flags.HasFlag(HexActionFlags.MovePlayer), a => { if (a) action.Flags |= HexActionFlags.MovePlayer; else action.Flags &= ~HexActionFlags.MovePlayer; Data.Changes[copy] = action; });
+
+                string[] conditions =
+                {
+                    "Zug",
+                    "Spieler betreten",
+                    "Spieler verlassen",
+                    "Nächste Flagge",
+                    "Nächste nicht Flagge",
+                    "Nächste ID",
+                    "Nächste nicht ID",
+                };
+
+                TextBlock conditionText = new TextBlock(conditions[((int)action.Condition).Clamp(0, conditions.Length-1)], 2, 0, 180);
+                conditionText.Color = Color.White;
+                frame.AddChild(conditionText);
+
+                AddNumber2("Bedingung: ", (byte)action.Condition, 160, a => { action.Condition = (HexCondition)a; Data.Changes[copy] = action; conditionText.Text = conditions[a.Clamp(0, conditions.Length-1)]; });
+
+                ui.Add(frame);
+
+                count++;
+            }
         }
 
         public override void Update()
@@ -139,11 +215,11 @@ namespace KreativerName.Scenes
 
                 add.OnLeftClick += (sender) =>
                 {
-                    if (add.ui.Input.KeyDown(OpenTK.Input.Key.LControl) ||
-                        add.ui.Input.KeyDown(OpenTK.Input.Key.RControl))
+                    if (add.ui.Input.KeyDown(Key.LControl) ||
+                        add.ui.Input.KeyDown(Key.RControl))
                         Value += 10;
-                    else if (add.ui.Input.KeyDown(OpenTK.Input.Key.LShift) ||
-                        add.ui.Input.KeyDown(OpenTK.Input.Key.RShift))
+                    else if (add.ui.Input.KeyDown(Key.LShift) ||
+                        add.ui.Input.KeyDown(Key.RShift))
                         Value += 5;
                     else
                         Value += 1;
@@ -155,11 +231,11 @@ namespace KreativerName.Scenes
                 };
                 sub.OnLeftClick += (sender) =>
                 {
-                    if (add.ui.Input.KeyDown(OpenTK.Input.Key.LControl) ||
-                        add.ui.Input.KeyDown(OpenTK.Input.Key.RControl))
+                    if (add.ui.Input.KeyDown(Key.LControl) ||
+                        add.ui.Input.KeyDown(Key.RControl))
                         Value -= 10;
-                    else if (add.ui.Input.KeyDown(OpenTK.Input.Key.LShift) ||
-                        add.ui.Input.KeyDown(OpenTK.Input.Key.RShift))
+                    else if (add.ui.Input.KeyDown(Key.LShift) ||
+                        add.ui.Input.KeyDown(Key.RShift))
                         Value -= 5;
                     else
                         Value -= 1;
@@ -187,6 +263,13 @@ namespace KreativerName.Scenes
                 ui.Add(text);
                 ui.Add(add);
                 ui.Add(sub);
+            }
+
+            public void AddTo(UIElement element)
+            {
+                element.AddChild(text);
+                element.AddChild(add);
+                element.AddChild(sub);
             }
         }
 
