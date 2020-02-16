@@ -163,6 +163,8 @@ namespace KreativerName.Scenes
                     "Nächste nicht Flagge",
                     "Nächste ID",
                     "Nächste nicht ID",
+                    "Spieler betritt ID",
+                    "Spieler verlässt ID",
                 };
 
                 TextBlock conditionText = new TextBlock(conditions[((int)action.Condition).Clamp(0, conditions.Length-1)], 2, 0, 180);
