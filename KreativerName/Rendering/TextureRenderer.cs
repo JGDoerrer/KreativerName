@@ -75,7 +75,16 @@ namespace KreativerName.Rendering
         public static void DrawHex(Texture2D texture, HexPoint hex, HexLayout layout, Vector2 scale, Color color, RectangleF? sourceRect)
         {
             Vector2[] vertecies = new Vector2[6];
-            Vector2[] tex = new Vector2[6];
+            Vector2[] texCoords = new Vector2[6];
+
+            uint[] indices =
+            {
+                0, 1, 2,
+                0, 2, 3,
+                0, 3, 5,
+                3, 4, 5
+            };
+
 
             for (int i = 0; i < 6; i++)
             {
@@ -86,10 +95,10 @@ namespace KreativerName.Rendering
             for (int i = 0; i < 6; i++)
             {
                 if (!sourceRect.HasValue)
-                    tex[i] = vertecies[i];
+                    texCoords[i] = vertecies[i];
                 else
                 {
-                    tex[i] = new Vector2((float)Math.Round((sourceRect.Value.Left + vertecies[i].X * sourceRect.Value.Width) * scale.X) / (texture.Width * scale.X),
+                    texCoords[i] = new Vector2((float)Math.Round((sourceRect.Value.Left + vertecies[i].X * sourceRect.Value.Width) * scale.X) / (texture.Width * scale.X),
                                 (float)Math.Round((sourceRect.Value.Top + vertecies[i].Y * sourceRect.Value.Height) * scale.Y) / (texture.Height * scale.Y));
                 }
 
@@ -98,6 +107,28 @@ namespace KreativerName.Rendering
                 vertecies[i].X = (float)Math.Floor(vertecies[i].X);
                 vertecies[i].Y = (float)Math.Floor(vertecies[i].Y);
             }
+
+
+            float[] vert = new float[18];
+            float[] tex = new float[12];
+
+            for (int i = 0; i < vertecies.Length; i++)
+            {
+                vert[i * 3] = vertecies[i].X / (16f * 80f) * 2 - 1;
+                vert[i * 3 + 1] = (1 - (vertecies[i].Y / (9f * 80f))) * 2 - 1;
+                vert[i * 3 + 2] = 0;
+            }
+
+            for (int i = 0; i < texCoords.Length; i++)
+            {
+                tex[i * 2] = texCoords[i].X;
+                tex[i * 2 + 1] = texCoords[i].Y;
+            }
+
+            Mesh mesh = new Mesh(vert, tex, indices, texture, Shaders.Get("shader"));
+            Model model = new Model(mesh);
+            Renderer.Render(model.Info, color);
+            model.Dispose();
 
             //GL.BindTexture(TextureTarget.Texture2D, texture.ID);
 
