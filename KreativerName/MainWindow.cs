@@ -20,6 +20,7 @@ namespace KreativerName
             : base(16 * 80, 9 * 80, GraphicsMode.Default, $"KreativerName {Version}")
         {
             Textures.LoadTextures(@"Resources\Textures");
+            Shaders.LoadShaders(@"Resources\Shaders");
 
             if (File.Exists(@"Resources\Icon.ico"))
                 Icon = new Icon(@"Resources\Icon.ico");
@@ -27,7 +28,7 @@ namespace KreativerName
             SceneManager.SetWindow(this);
             SceneManager.LoadScene(new LoadingScene(LoadStuff, "", new Transition(new MainMenu(), 30)));
 
-            GL.Enable(EnableCap.Texture2D);
+            //GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
         }
@@ -74,7 +75,7 @@ namespace KreativerName
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             GL.Viewport(0, 0, Width, Height);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.ClearColor(Color.Black);
 
             GL.MatrixMode(MatrixMode.Projection);
@@ -151,8 +152,15 @@ namespace KreativerName
             }
         }
 
-        protected override void OnClosed(EventArgs e)
+        protected override void OnUnload(EventArgs e)
         {
+            Textures.Dispose();
+            Shaders.Dispose();
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            GL.BindVertexArray(0);
+            GL.UseProgram(0);
+
             ClientManager.Disconnect();
         }
     }

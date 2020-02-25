@@ -97,6 +97,12 @@
     <Compile Include="Networking\Packet.cs" />
     <Compile Include="Networking\User.cs" />
     <Compile Include="Rendering\GridRenderer.cs" />
+    <Compile Include="Rendering\Mesh.cs" />
+    <Compile Include="Rendering\Model.cs" />
+    <Compile Include="Rendering\Renderer.cs" />
+    <Compile Include="Rendering\RenderInfo.cs" />
+    <Compile Include="Rendering\Shader.cs" />
+    <Compile Include="Rendering\Shaders.cs" />
     <Compile Include="Rendering\TextRenderer.cs" />
     <Compile Include="Scenes\Editor.cs" />
     <Compile Include="Extentions.cs" />
@@ -318,6 +324,12 @@
     <Content Include="Resources\Worlds\003.wld">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\Shaders\shader.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Shaders\shader.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\Worlds\004.wld">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

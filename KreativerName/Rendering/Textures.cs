@@ -12,7 +12,7 @@ namespace KreativerName.Rendering
 
         public static Texture2D Get(string texture)
         {
-            return textures.ContainsKey(texture) ? textures[texture] : new Texture2D();
+            return textures.ContainsKey(texture) ? textures[texture] : null;
         }
 
         public static void LoadTextures(string directory)
@@ -57,24 +57,16 @@ namespace KreativerName.Rendering
             if (!File.Exists(path))
                 throw new FileNotFoundException("File not found at \"" + path + "\"");
 
-            int id = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, id);
+            return new Texture2D(path);
+        }
 
-            Bitmap bitmap = new Bitmap(path);
-            BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height),
-               ImageLockMode.ReadOnly,
-               System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
-               OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-
-            return new Texture2D(id, bitmap.Width, bitmap.Height);
+        public static void Dispose()
+        {
+            foreach (KeyValuePair<string, Texture2D> tex in textures)
+            {
+                tex.Value.Dispose();
+            }
         }
     }
 }
