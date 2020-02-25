@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using KreativerName.Grid;
@@ -74,6 +75,9 @@ namespace KreativerName
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             GL.Viewport(0, 0, Width, Height);
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.ClearColor(Color.Black);
@@ -103,6 +107,9 @@ namespace KreativerName
                 TextRenderer.RenderString(s, new Vector2(Width - 65, Height - 17), Color.White);
             }
 
+            sw.Stop();
+            Console.WriteLine($"[StopWatch]: Rendertime: {sw.ElapsedMilliseconds}ms");
+            
             SwapBuffers();
         }
 

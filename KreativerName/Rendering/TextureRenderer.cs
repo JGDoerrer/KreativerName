@@ -68,8 +68,8 @@ namespace KreativerName.Rendering
 
             Mesh mesh = new Mesh(vert, tex, indices, texture, Shaders.Get("shader"));
             Model model = new Model(mesh);
-            Renderer.Render(model.Info);
-            model.Delete();
+            Renderer.Render(model.Info, color);
+            model.Dispose();
         }
 
         public static void DrawHex(Texture2D texture, HexPoint hex, HexLayout layout, Vector2 scale, Color color, RectangleF? sourceRect)

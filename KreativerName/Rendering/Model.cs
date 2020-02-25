@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 namespace KreativerName.Rendering
 {
-    public class Model
+    public class Model : IDisposable
     {
         public Model(Mesh mesh)
         {
@@ -39,7 +38,7 @@ namespace KreativerName.Rendering
 
         private void AddEBO(uint[] indices)
         {
-            int ebo = GL.GenBuffer();
+            ebo = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
             GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
 
@@ -47,12 +46,13 @@ namespace KreativerName.Rendering
         }
 
         int vao;
+        int ebo;
 
         List<int> vbos;
 
         public RenderInfo Info;
 
-        public void Delete()
+        private void Delete()
         {
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindVertexArray(0);
@@ -62,8 +62,38 @@ namespace KreativerName.Rendering
             {
                 GL.DeleteBuffer(vbo);
             }
+            GL.DeleteBuffer(ebo);
 
             GL.DeleteVertexArray(vao);
         }
+
+        #region Dispose
+
+        private bool disposedValue = false;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                Delete();
+                vbos = null;
+
+                disposedValue = true;
+            }
+        }
+
+        ~Model()
+        {
+            Dispose(false);
+        }
+
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
     }
 }

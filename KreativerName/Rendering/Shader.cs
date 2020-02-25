@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -99,6 +100,12 @@ namespace KreativerName.Rendering
         {
             GL.UseProgram(handle);
             GL.UniformMatrix4(uniformLocations[name], true, ref data);
+        }
+
+        public void SetColor(string name, Color data)
+        {
+            GL.UseProgram(handle);
+            GL.Uniform4(uniformLocations[name], data.R / 255f, data.G / 255f, data.B / 255f, data.A / 255f);
         }
 
         public int GetAttribLocation(string attribName)
