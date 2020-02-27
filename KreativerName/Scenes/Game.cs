@@ -320,6 +320,7 @@ namespace KreativerName.Scenes
                 engine.Players[0].Color = Color.FromArgb(0, 255, 0).Lerp(Color.FromArgb(255, 0, 0), ((float)Moves / (level.MinMoves)).Clamp(0, 1));
             }
 
+            layout.size = 32;
             renderer.Layout = layout;
             renderer.Grid = Grid;
 

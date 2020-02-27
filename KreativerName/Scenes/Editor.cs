@@ -147,7 +147,6 @@ namespace KreativerName.Scenes
                 scale = scale.Clamp(0.125f, 16);
 
                 scrolling = scrolling * scale / oldScale;
-
             }
         }
 
@@ -197,6 +196,8 @@ namespace KreativerName.Scenes
 
             engine.Level = level;
             Player player = new Player(level.StartPos, Color.FromArgb(255, 0, 255, 0));
+
+            renderer.BuildMesh();
             renderer.Render(player, selectedHex, engine.GetPossibleMoves(level.StartPos));
 
             ui.Render(windowSize);

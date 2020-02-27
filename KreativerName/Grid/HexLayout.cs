@@ -91,61 +91,8 @@ namespace KreativerName.Grid
             float cos;
             float sin;
 
-            switch ((startAngle + i) % 6)
-            {
-                case 0f:
-                    sin = 0;
-                    cos = 1;
-                    break;
-                case 0.5f:
-                    sin = 0.5f;
-                    cos = sqrt3 / 2f;
-                    break;
-                case 1f:
-                    sin = sqrt3 / 2f;
-                    cos = 0.5f;
-                    break;
-                case 1.5f:
-                    sin = 1;
-                    cos = 0;
-                    break;
-                case 2f:
-                    sin = sqrt3 / 2f;
-                    cos = -0.5f;
-                    break;
-                case 2.5f:
-                    sin = 0.5f;
-                    cos = -sqrt3 / 2f;
-                    break;
-                case 3f:
-                    sin = 0;
-                    cos = -1;
-                    break;
-                case 3.5f:
-                    sin = -0.5f;
-                    cos = -sqrt3 / 2f;
-                    break;
-                case 4f:
-                    sin = -sqrt3 / 2f;
-                    cos = -0.5f;
-                    break;
-                case 4.5f:
-                    sin = -1;
-                    cos = 0;
-                    break;
-                case 5f:
-                    sin = -sqrt3 / 2f;
-                    cos = 0.5f;
-                    break;
-                case 5.5f:
-                    sin = -0.5f;
-                    cos = sqrt3 / 2f;
-                    break;
-                default:
-                    cos = (float)Math.Cos(angle);
-                    sin = (float)Math.Sin(angle);
-                    break;
-            }
+            cos = (float)Math.Cos(angle);
+            sin = (float)Math.Sin(angle);
 
             return HexToPixel(h) + new Vector2(cos * size, sin * size);
         }

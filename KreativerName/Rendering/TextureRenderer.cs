@@ -66,8 +66,8 @@ namespace KreativerName.Rendering
                 tex[i * 2 + 1] = texCoords[i].Y;
             }
 
-            Mesh mesh = new Mesh(vert, tex, indices, texture, Shaders.Get("shader"));
-            Model model = new Model(mesh);
+            Mesh mesh = new Mesh(vert, tex, indices);
+            Model model = new Model(mesh, texture, Shaders.Get("shader"));
             Renderer.Render(model.Info, color);
             model.Dispose();
         }
@@ -125,35 +125,10 @@ namespace KreativerName.Rendering
                 tex[i * 2 + 1] = texCoords[i].Y;
             }
 
-            Mesh mesh = new Mesh(vert, tex, indices, texture, Shaders.Get("shader"));
-            Model model = new Model(mesh);
+            Mesh mesh = new Mesh(vert, tex, indices);
+            Model model = new Model(mesh, texture, Shaders.Get("shader"));
             Renderer.Render(model.Info, color);
             model.Dispose();
-
-            //GL.BindTexture(TextureTarget.Texture2D, texture.ID);
-
-            //GL.Begin(PrimitiveType.Polygon);
-            //GL.Color4(color);
-
-            //for (int i = 0; i < 6; i++)
-            //{
-            //    if (!sourceRect.HasValue)
-            //        GL.TexCoord2(vertecies[i]);
-            //    else
-            //    {
-            //        GL.TexCoord2(Math.Round((sourceRect.Value.Left + vertecies[i].X * sourceRect.Value.Width) * scale.X) / (texture.Width * scale.X),
-            //                    Math.Round((sourceRect.Value.Top + vertecies[i].Y * sourceRect.Value.Height) * scale.Y) / (texture.Height * scale.Y));
-            //    }
-
-            //    vertecies[i] = layout.HexCorner((Vector2)hex * layout.spacing, i);
-
-            //    vertecies[i].X = (float)Math.Floor(vertecies[i].X);
-            //    vertecies[i].Y = (float)Math.Floor(vertecies[i].Y);
-
-            //    GL.Vertex2(vertecies[i]);
-            //}
-
-            //GL.End();
         }
     }
 }

@@ -6,10 +6,10 @@ namespace KreativerName.Rendering
 {
     public class Model : IDisposable
     {
-        public Model(Mesh mesh)
+        public Model(Mesh mesh, Texture2D texture, Shader shader)
         {
-            Info.Shader = mesh.shader;
-            Info.Texture = mesh.texture;
+            Info.Shader = shader;
+            Info.Texture = texture;
 
             vbos = new List<int>();
 
