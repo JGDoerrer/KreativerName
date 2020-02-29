@@ -361,16 +361,7 @@ namespace KreativerName.Scenes
             world.AllCompleted = false;
             world.AllPerfect = false;
             world.Title = boxWorldName.Text ?? "";
-
-            world.LevelConnections = new List<int>[world.Levels.Count];
-            for (int i = 0; i < world.Levels.Count; i++)
-            {
-                if (i != world.Levels.Count - 1)
-                    world.LevelConnections[i] = new List<int> { i + 1 };
-                else
-                    world.LevelConnections[i] = new List<int>();
-            }
-            
+                        
             world.SaveToFile($@"Editor\{worldIndex:000}");
 
             Notification.Show("Welt gespeichert!", 2);

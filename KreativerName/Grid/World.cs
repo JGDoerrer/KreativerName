@@ -48,11 +48,6 @@ namespace KreativerName.Grid
         public DateTime UploadTime;
 
         /// <summary>
-        /// Stores the connections between levels.
-        /// </summary>
-        public List<int>[] LevelConnections;
-
-        /// <summary>
         /// Defines if all levels have been completed.
         /// </summary>
         public bool AllCompleted
@@ -264,15 +259,6 @@ namespace KreativerName.Grid
                 {
                     bytes.AddRange(Levels[i].ToBytes());
                 }
-
-                // Write level connections
-                for (int i = 0; i < Levels.Count; i++)
-                {
-                    bytes.AddRange((LevelConnections[i]?.Count ?? 0).ToBytes());
-
-                    for (int j = 0; j < (LevelConnections[i]?.Count ?? 0); j++)
-                        bytes.AddRange(LevelConnections[i][j].ToBytes());
-                }
             }
             catch (Exception e)
             {
@@ -318,25 +304,6 @@ namespace KreativerName.Grid
                     Level level = new Level();
                     total += level.FromBytes(bytes, startIndex + total);
                     Levels.Add(level);
-                }
-
-                // Read level connections
-                LevelConnections = new List<int>[levelCount];
-
-                for (int i = 0; i < levelCount; i++)
-                {
-                    int count = 0;
-                    total += count.FromBytes(bytes, startIndex + total);
-
-                    LevelConnections[i] = new List<int>();
-
-                    for (int j = 0; j < count; j++)
-                    {
-                        int connection = 0;
-                        total += connection.FromBytes(bytes, startIndex + total);
-
-                        LevelConnections[i].Add(connection);
-                    }
                 }
             }
             catch (Exception e)

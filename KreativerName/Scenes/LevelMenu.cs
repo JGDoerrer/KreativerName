@@ -16,13 +16,7 @@ namespace KreativerName.Scenes
         {
             worldIndex = world;
             this.world = World.LoadFromFile($"{World.ResourcePath}{world:000}.wld", false);
-
-            for (int i = 0; i < this.world.Levels.Count; i++)
-            {
-                if (this.world.LevelConnections[i] == null)
-                    this.world.LevelConnections[i] = new List<int>();
-            }
-
+            
             InitUI();
             InitLevels();
         }
@@ -119,42 +113,11 @@ namespace KreativerName.Scenes
                     new PixelConstraint(ButtonSize + 40))
             };
 
-            List<Tuple<int, int>> connections = new List<Tuple<int, int>>();
-
-            for (int i = 0; i < lvlCount; i++)
-            {
-                for (int j = 0; j < world.LevelConnections[i].Count; j++)
-                {
-                    connections.Add(new Tuple<int, int>(i, world.LevelConnections[i][j]));
-                }
-            }
-
-            Vector2[] positions = new Vector2[lvlCount];
-
-            void CalcPosition(int level, int index, int prev = 0, int count = 0)
-            {
-                int next = world.LevelConnections[level][index];
-
-                if (world.LevelConnections[next].Count > 0)
-                {
-                    for (int i = 0; i < world.LevelConnections[next].Count; i++)
-                    {
-                        CalcPosition(next, i, level, count + 1);
-                    }
-                }
-                else
-                    positions[next] = new Vector2(count + 1, index);
-
-                positions[level] = new Vector2(count, index);
-            }
-
-            CalcPosition(0, 0);
-
             // Create buttons
             int count = 0;
             for (int i = 0; i < lvlCount; i++)
             {
-                Button button = new Button((ButtonSize + 20) * (int)positions[i].X + 20, (ButtonSize + 20) * (int)positions[i].Y + 20, ButtonSize, ButtonSize);
+                Button button = new Button((ButtonSize + 20) * i + 20, (ButtonSize + 20) * 0 + 20, ButtonSize, ButtonSize);
 
                 // Create stars
                 for (int j = 0; j < StarsPerLevel; j++)
@@ -168,19 +131,13 @@ namespace KreativerName.Scenes
                 }
 
                 if (i < 10)
+                {
                     button.Shortcut = (Key)(110 + i);
+                }
 
                 if (i > 0)
                 {
-                    button.Enabled = false;
-                    for (int j = 0; j < world.LevelConnections.Length; j++)
-                    {
-                        if (world.Levels[j].Completed && world.LevelConnections[j].Contains(i))
-                        {
-                            button.Enabled = true;
-                            break;
-                        }
-                    }
+                    button.Enabled = world.Levels[i-1].Completed;
                 }
 
                 int level = i;
