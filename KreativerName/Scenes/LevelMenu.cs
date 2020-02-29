@@ -129,9 +129,9 @@ namespace KreativerName.Scenes
                     button.AddChild(image);
                 }
 
-                if (i < 10)
+                if (i < 9)
                 {
-                    button.Shortcut = (Key)(110 + i);
+                    button.Shortcut = Key.Number1 + i;
                 }
 
                 if (i > 0)
