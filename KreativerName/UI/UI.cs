@@ -46,7 +46,7 @@ namespace KreativerName.UI
 
             lock (Elements)
             {
-                foreach (var element in Elements)
+                foreach (UIElement element in Elements)
                 {
                     if (element.Visible)
                         element.Render(windowSize);

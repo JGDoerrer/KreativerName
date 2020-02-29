@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using KreativerName.Grid;
 using KreativerName.Networking;
 using KreativerName.Rendering;
@@ -116,7 +115,7 @@ namespace KreativerName.Scenes
             const int Margin = 10;
 
             int i = 0;
-            foreach (var world in worlds)
+            foreach (World world in worlds)
             {
                 Button button = new Button(0, i * (ButtonHeight + Margin), 0, ButtonHeight);
                 button.Constraints.width = new RelativeConstraint(1, RelativeTo.Parent);

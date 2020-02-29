@@ -189,7 +189,7 @@ namespace KreativerName.Scenes
                 if (engine.GetPossibleMoves(player).Contains(mouse))
                 {
                     player = mouse;
-                    engine.Update(0,player);
+                    engine.Update(0, player);
                     UpdatePlayer();
                 }
             }

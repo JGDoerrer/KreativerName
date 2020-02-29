@@ -142,7 +142,7 @@ namespace KreativerName.Scenes
                 }
 
 
-                frame.AddChild(new TextBlock($"Aktion {i+1}:", 2, 0, 0) { Color = Color.White });
+                frame.AddChild(new TextBlock($"Aktion {i + 1}:", 2, 0, 0) { Color = Color.White });
 
                 int copy = i;
                 HexAction action = Data.Changes[copy];
@@ -150,7 +150,7 @@ namespace KreativerName.Scenes
                 AddNumber2("Daten:      ", action.Data, 40, a => { action.Data = (byte)a; Data.Changes[copy] = action; });
                 AddNumber2("Bewege x:   ", action.MoveX, 60, a => { action.MoveX = (sbyte)a; Data.Changes[copy] = action; }, sbyte.MinValue, sbyte.MaxValue);
                 AddNumber2("Bewege y:   ", action.MoveX, 80, a => { action.MoveY = (sbyte)a; Data.Changes[copy] = action; }, sbyte.MinValue, sbyte.MaxValue);
-                
+
                 AddCheckBox2("Bewege Hex: ", 100, action.Flags.HasFlag(HexActionFlags.MoveHex), a => { if (a) action.Flags |= HexActionFlags.MoveHex; else action.Flags &= ~HexActionFlags.MoveHex; Data.Changes[copy] = action; });
                 AddCheckBox2("Bewege Spieler: ", 124, action.Flags.HasFlag(HexActionFlags.MovePlayer), a => { if (a) action.Flags |= HexActionFlags.MovePlayer; else action.Flags &= ~HexActionFlags.MovePlayer; Data.Changes[copy] = action; });
 
@@ -167,11 +167,11 @@ namespace KreativerName.Scenes
                     "Spieler verlässt ID",
                 };
 
-                TextBlock conditionText = new TextBlock(conditions[((int)action.Condition).Clamp(0, conditions.Length-1)], 2, 0, 180);
+                TextBlock conditionText = new TextBlock(conditions[((int)action.Condition).Clamp(0, conditions.Length - 1)], 2, 0, 180);
                 conditionText.Color = Color.White;
                 frame.AddChild(conditionText);
 
-                AddNumber2("Bedingung: ", (byte)action.Condition, 160, a => { action.Condition = (HexCondition)a; Data.Changes[copy] = action; conditionText.Text = conditions[a.Clamp(0, conditions.Length-1)]; });
+                AddNumber2("Bedingung: ", (byte)action.Condition, 160, a => { action.Condition = (HexCondition)a; Data.Changes[copy] = action; conditionText.Text = conditions[a.Clamp(0, conditions.Length - 1)]; });
 
                 ui.Add(frame);
 

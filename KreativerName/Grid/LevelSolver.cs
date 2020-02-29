@@ -94,11 +94,11 @@ namespace KreativerName.Grid
             if (logMoves)
                 possibleMoves[movesLeft - 1]++;
 
-            foreach (var move in moves)
+            foreach (HexPoint move in moves)
             {
                 Level copy = level;//.Copy();
                 Engine e = new Engine(copy);
-                e.Update(0,move);
+                e.Update(0, move);
 
                 HexFlags flags = copy.Grid[move].Value.GetFlags(level.Data);
 

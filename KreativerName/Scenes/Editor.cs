@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using KreativerName.Grid;
 using KreativerName.Networking;
@@ -67,7 +66,7 @@ namespace KreativerName.Scenes
         /// The grid of the current level.
         /// </summary>
         public HexGrid<Hex> Grid { get => level.Grid; set => level.Grid = value; }
-        
+
         public event EmptyEvent OnExit;
 
         /// <summary>
@@ -361,7 +360,7 @@ namespace KreativerName.Scenes
             world.AllCompleted = false;
             world.AllPerfect = false;
             world.Title = boxWorldName.Text ?? "";
-                        
+
             world.SaveToFile($@"Editor\{worldIndex:000}");
 
             Notification.Show("Welt gespeichert!", 2);

@@ -26,7 +26,7 @@ namespace KreativerName.UI
         {
             float y = notifications.Sum(x => x.Y);
 
-            foreach (var note in notifications.Reverse<Note>())
+            foreach (Note note in notifications.Reverse<Note>())
             {
                 note.Render(windowSize, y);
                 y += note.Height;

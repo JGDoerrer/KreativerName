@@ -15,7 +15,7 @@ namespace KreativerName.Grid
         {
             Level = level;
             Players = new Player[1]
-            {   
+            {
                 new Player(level.StartPos, Color.FromArgb(255, 0, 255, 0)),
             };
         }
@@ -45,7 +45,7 @@ namespace KreativerName.Grid
             }
 
             Level.Grid = nextGrid;
-            
+
             HexFlags flags = Level.Grid[Players[player].Position].Value.GetFlags(Level.Data);
 
             // If player is on a deadly or solid tile, reset

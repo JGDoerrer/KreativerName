@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using KreativerName.Grid;
 using KreativerName.Rendering;
@@ -16,7 +15,7 @@ namespace KreativerName.Scenes
         {
             worldIndex = world;
             this.world = World.LoadFromFile($"{World.ResourcePath}{world:000}.wld", false);
-            
+
             InitUI();
             InitLevels();
         }
@@ -137,7 +136,7 @@ namespace KreativerName.Scenes
 
                 if (i > 0)
                 {
-                    button.Enabled = world.Levels[i-1].Completed;
+                    button.Enabled = world.Levels[i - 1].Completed;
                 }
 
                 int level = i;

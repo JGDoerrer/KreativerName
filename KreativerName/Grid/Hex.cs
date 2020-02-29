@@ -160,7 +160,7 @@ namespace KreativerName.Grid
         {
             string s = $"{Position};";
 
-            foreach (var id in IDs)
+            foreach (byte id in IDs)
             {
                 s += $" {id},";
             }
