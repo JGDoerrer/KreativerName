@@ -26,7 +26,7 @@ namespace KreativerName.UI
         {
             float y = notifications.Sum(x => x.Y);
 
-            foreach (var note in notifications.Reverse<Note>())
+            foreach (Note note in notifications.Reverse<Note>())
             {
                 note.Render(windowSize, y);
                 y += note.Height;
@@ -54,11 +54,29 @@ namespace KreativerName.UI
             public int AnimationStay;
             public int AnimationOut;
 
+            Model textModel;
+            Model frameModel;
+
             public float Width => TextRenderer.GetWidth(Text, TextSize) + 16;
             public float Height => TextRenderer.GetHeight(Text, TextSize) + 16;
             public float Y => Height * -QuadraticInOut((float)(AnimationIn + 1) / maxAnimation);
 
             public bool AnimationDone => AnimationIn < 0 && AnimationOut < 0 && AnimationStay < 0;
+
+            public void BuildMesh()
+            {
+                const int a = 8;
+                const float scale = 2;
+
+                MeshBuilder builder = new MeshBuilder();
+
+                Texture2D tex = Textures.Get("TextBox");
+
+                builder.AddRectangle(new RectangleF(0, 0, a, a), 
+                                     new RectangleF(0, 0, a / (float)tex.Width, a / (float)tex.Height));
+
+                frameModel = new Model(builder.Mesh, tex, Shaders.Get("Basic"));
+            }
 
             public Note Update()
             {
@@ -92,7 +110,6 @@ namespace KreativerName.UI
                 float x = windowSize.X - w * animOut;
 
                 Color color = Color.White;
-                Texture2D tex = Textures.Get("TextBox");
 
                 float[] xs = { x, x + a * scale, x + w - a * scale };
                 float[] ys = { y, y + a * scale, y + h - a * scale };
@@ -104,7 +121,7 @@ namespace KreativerName.UI
                         Vector2 scl = new Vector2(i == 1 ? w / (a * scale) - 2 : 1,
                                                   j == 1 ? h / (a * scale) - 2 : 1) * scale;
 
-                        TextureRenderer.Draw(tex, new Vector2(xs[i], ys[j]), scl, color, new RectangleF(a * i, a * j, a, a));
+                        //TextureRenderer.Draw(tex, new Vector2(xs[i], ys[j]), scl, color, new RectangleF(a * i, a * j, a, a));
                     }
                 }
 

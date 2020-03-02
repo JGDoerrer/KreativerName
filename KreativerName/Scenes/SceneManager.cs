@@ -9,14 +9,25 @@ namespace KreativerName.Scenes
         public static GameWindow Window;
         public static Input Input;
 
+        static Scene next;
+        static bool loadScene = false;
+
         public static void LoadScene(Scene scene)
         {
-            Scene?.Exit();
-            Scene = scene;
+            next = scene;
+            loadScene = true;
         }
 
         public static void Update(Vector2 windowSize)
         {
+            if (loadScene)
+            {
+                Scene?.Unload();
+                Scene = next;
+                Scene?.Load();
+                loadScene = false;
+            }
+
             Scene?.UpdateUI(windowSize);
             Scene?.Update();
 
@@ -40,6 +51,11 @@ namespace KreativerName.Scenes
         public static void CloseWindow()
         {
             Window.Close();
+        }
+
+        public static void UnloadScene()
+        {
+            Scene?.Unload();
         }
     }
 }

@@ -196,7 +196,7 @@ namespace KreativerName.Scenes
                 for (int i = 0; i < number.Values.Count; i++)
                 {
                     int value = number.Values[i];
-                    TextureRenderer.Draw(Textures.Get("Font"), position - new Vector2(0, i * 16), Vector2.One * 2, number.Color, new RectangleF(((value + 16) % 16) * 6, ((value + 16) / 16) * 6, 6, 6));
+                    //TextureRenderer.Draw(Textures.Get("Font"), position - new Vector2(0, i * 16), Vector2.One * 2, number.Color, new RectangleF(((value + 16) % 16) * 6, ((value + 16) / 16) * 6, 6, 6));
                 }
             }
 

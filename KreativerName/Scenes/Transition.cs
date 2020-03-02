@@ -76,7 +76,7 @@ namespace KreativerName.Scenes
             {
                 if (disposing)
                 {
-                    next.Dispose();
+                    next = null;
                 }
 
                 disposedValue = true;

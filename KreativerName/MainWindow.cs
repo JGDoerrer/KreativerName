@@ -52,14 +52,14 @@ namespace KreativerName
 
             Vector2 size = new Vector2(Width, Height);
 
-            try
-            {
-                SceneManager.Update(size);
-            }
-            catch (Exception ex)
-            {
-                SceneManager.LoadScene(new Transition(new ErrorScene(ex), 10));
-            }
+            //try
+            //{
+            SceneManager.Update(size);
+            //}
+            //catch (Exception ex)
+            //{
+            //    SceneManager.LoadScene(new Transition(new ErrorScene(ex), 10));
+            //}
 
             // Update Stats
             Stats.Current.TimePlaying = Stats.Current.TimePlaying.Add(TimeSpan.FromSeconds(e.Time));
@@ -91,14 +91,14 @@ namespace KreativerName
 
             Vector2 size = new Vector2(Width, Height);
 
-            try
-            {
-                SceneManager.Render(size);
-            }
-            catch (Exception ex)
-            {
-                SceneManager.LoadScene(new Transition(new ErrorScene(ex), 10));
-            }
+            //try
+            //{
+            SceneManager.Render(size);
+            //}
+            //catch (Exception ex)
+            //{
+            //    SceneManager.LoadScene(new Transition(new ErrorScene(ex), 10));
+            //}
 
             // Render Fps
             if (Settings.Current.ShowFps)
@@ -161,6 +161,8 @@ namespace KreativerName
 
         protected override void OnUnload(EventArgs e)
         {
+            SceneManager.UnloadScene();
+
             Textures.Dispose();
             Shaders.Dispose();
 

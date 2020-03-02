@@ -74,7 +74,7 @@ namespace KreativerName.UI
             else
                 offset = 0;
 
-            TextureRenderer.Draw(tex, new Vector2(x, y), scale, color, new RectangleF(offset, 0, a, a));
+            //TextureRenderer.Draw(tex, new Vector2(x, y), scale, color, new RectangleF(offset, 0, a, a));
 
             RenderChildren(windowSize);
         }

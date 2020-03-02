@@ -193,7 +193,7 @@ namespace KreativerName.Scenes
             ui.Render(windowSize);
 
             layout.origin = new Vector2(400, 400);
-            GridRenderer.RenderHex(new HexPoint(0, 0), new List<HexData> { Data }, layout, Color.White, frameCount);
+            //GridRenderer.RenderHex(new HexPoint(0, 0), new List<HexData> { Data }, layout, Color.White, frameCount);
 
             frameCount++;
         }

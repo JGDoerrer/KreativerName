@@ -21,6 +21,9 @@ namespace KreativerName.UI
 
         public void Update(Vector2 windowSize)
         {
+            if (Elements == null)
+                return;
+
             for (int i = Elements.Count - 1; i >= 0; i--)
             {
                 UIElement element = Elements[i];
@@ -32,6 +35,9 @@ namespace KreativerName.UI
 
         public void Render(Vector2 windowSize)
         {
+            if (Elements == null)
+                return;
+
             int width = (int)windowSize.X;
             int height = (int)windowSize.Y;
 

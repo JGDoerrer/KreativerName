@@ -174,7 +174,7 @@ namespace KreativerName.UI
                     Vector2 scl = new Vector2(i == 1 ? w / (a * scale) - 2 : 1,
                                               j == 1 ? h / (a * scale) - 2 : 1) * scale;
 
-                    TextureRenderer.Draw(tex, new Vector2(xs[i], ys[j]), scl, color, new RectangleF(offset + a * i, a * j, a, a));
+                    //TextureRenderer.Draw(tex, new Vector2(xs[i], ys[j]), scl, color, new RectangleF(offset + a * i, a * j, a, a));
                 }
             }
 

@@ -49,7 +49,7 @@ namespace KreativerName.Scenes
             ui.Render(windowSize);
         }
 
-        public override void Exit()
+        public override void Unload()
         {
             ClientManager.PacketRecieved -= HandleRequest;
         }

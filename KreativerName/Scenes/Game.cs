@@ -325,9 +325,9 @@ namespace KreativerName.Scenes
             renderer.Grid = Grid;
 
             if (Settings.Current.ShowMoves)
-                renderer.Render(engine.Players[0], selectedHex, engine.GetPossibleMoves(player));
+                renderer.Render(windowSize, engine.Players[0], selectedHex, engine.GetPossibleMoves(player));
             else
-                renderer.Render(engine.Players[0], selectedHex, null);
+                renderer.Render(windowSize, engine.Players[0], selectedHex, null);
 
             ui.Render(windowSize);
 
@@ -550,6 +550,7 @@ namespace KreativerName.Scenes
                 {
                     ui.Dispose();
                     title.Dispose();
+                    renderer.Dispose();
                 }
 
                 world = new World();

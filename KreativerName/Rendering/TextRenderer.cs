@@ -10,7 +10,7 @@ namespace KreativerName.Rendering
         public static void RenderChar(char c, Vector2 position, Color color, float size = 2)
         {
             RectangleF sourceRect = new RectangleF(((c - 32) % 16) * 6, ((c - 32) / 16) * 6, 6, 6);
-            TextureRenderer.Draw(tex, position, Vector2.One * size, color, sourceRect);
+            //TextureRenderer.Draw(tex, position, Vector2.One * size, color, sourceRect);
         }
 
         public static void RenderString(string s, Vector2 position, Color color, float size = 2)

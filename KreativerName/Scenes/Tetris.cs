@@ -257,8 +257,8 @@ namespace KreativerName.Scenes
             position += winSize / 2;
             position -= new Vector2(Width, Height) * 8 * Scale / 2;
 
-            TextureRenderer.Draw(Textures.Get("Tetris"), position, Vector2.One * Scale, Color.White, new RectangleF((tile % 3 == 0 ? 0 : 1) * 8, 0, 8, 8));
-            TextureRenderer.Draw(Textures.Get("Tetris"), position, Vector2.One * Scale, tile % 3 != 2 ? c1 : c2, new RectangleF((tile % 3 == 0 ? 0 : 1) * 8, 8, 8, 8));
+            //TextureRenderer.Draw(Textures.Get("Tetris"), position, Vector2.One * Scale, Color.White, new RectangleF((tile % 3 == 0 ? 0 : 1) * 8, 0, 8, 8));
+            //TextureRenderer.Draw(Textures.Get("Tetris"), position, Vector2.One * Scale, tile % 3 != 2 ? c1 : c2, new RectangleF((tile % 3 == 0 ? 0 : 1) * 8, 8, 8, 8));
         }
 
         public void SetLevel(uint level)

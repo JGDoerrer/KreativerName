@@ -69,6 +69,35 @@ namespace KreativerName.UI
 
         public override void Render(Vector2 windowSize)
         {
+            if (model == null)
+                BuildMesh(windowSize);
+
+            Color color = Color;
+            if (!Enabled)
+            {
+                color = Color.FromArgb(Color.R / 2, Color.B / 2, Color.G / 2);
+            }
+
+            Matrix4 matrix = Matrix4.Identity;
+
+            matrix.M11 = 2 / windowSize.X; // scale
+            matrix.M22 = -2 / windowSize.Y;
+
+            matrix.M14 = -1 + GetX(windowSize)*2 / windowSize.X;
+            matrix.M24 = 1 - GetY(windowSize)*2 / windowSize.Y;
+
+            model.Info.Shader.SetMatrix4("transform", matrix);
+            model.Info.Shader.SetColor("inColor", color);
+
+            Renderer.Render(model.Info);
+
+            RenderChildren(windowSize);
+        }
+
+        private void BuildMesh(Vector2 windowSize)
+        {
+            MeshBuilder builder = new MeshBuilder();
+
             const int a = 8;
             const float scale = 2;
 
@@ -79,16 +108,11 @@ namespace KreativerName.UI
 
             float state = State * a * 3;
             float style = Style * a * 3;
-            Color color = Color;
             Texture2D tex = Textures.Get("Button");
 
-            if (!Enabled)
-            {
-                color = Color.FromArgb(Color.R / 2, Color.B / 2, Color.G / 2);
-            }
 
-            float[] xs = { x, x + a * scale, x + w - a * scale };
-            float[] ys = { y, y + a * scale, y + h - a * scale };
+            float[] xs = { 0, a * scale, w - a * scale };
+            float[] ys = { 0, a * scale, h - a * scale };
 
             for (int i = 0; i <= 2; i++)
             {
@@ -97,11 +121,13 @@ namespace KreativerName.UI
                     Vector2 scl = new Vector2(i == 1 ? w / (a * scale) - 2 : 1,
                                               j == 1 ? h / (a * scale) - 2 : 1) * scale;
 
-                    TextureRenderer.Draw(tex, new Vector2(xs[i], ys[j]), scl, color, new RectangleF(state + a * i, style + a * j, a, a));
+                    builder.AddRectangle(new RectangleF(xs[i], ys[j], a*scl.X, a*scl.Y), new RectangleF((state + a * i) / tex.Width, (style + a * j) / tex.Height, a / (float)tex.Width, a / (float)tex.Height));
+
+                    //TextureRenderer.Draw(tex, new Vector2(xs[i], ys[j]), scl, color, new RectangleF(state + a * i, style + a * j, a, a));
                 }
             }
 
-            RenderChildren(windowSize);
+            model = new Model(builder.Mesh, tex, Shaders.Get("Basic"));
         }
     }
 }

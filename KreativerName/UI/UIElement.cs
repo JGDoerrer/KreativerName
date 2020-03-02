@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using KreativerName.Rendering;
 using KreativerName.UI.Constraints;
 using OpenTK;
 using OpenTK.Input;
@@ -22,6 +23,8 @@ namespace KreativerName.UI
         internal UI ui;
         internal UIElement parent;
         protected List<UIElement> children = new List<UIElement>();
+
+        protected Model model;
 
         internal bool HasParent => parent != null;
         public List<UIElement> Children => children;
@@ -123,11 +126,17 @@ namespace KreativerName.UI
             {
                 if (disposing)
                 {
-                    parent?.Dispose();
+                    model?.Dispose();
                 }
 
-                ui = null;
+                foreach (UIElement child in Children)
+                {
+                    child.Dispose();
+                }
+
+                //ui = null;
                 children = null;
+                parent = null;
 
                 disposedValue = true;
             }

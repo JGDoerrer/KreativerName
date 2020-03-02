@@ -37,7 +37,7 @@ namespace KreativerName.UI
             float height = sourceRect.HasValue ? sourceRect.Value.Height : texture.Height;
             Vector2 scale = new Vector2(GetWidth(windowSize) / width, GetHeight(windowSize) / height);
 
-            TextureRenderer.Draw(texture, pos, scale, Color, sourceRect);
+            //TextureRenderer.Draw(texture, pos, scale, Color, sourceRect);
         }
     }
 }

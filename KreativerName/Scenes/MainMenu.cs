@@ -157,7 +157,7 @@ namespace KreativerName.Scenes
             {
                 for (int x = -(y / 2) - 4; x < w - (y + 1) / 2; x++)
                 {
-                    TextureRenderer.DrawHex(tex, new HexPoint(x, y), layout, Vector2.One, Color.FromArgb(10, 10, 10), new RectangleF(0, 0, 32, 32));
+                    //TextureRenderer.DrawHex(tex, new HexPoint(x, y), layout, Vector2.One, Color.FromArgb(10, 10, 10), new RectangleF(0, 0, 32, 32));
                 }
             }
 

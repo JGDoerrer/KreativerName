@@ -7,7 +7,7 @@ using OpenTK;
 
 namespace KreativerName.Rendering
 {
-    public class GridRenderer
+    public class GridRenderer : IDisposable
     {
         public GridRenderer()
         { }
@@ -26,13 +26,26 @@ namespace KreativerName.Rendering
         int frameCount = 0;
         List<Model> models = new List<Model>();
 
-        public void Render(Player player, HexPoint selectedHex, List<HexPoint> moves)
+        public void Render(Vector2 windowSize, Player player, HexPoint selectedHex, List<HexPoint> moves)
         {
             if (Grid == null)
                 return;
 
+            BuildMesh();
+
             foreach (Model model in models)
             {
+                Matrix4 matrix = Matrix4.Identity;
+
+                matrix.M11 = 2 / windowSize.X; // scale
+                matrix.M22 = -2 / windowSize.Y;
+
+                matrix.M14 = -1;
+                matrix.M24 = 1;
+
+                model.Info.Shader.SetMatrix4("transform", matrix);
+                model.Info.Shader.SetColor("inColor", Color.White);
+
                 Renderer.Render(model.Info);
             }
 
@@ -69,43 +82,6 @@ namespace KreativerName.Rendering
             //}
 
             frameCount++;
-        }
-
-
-        public static void RenderHex(HexPoint pos, List<HexData> types, HexLayout layout, Color color, int frameCount, HexGrid<Hex> grid = null)
-        {
-            types = types.OrderBy(x => x.ID).ToList();
-
-            for (int i = 0; i < types.Count; i++)
-            {
-                int animation = 0;
-                int connection = 0;
-
-                if (types[i].RenderFlags.HasFlag(RenderFlags.Animated) && types[i].AnimationLength != 0 && types[i].AnimationSpeed != 0)
-                {
-                    animation = ((frameCount + types[i].AnimationPhase) / types[i].AnimationSpeed) % types[i].AnimationLength;
-                }
-
-                if (grid != null && types[i].RenderFlags.HasFlag(RenderFlags.Connected))
-                {
-                    HexPoint[] directions = {
-                        new HexPoint( 1,  0), // E  1
-                        new HexPoint( 1, -1), // NE 2
-                        new HexPoint( 0, -1), // NW 4
-                        new HexPoint(-1,  0), // W  8
-                        new HexPoint(-1,  1), // SW 16
-                        new HexPoint( 0,  1), // SE 32
-                    };
-
-                    for (int j = 0; j < 6; j++)
-                    {
-                        if (grid[pos + directions[j]].HasValue && grid[pos + directions[j]].Value.IDs.Contains(types[i].ID))
-                            connection += 1 << j;
-                    }
-                }
-
-                TextureRenderer.DrawHex(Textures.Get($"Hex\\{types[i].Texture:000}"), pos, layout, Vector2.One * layout.size, color, new RectangleF(32 * connection, animation * 32, 32, 32));
-            }
         }
 
         public void BuildMesh()
@@ -168,9 +144,6 @@ namespace KreativerName.Rendering
                             (float)Math.Round((32 * animation + hexVertecies[j].Y * texSize) * Layout.size) / (texture.Height * Layout.size));
 
                         hexVertecies[j] = Layout.HexCorner((Vector2)hex.Position * Layout.spacing, j);
-
-                        hexVertecies[j].X = hexVertecies[j].X / (16f * 80f) * 2 - 1;
-                        hexVertecies[j].Y = (1 - (hexVertecies[j].Y / (9f * 80f))) * 2 - 1;
                     }
 
                     foreach (Vector2 vertex in hexVertecies)
@@ -195,9 +168,46 @@ namespace KreativerName.Rendering
                 }
 
                 Mesh mesh = new Mesh(vertecies.ToArray(), texCoords.ToArray(), indices.ToArray());
-                Model model = new Model(mesh, texture, Shaders.Get("shader"));
+                Model model = new Model(mesh, texture, Shaders.Get("Basic"));
                 models.Add(model);
             }
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // Dient zur Erkennung redundanter Aufrufe.
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                }
+
+                foreach (Model model in models)
+                {
+                    model.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        ~GridRenderer()
+        {
+            // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
+            Dispose(false);
+        }
+
+        // Dieser Code wird hinzugefügt, um das Dispose-Muster richtig zu implementieren.
+        public void Dispose()
+        {
+            // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
+            Dispose(true);
+           GC.SuppressFinalize(this);
+        }
+        #endregion
+
+
     }
 }

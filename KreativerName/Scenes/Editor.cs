@@ -198,7 +198,7 @@ namespace KreativerName.Scenes
             Player player = new Player(level.StartPos, Color.FromArgb(255, 0, 255, 0));
 
             renderer.BuildMesh();
-            renderer.Render(player, selectedHex, engine.GetPossibleMoves(level.StartPos));
+            renderer.Render(windowSize, player, selectedHex, engine.GetPossibleMoves(level.StartPos));
 
             ui.Render(windowSize);
         }
