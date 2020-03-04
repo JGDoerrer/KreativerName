@@ -40,7 +40,7 @@ namespace KreativerName.Rendering
                 matrix.M11 = 2 / windowSize.X; // scale
                 matrix.M22 = -2 / windowSize.Y;
 
-                matrix.M14 = -1;
+                matrix.M14 = -1; // translate
                 matrix.M24 = 1;
 
                 model.Info.Shader.SetMatrix4("transform", matrix);
@@ -48,38 +48,6 @@ namespace KreativerName.Rendering
 
                 Renderer.Render(model.Info);
             }
-
-            //foreach (Hex hex in Grid)
-            //{
-            //    Vector2 renderPos = Layout.HexCorner(hex.Position, 3);
-            //    renderPos.X -= Layout.size / 2f * sqrt3;
-            //    renderPos.Y -= Layout.size / 2f;
-
-            //    renderPos.X = (float)Math.Floor(renderPos.X);
-            //    renderPos.Y = (float)Math.Floor(renderPos.Y);
-
-            //    Color mask;
-
-            //    if (selectedHex == hex.Position)
-            //    {
-            //        if (moves != null && moves.Contains(hex.Position))
-            //            mask = Color.FromArgb(80, 0, 100, 0);
-            //        else
-            //            mask = Color.FromArgb(50, Color.Black);
-            //    }
-            //    else if (moves != null && moves.Contains(hex.Position))
-            //        mask = Color.FromArgb(80, 0, 200, 0);
-            //    else
-            //        mask = Color.Transparent;
-
-            //    RenderHex(hex.Position, hex.GetTypes(Data), Layout, Color.White, frameCount, Grid);
-
-            //    if (mask.A > 0)
-            //        TextureRenderer.DrawHex(Textures.Get("Hex\\Mask"), hex.Position, Layout, Vector2.One * Layout.size, mask, null);
-
-            //    if (hex.Position == player.Position)
-            //        TextureRenderer.DrawHex(Textures.Get("Player"), hex.Position, Layout, Vector2.One * Layout.size, player.Color, null);
-            //}
 
             frameCount++;
         }
@@ -134,11 +102,6 @@ namespace KreativerName.Rendering
 
                     for (int j = 0; j < 6; j++)
                     {
-                        //hexTexCoords[j] = new Vector2(
-                        //    (32 * connection + hexVertecies[j].X * texSize) / (texture.Width),
-                        //    (32 * animation + hexVertecies[j].Y * texSize) / (texture.Height)
-                        //);
-
                         hexTexCoords[j] = new Vector2(
                             (float)Math.Round((32 * connection + hexVertecies[j].X * texSize) * Layout.size) / (texture.Width * Layout.size),
                             (float)Math.Round((32 * animation + hexVertecies[j].Y * texSize) * Layout.size) / (texture.Height * Layout.size));
