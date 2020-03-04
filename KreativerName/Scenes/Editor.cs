@@ -50,14 +50,14 @@ namespace KreativerName.Scenes
         HexPoint lastSelectedHex;
         HexPoint selectedHex;
 
-        const float SQRT3 = 1.732050807568877293527446341505872366942805253810380628055f;
+        const float sqrt3 = 1.732050807568877293527446341505872366942805253810380628055f;
+        const float hexSize = 16 * 2;
 
-        const float HEX_SIZE = 16 * 2;
         HexLayout layout = new HexLayout(
-            new Matrix2(SQRT3, SQRT3 / 2f, 0, 3f / 2f),
-            new Matrix2(SQRT3 / 3f, -1f / 3f, 0, 2f / 3f),
+            new Matrix2(sqrt3, sqrt3 / 2f, 0, 3f / 2f),
+            new Matrix2(sqrt3 / 3f, -1f / 3f, 0, 2f / 3f),
             new Vector2(0, 0),
-            HEX_SIZE, 0.5f);
+            hexSize, 0.5f);
         Vector2 scrolling;
         float scale = 1;
         GridRenderer renderer;
@@ -86,58 +86,51 @@ namespace KreativerName.Scenes
             lastSelectedHex = selectedHex;
             selectedHex = mouse;
 
-            float scrollSpeed = 2 * (4 + (float)Math.Log(scale, 2));
-
             if (!ignoreMouse)
             {
-                if (input.MouseDown(MouseButton.Left))
+                // place hex
+                if (input.MouseDown(MouseButton.Left) && Grid != null && Grid[mouse] != null && drawID != null)
                 {
-                    if (Grid != null && Grid[mouse] != null && drawID != null)
-                    {
-                        Hex hex = Grid[mouse].Value;
+                    Hex hex = Grid[mouse].Value;
 
-                        if (drawID.HasValue && (drawID == 0))
-                            hex.IDs = new List<byte> { drawID.Value };
-                        else if (drawID.HasValue && !hex.IDs.Contains(drawID.Value))
-                            hex.IDs.Add(drawID.Value);
+                    if (drawID.HasValue && (drawID == 0))
+                        hex.IDs = new List<byte> { drawID.Value };
+                    else if (drawID.HasValue && !hex.IDs.Contains(drawID.Value))
+                        hex.IDs.Add(drawID.Value);
 
-                        Grid[mouse] = hex;
-                    }
+                    Grid[mouse] = hex;
                 }
-                if (input.MousePress(MouseButton.Right) || (input.MouseDown(MouseButton.Right) && lastSelectedHex != selectedHex))
+
+                // create hex
+                if (input.MousePress(MouseButton.Right) || (input.MouseDown(MouseButton.Right) && lastSelectedHex != selectedHex)
+                    && (Grid != null))
                 {
-                    if (Grid != null)
-                    {
-                        if (Grid[mouse].HasValue)
-                            Grid[mouse] = null;
-                        else
-                            Grid[mouse] = new Hex(mouse, 0);
-                    }
+                    if (Grid[mouse].HasValue)
+                        Grid[mouse] = null;
+                    else
+                        Grid[mouse] = new Hex(mouse, 0);
                 }
             }
+
             if (!ui.ignoreShortcuts)
             {
                 if (input.KeyPress(Key.A))
-                {
                     level.StartPos = mouse;
-                }
+
+                float scrollSpeed = 2 * (4 + (float)Math.Log(scale, 2));
+
+                // scrolling
                 if (input.KeyDown(Key.Left))
-                {
                     scrolling.X += scrollSpeed;
-                }
                 if (input.KeyDown(Key.Right))
-                {
                     scrolling.X -= scrollSpeed;
-                }
                 if (input.KeyDown(Key.Up))
-                {
                     scrolling.Y += scrollSpeed;
-                }
                 if (input.KeyDown(Key.Down))
-                {
                     scrolling.Y -= scrollSpeed;
-                }
             }
+
+            // zoom
             if (input.MouseScroll() != 0)
             {
                 float oldScale = scale;
@@ -177,12 +170,12 @@ namespace KreativerName.Scenes
                 int maxY = Grid.Max(x => x.Value.Y);
                 int minY = Grid.Min(x => x.Value.Y);
 
-                layout.size = Math.Min((width - margin - leftFrame.GetWidth(windowSize)) / (SQRT3 * (maxX - minX + 1)), (height - margin - lowerFrame.GetHeight(windowSize)) / (1.5f * (maxY - minY + 1.25f)));
+                layout.size = Math.Min((width - margin - leftFrame.GetWidth(windowSize)) / (sqrt3 * (maxX - minX + 1)), (height - margin - lowerFrame.GetHeight(windowSize)) / (1.5f * (maxY - minY + 1.25f)));
                 // Round to multiples of 16
                 layout.size = (float)Math.Floor(layout.size / 16) * 16;
                 layout.size = layout.size.Clamp(16, 48) * scale;
 
-                int centerX = (int)(layout.size * SQRT3 * (maxX + minX));
+                int centerX = (int)(layout.size * sqrt3 * (maxX + minX));
                 int centerY = (int)(layout.size * 1.5f * (maxY + minY));
 
                 // Center grid

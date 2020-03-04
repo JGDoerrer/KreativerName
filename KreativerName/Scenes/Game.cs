@@ -49,6 +49,10 @@ namespace KreativerName.Scenes
 
         #endregion
 
+        public event EmptyEvent OnExit;
+        public event LevelEvent LevelCompleted;
+        public event WorldEvent WorldCompleted;
+
         bool singleLevel = false;
         bool perfect = false;
         int levelIndex = 0;
@@ -60,7 +64,7 @@ namespace KreativerName.Scenes
         // max value = 240
         int titleAnim = -1;
 
-        const int MAX_LEVEL_ANIM = 80;
+        const int maxLevelAnim = 80;
         int levelAnim = -1;
         // true when level is done
         bool levelDone = false;
@@ -72,14 +76,14 @@ namespace KreativerName.Scenes
         HexPoint selectedHex;
         HexPoint player;
 
-        const float SQRT3 = 1.732050807568877293527446341505872366942805253810380628055f;
-        const float SIZE = 16 * 2;
+        const float sqrt3 = 1.732050807568877293527446341505872366942805253810380628055f;
+        const float size = 16 * 2;
 
         HexLayout layout = new HexLayout(
-            new Matrix2(SQRT3, SQRT3 / 2f, 0, 3f / 2f),
-            new Matrix2(SQRT3 / 3f, -1f / 3f, 0, 2f / 3f),
+            new Matrix2(sqrt3, sqrt3 / 2f, 0, 3f / 2f),
+            new Matrix2(sqrt3 / 3f, -1f / 3f, 0, 2f / 3f),
             new Vector2(0, 0),
-            SIZE, 0.5f);
+            size, 0.5f);
         GridRenderer renderer = new GridRenderer();
 
         Vector2 scrolling;
@@ -157,25 +161,16 @@ namespace KreativerName.Scenes
             if (!singleLevel)
                 Stats.Current.TotalMoves++;
 
-            if (engine.Players[0].IsDead)
+            if (engine.Players[0].IsDead || (perfect && Moves >= level.MinMoves))
             {
                 if (!singleLevel)
                     Stats.Current.Fails++;
 
                 LoadLevel();
-                return;
             }
-
-            if (engine.LevelDone)
+            else if (engine.LevelDone)
             {
                 CompleteLevel();
-                return;
-            }
-
-            if (perfect && Moves >= level.MinMoves)
-            {
-                LoadLevel();
-                return;
             }
         }
 
@@ -184,34 +179,27 @@ namespace KreativerName.Scenes
             HexPoint mouse = layout.PixelToHex(input.MousePosition);
             selectedHex = mouse;
 
-            if (input.MousePress(MouseButton.Left) && !levelDone)
+            if (input.MousePress(MouseButton.Left) && !levelDone &&
+                engine.GetPossibleMoves(player).Contains(mouse))
             {
-                if (engine.GetPossibleMoves(player).Contains(mouse))
-                {
-                    player = mouse;
-                    engine.Update(0, player);
-                    UpdatePlayer();
-                }
+                player = mouse;
+                engine.Update(0, player);
+                UpdatePlayer();
             }
 
+            // scrolling
             float scrollSpeed = 4 * (4 + (float)Math.Log(scale, 2));
 
             if (input.KeyDown(Key.Left))
-            {
                 scrolling.X += scrollSpeed;
-            }
             if (input.KeyDown(Key.Right))
-            {
                 scrolling.X -= scrollSpeed;
-            }
             if (input.KeyDown(Key.Up))
-            {
                 scrolling.Y += scrollSpeed;
-            }
             if (input.KeyDown(Key.Down))
-            {
                 scrolling.Y -= scrollSpeed;
-            }
+
+            // zoom
             if (input.MouseScroll() != 0)
             {
                 float oldScale = scale;
@@ -251,14 +239,10 @@ namespace KreativerName.Scenes
                     levelIndex++;
 
                 if (levelIndex == Levels)
-                {
                     worldDone = true;
-                }
 
                 if (Settings.Current.ShowAnimations)
-                {
-                    levelAnim = MAX_LEVEL_ANIM;
-                }
+                    levelAnim = maxLevelAnim;
 
                 levelDone = true;
             }
@@ -293,7 +277,7 @@ namespace KreativerName.Scenes
                 int maxY = Grid.Max(x => x.Value.Y);
                 int minY = Grid.Min(x => x.Value.Y);
 
-                layout.size = Math.Min((windowSize.X - margin) / (SQRT3 * (maxX - minX + 1)), (windowSize.Y - margin) / (1.5f * (maxY - minY + 1.25f)));
+                layout.size = Math.Min((windowSize.X - margin) / (sqrt3 * (maxX - minX + 1)), (windowSize.Y - margin) / (1.5f * (maxY - minY + 1.25f)));
                 // Round size to multiples of 16
                 layout.size = (float)Math.Floor(layout.size / 16) * 16;
                 layout.size = layout.size.Clamp(16, 64) * scale;
@@ -301,13 +285,13 @@ namespace KreativerName.Scenes
                 // Do level animation
                 if (levelAnim >= 0)
                 {
-                    layout.spacing = 1 + 2 * (1 - QuarticOut(levelDone ? (levelAnim / (float)MAX_LEVEL_ANIM) : (1 - levelAnim / (float)MAX_LEVEL_ANIM)));
-                    layout.size *= QuarticOut(levelDone ? (levelAnim / (float)MAX_LEVEL_ANIM) : (1 - levelAnim / (float)MAX_LEVEL_ANIM));
+                    layout.spacing = 1 + 2 * (1 - QuarticOut(levelDone ? (levelAnim / (float)maxLevelAnim) : (1 - levelAnim / (float)maxLevelAnim)));
+                    layout.size *= QuarticOut(levelDone ? (levelAnim / (float)maxLevelAnim) : (1 - levelAnim / (float)maxLevelAnim));
                 }
                 else
                     layout.spacing = 1;
 
-                int centerX = (int)(layout.size * layout.spacing * SQRT3 * (maxX + minX));
+                int centerX = (int)(layout.size * layout.spacing * sqrt3 * (maxX + minX));
                 int centerY = (int)(layout.size * layout.spacing * 1.5f * (maxY + minY));
 
                 // Center grid
@@ -366,14 +350,6 @@ namespace KreativerName.Scenes
 
         private float QuarticOut(float t)
            => -((t - 1) * (t - 1) * (t - 1) * (t - 1)) + 1;
-
-        #endregion
-
-        #region Events
-
-        public event EmptyEvent OnExit;
-        public event LevelEvent LevelCompleted;
-        public event WorldEvent WorldCompleted;
 
         #endregion
 
@@ -445,12 +421,10 @@ namespace KreativerName.Scenes
             scrolling = new Vector2();
             scale = 1;
 
-            if (Settings.Current.ShowAnimations)
-            {
-                levelAnim = MAX_LEVEL_ANIM;
-            }
-
             levelDone = false;
+
+            if (Settings.Current.ShowAnimations)
+                levelAnim = maxLevelAnim;
         }
 
         /// <summary>

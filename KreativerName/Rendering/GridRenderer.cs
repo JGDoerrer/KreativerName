@@ -32,6 +32,7 @@ namespace KreativerName.Rendering
 
             foreach (Hex hex in Grid)
             {
+                // Calculate position
                 Vector2 renderPos = Layout.HexCorner(hex.Position, 3);
                 renderPos.X -= Layout.size / 2f * sqrt3;
                 renderPos.Y -= Layout.size / 2f;
@@ -39,6 +40,7 @@ namespace KreativerName.Rendering
                 renderPos.X = (float)Math.Floor(renderPos.X);
                 renderPos.Y = (float)Math.Floor(renderPos.Y);
 
+                // Choose mask
                 Color mask;
 
                 if (selectedHex == hex.Position)
@@ -75,6 +77,7 @@ namespace KreativerName.Rendering
                 int animation = 0;
                 int connection = 0;
 
+                // Calculate animation
                 if (types[i].RenderFlags.HasFlag(RenderFlags.Animated) && types[i].AnimationLength != 0 && types[i].AnimationSpeed != 0)
                 {
                     animation = ((frameCount + types[i].AnimationPhase) / types[i].AnimationSpeed) % types[i].AnimationLength;
@@ -91,6 +94,7 @@ namespace KreativerName.Rendering
                         new HexPoint( 0,  1), // SE 32
                     };
 
+                    // Calculate connections
                     for (int j = 0; j < 6; j++)
                     {
                         if (grid[pos + directions[j]].HasValue && grid[pos + directions[j]].Value.IDs.Contains(types[i].ID))

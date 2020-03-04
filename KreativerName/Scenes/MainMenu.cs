@@ -127,22 +127,22 @@ namespace KreativerName.Scenes
 
         public override void Update()
         {
-        }
-
-        public override void UpdateUI(Vector2 windowSize)
-        {
-            ui.Update(windowSize);
-
             layout.origin += backScroll;
 
             if (layout.origin.X <= -layout.size * sqrt3)
                 layout.origin.X += layout.size * sqrt3;
             if (layout.origin.X >= layout.size * sqrt3)
                 layout.origin.X -= layout.size * sqrt3;
+
             if (layout.origin.Y >= layout.size * 3f)
                 layout.origin.Y -= layout.size * 3f;
             if (layout.origin.Y <= -layout.size * 3f)
                 layout.origin.Y += layout.size * 3f;
+        }
+
+        public override void UpdateUI(Vector2 windowSize)
+        {
+            ui.Update(windowSize);
         }
 
         public override void Render(Vector2 windowSize)
