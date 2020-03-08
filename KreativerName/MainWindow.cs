@@ -50,14 +50,14 @@ namespace KreativerName
 
             Vector2 size = new Vector2(Width, Height);
 
-            try
-            {
-                SceneManager.Update(size);
-            }
-            catch (Exception ex)
-            {
-                SceneManager.LoadScene(new Transition(new ErrorScene(ex), 10));
-            }
+            //try
+            //{
+            SceneManager.Update(size);
+            //}
+            //catch (Exception ex)
+            //{
+            //    SceneManager.LoadScene(new Transition(new ErrorScene(ex), 10));
+            //}
 
             // Update Stats
             Stats.Current.TimePlaying = Stats.Current.TimePlaying.Add(TimeSpan.FromSeconds(e.Time));
@@ -86,14 +86,14 @@ namespace KreativerName
 
             Vector2 size = new Vector2(Width, Height);
 
-            try
-            {
-                SceneManager.Render(size);
-            }
-            catch (Exception ex)
-            {
-                SceneManager.LoadScene(new Transition(new ErrorScene(ex), 10));
-            }
+            //try
+            //{
+            SceneManager.Render(size);
+            //}
+            //catch (Exception ex)
+            //{
+            //    SceneManager.LoadScene(new Transition(new ErrorScene(ex), 10));
+            //}
 
             // Render Fps
             if (Settings.Current.ShowFps)
@@ -118,15 +118,15 @@ namespace KreativerName
             HexData.LoadData(@"Resources\HexData");
             worker.ReportProgress(60);
 
-            if (ClientManager.Connect())
-            {
-                ClientManager.Login();
-                ClientManager.CompareVersion();
-            }
-            else
-            {
-                Notification.Show("Konnte nicht mit Server verbinden");
-            }
+            //if (ClientManager.Connect())
+            //{
+            //    ClientManager.Login();
+            //    ClientManager.CompareVersion();
+            //}
+            //else
+            //{
+            //    Notification.Show("Konnte nicht mit Server verbinden");
+            //}
             worker.ReportProgress(80);
 
             if (Stats.Current.FirstStart.Ticks == 0)

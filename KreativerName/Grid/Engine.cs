@@ -37,6 +37,7 @@ namespace KreativerName.Grid
 
             HexGrid<Hex> nextGrid = Level.Grid.Copy();
 
+            // Update every hex
             for (int i = 0; i < Level.Grid.Count; i++)
             {
                 Hex hex = Level.Grid.Values.ElementAt(i);
@@ -44,6 +45,7 @@ namespace KreativerName.Grid
                 UpdateHex(hex, player, ref nextGrid);
             }
 
+            // Update grid
             Level.Grid = nextGrid;
 
             HexFlags flags = Level.Grid[Players[player].Position].Value.GetFlags(Level.Data);
@@ -77,6 +79,7 @@ namespace KreativerName.Grid
                     {
                         if (nextPos == position || !moveHex)
                         {
+                            // Change IDs
                             Hex temp = nextGrid[position].Value;
                             temp.IDs.Remove(type.ID);
                             temp.IDs.Add(action.ChangeTo);
@@ -84,6 +87,7 @@ namespace KreativerName.Grid
                         }
                         else if (nextGrid[nextPos].HasValue && moveHex)
                         {
+                            // Change IDs and move hex
                             Hex temp = nextGrid[position].Value;
                             temp.IDs.Remove(type.ID);
 
@@ -163,7 +167,9 @@ namespace KreativerName.Grid
             {
                 int j = 1;
 
-                while (Level.Grid[(directions[i] * j) + player].HasValue && !Level.Grid[(directions[i] * j) + player].Value.GetFlags(Level.Data).HasFlag(HexFlags.Solid))
+                // While next is not solid and not null
+                while (Level.Grid[(directions[i] * j) + player].HasValue &&
+                    !Level.Grid[(directions[i] * j) + player].Value.GetFlags(Level.Data).HasFlag(HexFlags.Solid))
                 {
                     moves.Add(directions[i] * j + player);
                     j++;
